@@ -1,0 +1,71 @@
+run-name: Deploy / ${{ github.event.head_commit.message }}
+name: Deploy
+on:
+  workflow_call:
+
+jobs:
+  cppcheck:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+    - name: Install CppCheck
+      run: |
+        sudo -H apt-get update -y
+        sudo -H apt-get install cppcheck
+    - name: Run Cppcheck
+      run: cppcheck --std=c++20 -I./lib --xml --xml-version=2 --force --enable=all example lib/core 2> cppcheck_res.xml
+    - name: Generate Report
+      run: cppcheck-htmlreport --title=WebFrame --file=cppcheck_res.xml --report-dir=codeql_report
+    - name: Upload Report
+      uses: actions/upload-artifact@v1
+      with:
+        name: cppcheck
+        path: codeql_report
+  doxygen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+      - name: Configure
+        shell: bash
+        run: |
+          sudo apt install doxygen
+          doxygen Doxyfile
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: doxygen
+          path: |
+            reports/docs
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [cppcheck, doxygen]
+    permissions:                # Job-level permissions configuration starts here
+      contents: write           # 'write' access to repository contents
+      pull-requests: write      # 'write' access to pull requests
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+          ref: ${{ github.head_ref }}
+      - name: Download all artifacts 🔧
+        uses: actions/download-artifact@v3
+      - name: Prepare
+        shell: bash
+        run: |
+          rm -rf ./reports
+          mv -f ./cppcheck/* reports/codeql_report/
+          mv -f ./doxygen/* reports/docs/
+      - uses: EndBug/add-and-commit@v4
+        with:
+          author_name: Static analysis reports
+          author_email: static@analysis.reports
+          message: ':art: Committing static analysis reports'
+          add: "./reports"
+          ref: ${{ github.head_ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
