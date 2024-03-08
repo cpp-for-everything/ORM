@@ -42,7 +42,9 @@ if(USE_MYSQL)
 endif()
 
 if(RUN_TESTS)
-    add_subdirectory("tests")
+    include(CTest)
+    enable_testing()
+    add_subdirectory("tests/")
 endif()
 
 # Generate example source code
@@ -55,4 +57,4 @@ target_include_directories(Webframe_ORM_Example PUBLIC
                           )
 add_executable(Webframe::ORM::Example ALIAS Webframe_ORM_Example)
 
-#include(CPack)
+include(CPack)
