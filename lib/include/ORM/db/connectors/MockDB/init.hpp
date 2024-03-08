@@ -175,7 +175,7 @@ namespace webframe::ORM {
                 ss << "(";
                 for_with<typename decltype(query)::properties>(
                     [&]<size_t i, typename T>() {
-                        ss << webframe::ORM::details::i_mem_ptr<decltype(std::declval<T>().get<i>())>::type::_name();
+                        ss << webframe::ORM::details::i_mem_ptr<typename T::template orm_type<i>>::type::_name();
                         if constexpr (i != T::size - 1)
                             ss << ", ";
                     },
