@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['ubiq_5fconstructor_5fconstexpr_5fcopy_883',['ubiq_constructor_constexpr_copy',['../d9/d0f/structpfr_1_1detail_1_1ubiq__constructor__constexpr__copy.html',1,'pfr::detail']]],
+  ['ubiq_5fconstructor_5fexcept_884',['ubiq_constructor_except',['../db/d59/structpfr_1_1detail_1_1ubiq__constructor__except.html',1,'pfr::detail']]],
+  ['ubiq_5fconstructor_5fexcept_3c_20t_2c_20false_20_3e_885',['ubiq_constructor_except&lt; T, false &gt;',['../d1/dcf/structpfr_1_1detail_1_1ubiq__constructor__except_3_01_t_00_01false_01_4.html',1,'pfr::detail']]],
+  ['ubiq_5fis_5fflat_5frefelectable_886',['ubiq_is_flat_refelectable',['../d7/de6/structpfr_1_1detail_1_1ubiq__is__flat__refelectable.html',1,'pfr::detail']]],
+  ['ubiq_5flref_5fbase_5fasserting_887',['ubiq_lref_base_asserting',['../df/d2d/structpfr_1_1detail_1_1ubiq__lref__base__asserting.html',1,'pfr::detail']]],
+  ['ubiq_5flref_5fconstructor_888',['ubiq_lref_constructor',['../dc/d84/structpfr_1_1detail_1_1ubiq__lref__constructor.html',1,'pfr::detail']]],
+  ['ubiq_5frref_5fbase_5fasserting_889',['ubiq_rref_base_asserting',['../db/d12/structpfr_1_1detail_1_1ubiq__rref__base__asserting.html',1,'pfr::detail']]],
+  ['ubiq_5frref_5fconstructor_890',['ubiq_rref_constructor',['../d4/dda/structpfr_1_1detail_1_1ubiq__rref__constructor.html',1,'pfr::detail']]],
+  ['ubiq_5fsizes_891',['ubiq_sizes',['../d6/df0/structpfr_1_1detail_1_1ubiq__sizes.html',1,'pfr::detail']]],
+  ['ubiq_5fval_892',['ubiq_val',['../db/d73/structpfr_1_1detail_1_1ubiq__val.html',1,'pfr::detail']]],
+  ['unique_5ffirst_5ftables_893',['unique_first_tables',['../d1/deb/structwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1details_1_1unique__first__tables.html',1,'webframe::ORM::CRUD::details']]],
+  ['unique_5ffirst_5ftables_3c_20webframe_3a_3aorm_3a_3adetails_3a_3aorm_5ftuple_3c_20statement1_2c_20statements_2e_2e_2e_20_3e_20_3e_894',['unique_first_tables&lt; webframe::ORM::details::orm_tuple&lt; Statement1, Statements... &gt; &gt;',['../de/d4d/structwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1details_1_1unique__first__tables_3_01webframe_1_1_o_r_m_e7bd1a40ec193d57df7ce2018add0594.html',1,'webframe::ORM::CRUD::details']]],
+  ['unique_5ffirst_5ftables_3c_20webframe_3a_3aorm_3a_3adetails_3a_3aorm_5ftuple_3c_3e_20_3e_895',['unique_first_tables&lt; webframe::ORM::details::orm_tuple&lt;&gt; &gt;',['../d5/d97/structwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1details_1_1unique__first__tables_3_01webframe_1_1_o_r_m_fd3a3c525df5995a4b9989090de5ac11.html',1,'webframe::ORM::CRUD::details']]],
+  ['unique_5ftables_896',['unique_tables',['../d4/db0/structwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1details_1_1unique__tables.html',1,'webframe::ORM::CRUD::details']]],
+  ['unique_5ftables_3c_20t_2c_20ts_2e_2e_2e_20_3e_897',['unique_tables&lt; T, Ts... &gt;',['../d0/dec/structwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1details_1_1unique__tables_3_01_t_00_01_ts_8_8_8_01_4.html',1,'webframe::ORM::CRUD::details']]],
+  ['unique_5ftables_3c_3e_898',['unique_tables&lt;&gt;',['../d3/dc3/structwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1details_1_1unique__tables_3_4.html',1,'webframe::ORM::CRUD::details']]],
+  ['unique_5ftables_5ft_899',['unique_tables_t',['../d0/dd7/structwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1details_1_1unique__tables__t.html',1,'webframe::ORM::CRUD::details']]],
+  ['unique_5ftables_5ft_3c_20std_3a_3atuple_3c_20t_2c_20ts_2e_2e_2e_20_3e_20_3e_900',['unique_tables_t&lt; std::tuple&lt; T, Ts... &gt; &gt;',['../d0/d29/structwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1details_1_1unique__tables__t_3_01std_1_1tuple_3_01_t_00_01_ts_8_8_8_01_4_01_4.html',1,'webframe::ORM::CRUD::details']]],
+  ['unique_5ftables_5ft_3c_20std_3a_3atuple_3c_3e_20_3e_901',['unique_tables_t&lt; std::tuple&lt;&gt; &gt;',['../de/d7a/structwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1details_1_1unique__tables__t_3_01std_1_1tuple_3_4_01_4.html',1,'webframe::ORM::CRUD::details']]],
+  ['unique_5ftables_5ft_3c_20webframe_3a_3aorm_3a_3adetails_3a_3aorm_5ftuple_3c_20ts_2e_2e_2e_20_3e_20_3e_902',['unique_tables_t&lt; webframe::ORM::details::orm_tuple&lt; Ts... &gt; &gt;',['../db/deb/structwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1details_1_1unique__tables__t_3_01webframe_1_1_o_r_m_1_1d9857452287db75a34b0e01716bd20051.html',1,'webframe::ORM::CRUD::details']]],
+  ['update_5fquery_903',['update_query',['../d3/d56/classwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1update__query.html',1,'webframe::ORM::CRUD']]],
+  ['update_5fquery_5ft_904',['update_query_t',['../d3/dc9/classwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1details_1_1update__query__t.html',1,'webframe::ORM::CRUD::details']]]
+];
