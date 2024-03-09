@@ -17,8 +17,8 @@
 #include <pfr/io_fields.hpp>
 #include <pfr/ops.hpp>
 #include <pfr/ops_fields.hpp>
-#include <pfr/tuple_size.hpp>
-#include <pfr/traits_fwd.hpp>
 #include <pfr/traits.hpp>
+#include <pfr/traits_fwd.hpp>
+#include <pfr/tuple_size.hpp>
 
 #endif // PFR_HPP
