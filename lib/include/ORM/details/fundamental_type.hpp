@@ -10,9 +10,9 @@
 #include <concepts>
 
 namespace webframe::ORM::details {
-    template<typename T>
-    concept is_inheritable = !std::is_fundamental_v<T> && !std::is_enum_v<T>;
+template <typename T>
+concept is_inheritable = !std::is_fundamental_v<T> && !std::is_enum_v<T>;
 
-    template<typename T>
-    concept is_not_inheritable = std::is_fundamental_v<T> || std::is_enum_v<T>;
-}
+template <typename T>
+concept is_not_inheritable = std::is_fundamental_v<T> || std::is_enum_v<T>;
+} // namespace webframe::ORM::details
