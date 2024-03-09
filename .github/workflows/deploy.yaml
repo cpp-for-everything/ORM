@@ -58,6 +58,7 @@ jobs:
         shell: bash
         run: |
           rm -rf ./reports
+          mkdir -p ./reports/codeql_report ./reports/docs
           mv -f ./cppcheck/* reports/codeql_report/
           mv -f ./doxygen/* reports/docs/
       - uses: EndBug/add-and-commit@v4
