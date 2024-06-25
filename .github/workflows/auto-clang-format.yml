@@ -11,13 +11,15 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        submodules: 'recursive'
         ref: ${{ github.head_ref }}
-    - name: clang-format
-      uses: egor-tensin/clang-format@v1
+    - uses: DoozyX/clang-format-lint-action@v0.17
       with:
-        version: 16
-        style: file
-        exclude: ./lib/inja:./lib/url-matcher:./tests/Catch2
+        source: '.'
+        exclude: './lib/inja ./lib/url-matcher ./tests/Catch2'
+        extensions: 'h,cpp,hpp'
+        clangFormatVersion: 16
+        inplace: True
     - uses: EndBug/add-and-commit@v4
       with:
         author_name: Clang Robot
