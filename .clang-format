@@ -1,0 +1,17 @@
+---
+BasedOnStyle: Microsoft
+UseTab: ForContinuationAndIndentation
+TabWidth: 4
+AccessModifierOffset: 0
+IndentPPDirectives: BeforeHash
+ColumnLimit: 160
+BinPackArguments: false
+BinPackParameters: false
+AlignAfterOpenBracket: AlwaysBreak
+AlignOperands: DontAlign
+PointerAlignment: Left
+SortIncludes: false
+SortUsingDeclarations: false
+NamespaceIndentation: All
+InsertBraces: true
+InsertNewlineAtEOF: true
