@@ -15,3 +15,11 @@ SortUsingDeclarations: false
 NamespaceIndentation: All
 InsertBraces: true
 InsertNewlineAtEOF: true
+WhitespaceSensitiveMacros:
+  - DISABLE_WARNING_PUSH
+  - DISABLE_WARNING_PUSH3
+  - DISABLE_WARNING_POP
+  - DISABLE_WARNING
+  - DISABLE_WARNING_UNREACHABLE_CODE
+  - DISABLE_WARNING_LOSS_OF_DATA
+  - DISABLE_WARNING_USER_DEFINED_COMMA
