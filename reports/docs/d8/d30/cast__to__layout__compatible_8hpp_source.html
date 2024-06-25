@@ -83,71 +83,72 @@ $(function() {
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="../../da/d84/detail_2config_8hpp.html">pfr/detail/config.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;type_traits&gt;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;utility&gt;</span>      <span class="comment">// metaprogramming stuff</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;utility&gt;</span> <span class="comment">// metaprogramming stuff</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="../../d2/dfb/rvalue__t_8hpp.html">pfr/detail/rvalue_t.hpp</a>&gt;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
-<div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="../../d9/d07/namespacepfr_1_1detail.html">   16</a></span>&#160;<span class="keyword">namespace </span><a class="code" href="../../d4/d26/namespacepfr.html">pfr</a> { <span class="keyword">namespace </span>detail {</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keyword">class</span> U&gt;</div>
-<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="../../d9/d07/namespacepfr_1_1detail.html#aa5ab8c3c3b274c65499bfdabb03cfed0">   19</a></span>&#160;constexpr <span class="keywordtype">void</span> <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#aa5ab8c3c3b274c65499bfdabb03cfed0">static_assert_layout_compatible</a>() noexcept {</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    static_assert(</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        std::alignment_of&lt;T&gt;::value == std::alignment_of&lt;U&gt;::value,</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        <span class="stringliteral">&quot;====================&gt; Boost.PFR: Alignment check failed, probably your structure has user-defined alignment for the whole structure or for some of the fields.&quot;</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    );</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    static_assert(<span class="keyword">sizeof</span>(T) == <span class="keyword">sizeof</span>(U), <span class="stringliteral">&quot;====================&gt; Boost.PFR: Size check failed, probably your structure has bitfields or user-defined alignment.&quot;</span>);</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;}</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#ifdef __GNUC__</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#define MAY_ALIAS __attribute__((__may_alias__))</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#define MAY_ALIAS</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> To, <span class="keyword">class</span> From&gt;</div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="../../d9/d07/namespacepfr_1_1detail.html#ae7802b270acb523661b518426c329a16">   36</a></span>&#160;MAY_ALIAS <span class="keyword">const</span> To&amp; <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ae7802b270acb523661b518426c329a16">cast_to_layout_compatible</a>(<span class="keyword">const</span> From&amp; val) noexcept {</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    MAY_ALIAS <span class="keyword">const</span> To* <span class="keyword">const</span> t = <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span>To*<span class="keyword">&gt;</span>( std::addressof(val) );</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    detail::static_assert_layout_compatible&lt;To, From&gt;();</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keywordflow">return</span> *t;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;}</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> To, <span class="keyword">class</span> From&gt;</div>
-<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="../../d9/d07/namespacepfr_1_1detail.html#afe51440e3094741d5055ed6cedbae854">   43</a></span>&#160;MAY_ALIAS <span class="keyword">const</span> <span class="keyword">volatile</span> To&amp; <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ae7802b270acb523661b518426c329a16">cast_to_layout_compatible</a>(<span class="keyword">const</span> <span class="keyword">volatile</span> From&amp; val) noexcept {</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    MAY_ALIAS <span class="keyword">const</span> <span class="keyword">volatile</span> To* <span class="keyword">const</span> t = <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keyword">volatile </span>To*<span class="keyword">&gt;</span>( std::addressof(val) );</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    detail::static_assert_layout_compatible&lt;To, From&gt;();</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordflow">return</span> *t;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;}</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> To, <span class="keyword">class</span> From&gt;</div>
-<div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="../../d9/d07/namespacepfr_1_1detail.html#a7a482647fb4dc174870a93a59fb2dc3d">   51</a></span>&#160;MAY_ALIAS <span class="keyword">volatile</span> To&amp; <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ae7802b270acb523661b518426c329a16">cast_to_layout_compatible</a>(<span class="keyword">volatile</span> From&amp; val) noexcept {</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    MAY_ALIAS <span class="keyword">volatile</span> To* <span class="keyword">const</span> t = <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">volatile </span>To*<span class="keyword">&gt;</span>( std::addressof(val) );</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    detail::static_assert_layout_compatible&lt;To, From&gt;();</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordflow">return</span> *t;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;}</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> To, <span class="keyword">class</span> From&gt;</div>
-<div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="../../d9/d07/namespacepfr_1_1detail.html#a5b307acc61bd0e905ed7c4bf485a9c7a">   59</a></span>&#160;MAY_ALIAS To&amp; <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ae7802b270acb523661b518426c329a16">cast_to_layout_compatible</a>(From&amp; val) noexcept {</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    MAY_ALIAS To* <span class="keyword">const</span> t = <span class="keyword">reinterpret_cast&lt;</span>To*<span class="keyword">&gt;</span>( std::addressof(val) );</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    detail::static_assert_layout_compatible&lt;To, From&gt;();</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordflow">return</span> *t;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;}</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="preprocessor">#ifdef PFR_DETAIL_STRICT_RVALUE_TESTING</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> To, <span class="keyword">class</span> From&gt;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;To&amp;&amp; <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ae7802b270acb523661b518426c329a16">cast_to_layout_compatible</a>(rvalue_t&lt;From&gt; val) noexcept = <span class="keyword">delete</span>;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="preprocessor">#undef MAY_ALIAS</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span><a class="code" href="../../d4/d26/namespacepfr.html">pfr</a></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;{</div>
+<div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="../../d9/d07/namespacepfr_1_1detail.html">   18</a></span>&#160;    <span class="keyword">namespace </span>detail</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    {</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
+<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="../../d9/d07/namespacepfr_1_1detail.html#aa5ab8c3c3b274c65499bfdabb03cfed0">   21</a></span>&#160;        <span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keyword">class</span> U&gt; constexpr <span class="keywordtype">void</span> <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#aa5ab8c3c3b274c65499bfdabb03cfed0">static_assert_layout_compatible</a>() noexcept</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        {</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;            static_assert(</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                std::alignment_of&lt;T&gt;::value == std::alignment_of&lt;U&gt;::value,</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                <span class="stringliteral">&quot;====================&gt; Boost.PFR: Alignment check failed, probably your structure has user-defined alignment for the whole structure or for &quot;</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                <span class="stringliteral">&quot;some of the fields.&quot;</span>);</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;            static_assert(</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;                <span class="keyword">sizeof</span>(T) == <span class="keyword">sizeof</span>(U), <span class="stringliteral">&quot;====================&gt; Boost.PFR: Size check failed, probably your structure has bitfields or user-defined alignment.&quot;</span>);</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        }</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#ifdef __GNUC__</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">    #define MAY_ALIAS __attribute__((__may_alias__))</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">    #define MAY_ALIAS</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="../../d9/d07/namespacepfr_1_1detail.html#ae7802b270acb523661b518426c329a16">   39</a></span>&#160;        <span class="keyword">template</span> &lt;<span class="keyword">class</span> To, <span class="keyword">class</span> From&gt; MAY_ALIAS <span class="keyword">const</span> To&amp; <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ae7802b270acb523661b518426c329a16">cast_to_layout_compatible</a>(<span class="keyword">const</span> From&amp; val) noexcept</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        {</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;            MAY_ALIAS <span class="keyword">const</span> To* <span class="keyword">const</span> t = <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span>To*<span class="keyword">&gt;</span>(std::addressof(val));</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;            detail::static_assert_layout_compatible&lt;To, From&gt;();</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            <span class="keywordflow">return</span> *t;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        }</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
+<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="../../d9/d07/namespacepfr_1_1detail.html#afe51440e3094741d5055ed6cedbae854">   46</a></span>&#160;        <span class="keyword">template</span> &lt;<span class="keyword">class</span> To, <span class="keyword">class</span> From&gt; MAY_ALIAS <span class="keyword">const</span> <span class="keyword">volatile</span> To&amp; <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ae7802b270acb523661b518426c329a16">cast_to_layout_compatible</a>(<span class="keyword">const</span> <span class="keyword">volatile</span> From&amp; val) noexcept</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        {</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            MAY_ALIAS <span class="keyword">const</span> <span class="keyword">volatile</span> To* <span class="keyword">const</span> t = <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keyword">volatile </span>To*<span class="keyword">&gt;</span>(std::addressof(val));</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;            detail::static_assert_layout_compatible&lt;To, From&gt;();</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            <span class="keywordflow">return</span> *t;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        }</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
+<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="../../d9/d07/namespacepfr_1_1detail.html#a7a482647fb4dc174870a93a59fb2dc3d">   53</a></span>&#160;        <span class="keyword">template</span> &lt;<span class="keyword">class</span> To, <span class="keyword">class</span> From&gt; MAY_ALIAS <span class="keyword">volatile</span> To&amp; <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ae7802b270acb523661b518426c329a16">cast_to_layout_compatible</a>(<span class="keyword">volatile</span> From&amp; val) noexcept</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        {</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            MAY_ALIAS <span class="keyword">volatile</span> To* <span class="keyword">const</span> t = <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">volatile </span>To*<span class="keyword">&gt;</span>(std::addressof(val));</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            detail::static_assert_layout_compatible&lt;To, From&gt;();</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            <span class="keywordflow">return</span> *t;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        }</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
+<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="../../d9/d07/namespacepfr_1_1detail.html#a5b307acc61bd0e905ed7c4bf485a9c7a">   60</a></span>&#160;        <span class="keyword">template</span> &lt;<span class="keyword">class</span> To, <span class="keyword">class</span> From&gt; MAY_ALIAS To&amp; <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ae7802b270acb523661b518426c329a16">cast_to_layout_compatible</a>(From&amp; val) noexcept</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        {</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;            MAY_ALIAS To* <span class="keyword">const</span> t = <span class="keyword">reinterpret_cast&lt;</span>To*<span class="keyword">&gt;</span>(std::addressof(val));</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;            detail::static_assert_layout_compatible&lt;To, From&gt;();</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;            <span class="keywordflow">return</span> *t;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        }</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="preprocessor">#ifdef PFR_DETAIL_STRICT_RVALUE_TESTING</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        <span class="keyword">template</span> &lt;<span class="keyword">class</span> To, <span class="keyword">class</span> From&gt; To&amp;&amp; <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ae7802b270acb523661b518426c329a16">cast_to_layout_compatible</a>(rvalue_t&lt;From&gt; val) noexcept = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="preprocessor">#undef MAY_ALIAS</span></div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;}} <span class="comment">// namespace pfr::detail</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// PFR_DETAIL_CAST_TO_LAYOUT_COMPATIBLE_HPP</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    } <span class="comment">// namespace detail</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;} <span class="comment">// namespace pfr</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// PFR_DETAIL_CAST_TO_LAYOUT_COMPATIBLE_HPP</span></div>
 <div class="ttc" id="adetail_2config_8hpp_html"><div class="ttname"><a href="../../da/d84/detail_2config_8hpp.html">config.hpp</a></div></div>
-<div class="ttc" id="anamespacepfr_1_1detail_html_aa5ab8c3c3b274c65499bfdabb03cfed0"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#aa5ab8c3c3b274c65499bfdabb03cfed0">pfr::detail::static_assert_layout_compatible</a></div><div class="ttdeci">constexpr void static_assert_layout_compatible() noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d30/cast__to__layout__compatible_8hpp_source.html#l00019">cast_to_layout_compatible.hpp:19</a></div></div>
-<div class="ttc" id="anamespacepfr_1_1detail_html_ae7802b270acb523661b518426c329a16"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#ae7802b270acb523661b518426c329a16">pfr::detail::cast_to_layout_compatible</a></div><div class="ttdeci">MAY_ALIAS const To &amp; cast_to_layout_compatible(const From &amp;val) noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d30/cast__to__layout__compatible_8hpp_source.html#l00036">cast_to_layout_compatible.hpp:36</a></div></div>
-<div class="ttc" id="anamespacepfr_html"><div class="ttname"><a href="../../d4/d26/namespacepfr.html">pfr</a></div><div class="ttdef"><b>Definition:</b> <a href="../../da/d47/core_8hpp_source.html#l00030">core.hpp:30</a></div></div>
+<div class="ttc" id="anamespacepfr_1_1detail_html_aa5ab8c3c3b274c65499bfdabb03cfed0"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#aa5ab8c3c3b274c65499bfdabb03cfed0">pfr::detail::static_assert_layout_compatible</a></div><div class="ttdeci">constexpr void static_assert_layout_compatible() noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d30/cast__to__layout__compatible_8hpp_source.html#l00021">cast_to_layout_compatible.hpp:21</a></div></div>
+<div class="ttc" id="anamespacepfr_1_1detail_html_ae7802b270acb523661b518426c329a16"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#ae7802b270acb523661b518426c329a16">pfr::detail::cast_to_layout_compatible</a></div><div class="ttdeci">MAY_ALIAS const To &amp; cast_to_layout_compatible(const From &amp;val) noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d30/cast__to__layout__compatible_8hpp_source.html#l00039">cast_to_layout_compatible.hpp:39</a></div></div>
+<div class="ttc" id="anamespacepfr_html"><div class="ttname"><a href="../../d4/d26/namespacepfr.html">pfr</a></div><div class="ttdef"><b>Definition:</b> <a href="../../da/d47/core_8hpp_source.html#l00030">core.hpp:31</a></div></div>
 <div class="ttc" id="arvalue__t_8hpp_html"><div class="ttname"><a href="../../d2/dfb/rvalue__t_8hpp.html">rvalue_t.hpp</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

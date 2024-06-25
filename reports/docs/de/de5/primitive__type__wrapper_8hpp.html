@@ -215,32 +215,39 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; \</div>
-<div class="line">            struct name; \</div>
-<div class="line">                                                                \</div>
-<div class="line">            template&lt;typename T&gt; <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a> <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a> (T&amp; a, T b) { \</div>
-<div class="line">                { a op b }; \</div>
-<div class="line">            } \</div>
-<div class="line">            struct name&lt;T&gt; : <span class="keyword">public</span> Wrapper&lt;T&gt; { \</div>
-<div class="line">                template&lt;typename U&gt; \</div>
-<div class="line">                inline decltype(T() op U()) operator op (U b)<span class="keyword"> const </span>{ \</div>
-<div class="line">                    return (this-&gt;<span class="keyword">get</span>() op b); \</div>
-<div class="line">                } \</div>
-<div class="line">            }; \</div>
-<div class="line">                                                                \</div>
-<div class="line">            template&lt;typename T&gt; <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a> (!<a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a> (T&amp; a, T b) { \</div>
-<div class="line">                { a op b }; \</div>
-<div class="line">            }) \</div>
-<div class="line">            <span class="keyword">struct</span> name&lt;T&gt; : <span class="keyword">public</span> Wrapper&lt;T&gt; { \</div>
-<div class="line">                template&lt;typename U&gt; \</div>
-<div class="line">                inline T <span class="keyword">operator</span> op (U)<span class="keyword"> const </span>{ \</div>
-<div class="line">                    static_assert(operator_not_available&lt;T, U&gt;, <span class="stringliteral">&quot;error: invalid operands of types ‘T’ and ‘U’ to binary ‘operator&quot;</span>#op<span class="stringliteral">&quot;’&quot;</span>); \</div>
-<div class="line">                    return this-&gt;<span class="keyword">get</span>(); \</div>
-<div class="line">                } \</div>
-<div class="line">            }</div>
-<div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_a23fdca7da2e3558a0c6e97a842b69a9f"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">webframe::ORM::details::requires</a></div><div class="ttdeci">requires(std::is_fundamental_v&lt; T &gt;) class Wrapper</div><div class="ttdef"><b>Definition:</b> <a href="../../de/de5/primitive__type__wrapper_8hpp_source.html#l00008">primitive_type_wrapper.hpp:8</a></div></div>
+<b>Value:</b><div class="fragment"><div class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; <span class="keyword">struct </span>name;                                                                                                                         \</div>
+<div class="line">                                                                                                                                                               \</div>
+<div class="line">    template &lt;typename T&gt;                                                                                                                                      \</div>
+<div class="line">        requires <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a>(T&amp; a, T b) {                                                                                                                         \</div>
+<div class="line">            {                                                                                                                                                  \</div>
+<div class="line">                a op b                                                                                                                                         \</div>
+<div class="line">            };                                                                                                                                                 \</div>
+<div class="line">        }                                                                                                                                                      \</div>
+<div class="line">    struct name&lt;T&gt; : <span class="keyword">public</span> Wrapper&lt;T&gt;                                                                                                                         \</div>
+<div class="line">    {                                                                                                                                                          \</div>
+<div class="line">        template &lt;typename U&gt; <span class="keyword">inline</span> decltype(T() op U()) operator op(U b) const                                                                               \</div>
+<div class="line">        {                                                                                                                                                      \</div>
+<div class="line">            return (this-&gt;<span class="keyword">get</span>() op b);                                                                                                                         \</div>
+<div class="line">        }                                                                                                                                                      \</div>
+<div class="line">    };                                                                                                                                                         \</div>
+<div class="line">                                                                                                                                                               \</div>
+<div class="line">    template &lt;typename T&gt;                                                                                                                                      \</div>
+<div class="line">        requires(!<a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a>(T&amp; a, T b) {                                                                                                                        \</div>
+<div class="line">            {                                                                                                                                                  \</div>
+<div class="line">                a op b                                                                                                                                         \</div>
+<div class="line">            };                                                                                                                                                 \</div>
+<div class="line">        })                                                                                                                                                     \</div>
+<div class="line">    <span class="keyword">struct</span> name&lt;T&gt; : <span class="keyword">public</span> Wrapper&lt;T&gt;                                                                                                                         \</div>
+<div class="line">    {                                                                                                                                                          \</div>
+<div class="line">        template &lt;typename U&gt; <span class="keyword">inline</span> T <span class="keyword">operator</span> op(U) <span class="keyword">const</span>                                                                                                    \</div>
+<div class="line">        {                                                                                                                                                      \</div>
+<div class="line">            static_assert(operator_not_available&lt;T, U&gt;, <span class="stringliteral">&quot;error: invalid operands of types ‘T’ and ‘U’ to binary ‘operator&quot;</span> #op <span class="stringliteral">&quot;’&quot;</span>);                           \</div>
+<div class="line">            return this-&gt;<span class="keyword">get</span>();                                                                                                                                \</div>
+<div class="line">        }                                                                                                                                                      \</div>
+<div class="line">    }</div>
+<div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_a23fdca7da2e3558a0c6e97a842b69a9f"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">webframe::ORM::details::requires</a></div><div class="ttdeci">requires(std::is_fundamental_v&lt; T &gt;) class Wrapper</div><div class="ttdef"><b>Definition:</b> <a href="../../de/de5/primitive__type__wrapper_8hpp_source.html#l00011">primitive_type_wrapper.hpp:11</a></div></div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../de/de5/primitive__type__wrapper_8hpp_source.html#l00018">18</a> of file <a class="el" href="../../de/de5/primitive__type__wrapper_8hpp_source.html">primitive_type_wrapper.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/de5/primitive__type__wrapper_8hpp_source.html#l00022">22</a> of file <a class="el" href="../../de/de5/primitive__type__wrapper_8hpp_source.html">primitive_type_wrapper.hpp</a>.</p>
 
 </div>
 </div>
@@ -269,31 +276,8 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; \</div>
-<div class="line">            struct name; \</div>
-<div class="line">                                                                \</div>
-<div class="line">            template&lt;typename T&gt; <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a> <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a> (T&amp; a, T b) { \</div>
-<div class="line">                { a op b }; \</div>
-<div class="line">            } \</div>
-<div class="line">            struct name&lt;T&gt; : <span class="keyword">public</span> Wrapper&lt;T&gt; { \</div>
-<div class="line">                template&lt;typename U&gt; <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a> (!std::is_base_of_v&lt;std::ios_base, U&gt;) \</div>
-<div class="line">                inline T&amp; <span class="keyword">operator</span> op (U b) { \</div>
-<div class="line">                    return (this-&gt;<span class="keyword">get</span>() op b); \</div>
-<div class="line">                } \</div>
-<div class="line">            }; \</div>
-<div class="line">                                                                \</div>
-<div class="line">            template&lt;typename T&gt; <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a> (!<a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a> (T&amp; a, T b) { \</div>
-<div class="line">                { a op b }; \</div>
-<div class="line">            }) \</div>
-<div class="line">            <span class="keyword">struct</span> name&lt;T&gt; : <span class="keyword">public</span> Wrapper&lt;T&gt; { \</div>
-<div class="line">                template&lt;typename U&gt; <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a> (!std::is_base_of_v&lt;std::ios_base, U&gt;) \</div>
-<div class="line">                inline T&amp; <span class="keyword">operator</span> op (U) { \</div>
-<div class="line">                    static_assert(operator_not_available&lt;T, U&gt;, <span class="stringliteral">&quot;error: invalid operands of types ‘T’ and ‘U’ to binary ‘operator&quot;</span>#op<span class="stringliteral">&quot;’&quot;</span>); \</div>
-<div class="line">                    return (this-&gt;<span class="keyword">get</span>()); \</div>
-<div class="line">                } \</div>
-<div class="line">            }</div>
-</div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../de/de5/primitive__type__wrapper_8hpp_source.html#l00043">43</a> of file <a class="el" href="../../de/de5/primitive__type__wrapper_8hpp_source.html">primitive_type_wrapper.hpp</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="../../de/de5/primitive__type__wrapper_8hpp_source.html#l00054">54</a> of file <a class="el" href="../../de/de5/primitive__type__wrapper_8hpp_source.html">primitive_type_wrapper.hpp</a>.</p>
 
 </div>
 </div>
@@ -322,29 +306,38 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; \</div>
-<div class="line">            struct name; \</div>
-<div class="line">                                                                \</div>
-<div class="line">            template&lt;typename T&gt; <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a> <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a> (T&amp; a) { \</div>
-<div class="line">                { op a }; \</div>
-<div class="line">            } \</div>
-<div class="line">            struct name&lt;T&gt; : <span class="keyword">public</span> Wrapper&lt;T&gt; { \</div>
-<div class="line">                inline T&amp; <span class="keyword">operator</span> op () { \</div>
-<div class="line">                    return (op this-&gt;<span class="keyword">get</span>()); \</div>
-<div class="line">                } \</div>
-<div class="line">            }; \</div>
-<div class="line">                                                                \</div>
-<div class="line">            template&lt;typename T&gt; <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a> (!<a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a> (T&amp; a) { \</div>
-<div class="line">                { op a }; \</div>
-<div class="line">            }) \</div>
-<div class="line">            <span class="keyword">struct</span> name&lt;T&gt; : <span class="keyword">public</span> Wrapper&lt;T&gt; { \</div>
-<div class="line">                inline T&amp; <span class="keyword">operator</span> op () { \</div>
-<div class="line">                    static_assert(operator_not_available&lt;T&gt;, <span class="stringliteral">&quot;error: invalid operand of types ‘T’ to unary prefix ‘operator&quot;</span>#op<span class="stringliteral">&quot;’&quot;</span>); \</div>
-<div class="line">                    return (this-&gt;<span class="keyword">get</span>()); \</div>
-<div class="line">                } \</div>
-<div class="line">            }</div>
+<b>Value:</b><div class="fragment"><div class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; <span class="keyword">struct </span>name;                                                                                                                         \</div>
+<div class="line">                                                                                                                                                               \</div>
+<div class="line">    template &lt;typename T&gt;                                                                                                                                      \</div>
+<div class="line">        requires <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a>(T&amp; a) {                                                                                                                              \</div>
+<div class="line">            {                                                                                                                                                  \</div>
+<div class="line">                op a                                                                                                                                           \</div>
+<div class="line">            };                                                                                                                                                 \</div>
+<div class="line">        }                                                                                                                                                      \</div>
+<div class="line">    struct name&lt;T&gt; : <span class="keyword">public</span> Wrapper&lt;T&gt;                                                                                                                         \</div>
+<div class="line">    {                                                                                                                                                          \</div>
+<div class="line">        inline T&amp; <span class="keyword">operator</span> op()                                                                                                                                \</div>
+<div class="line">        {                                                                                                                                                      \</div>
+<div class="line">            return (op this-&gt;<span class="keyword">get</span>());                                                                                                                           \</div>
+<div class="line">        }                                                                                                                                                      \</div>
+<div class="line">    };                                                                                                                                                         \</div>
+<div class="line">                                                                                                                                                               \</div>
+<div class="line">    template &lt;typename T&gt;                                                                                                                                      \</div>
+<div class="line">        requires(!<a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a>(T&amp; a) {                                                                                                                             \</div>
+<div class="line">            {                                                                                                                                                  \</div>
+<div class="line">                op a                                                                                                                                           \</div>
+<div class="line">            };                                                                                                                                                 \</div>
+<div class="line">        })                                                                                                                                                     \</div>
+<div class="line">    <span class="keyword">struct</span> name&lt;T&gt; : <span class="keyword">public</span> Wrapper&lt;T&gt;                                                                                                                         \</div>
+<div class="line">    {                                                                                                                                                          \</div>
+<div class="line">        inline T&amp; <span class="keyword">operator</span> op()                                                                                                                                \</div>
+<div class="line">        {                                                                                                                                                      \</div>
+<div class="line">            static_assert(operator_not_available&lt;T&gt;, <span class="stringliteral">&quot;error: invalid operand of types ‘T’ to unary prefix ‘operator&quot;</span> #op <span class="stringliteral">&quot;’&quot;</span>);                                 \</div>
+<div class="line">            return (this-&gt;<span class="keyword">get</span>());                                                                                                                              \</div>
+<div class="line">        }                                                                                                                                                      \</div>
+<div class="line">    }</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../de/de5/primitive__type__wrapper_8hpp_source.html#l00068">68</a> of file <a class="el" href="../../de/de5/primitive__type__wrapper_8hpp_source.html">primitive_type_wrapper.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/de5/primitive__type__wrapper_8hpp_source.html#l00090">90</a> of file <a class="el" href="../../de/de5/primitive__type__wrapper_8hpp_source.html">primitive_type_wrapper.hpp</a>.</p>
 
 </div>
 </div>
@@ -373,29 +366,38 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; \</div>
-<div class="line">            struct name; \</div>
-<div class="line">                                                                \</div>
-<div class="line">            template&lt;typename T&gt; <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a> <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a> (T&amp; a) { \</div>
-<div class="line">                { a op }; \</div>
-<div class="line">            } \</div>
-<div class="line">            struct name&lt;T&gt; : <span class="keyword">public</span> Wrapper&lt;T&gt; { \</div>
-<div class="line">                inline T&amp; <span class="keyword">operator</span> op (<span class="keywordtype">int</span>) { \</div>
-<div class="line">                    return (this-&gt;<span class="keyword">get</span>() op); \</div>
-<div class="line">                } \</div>
-<div class="line">            }; \</div>
-<div class="line">                                                                \</div>
-<div class="line">            template&lt;typename T&gt; <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a> (!<a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a> (T&amp; a) { \</div>
-<div class="line">                { a op }; \</div>
-<div class="line">            }) \</div>
-<div class="line">            <span class="keyword">struct</span> name&lt;T&gt; : <span class="keyword">public</span> Wrapper&lt;T&gt; { \</div>
-<div class="line">                inline T&amp; <span class="keyword">operator</span> op (<span class="keywordtype">int</span>) { \</div>
-<div class="line">                    static_assert(operator_not_available&lt;T&gt;, <span class="stringliteral">&quot;error: invalid operand of types ‘T’ to unary suffix ‘operator&quot;</span>#op<span class="stringliteral">&quot;’&quot;</span>); \</div>
-<div class="line">                    return (this-&gt;<span class="keyword">get</span>()); \</div>
-<div class="line">                } \</div>
-<div class="line">            }</div>
+<b>Value:</b><div class="fragment"><div class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; <span class="keyword">struct </span>name;                                                                                                                         \</div>
+<div class="line">                                                                                                                                                               \</div>
+<div class="line">    template &lt;typename T&gt;                                                                                                                                      \</div>
+<div class="line">        requires <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a>(T&amp; a) {                                                                                                                              \</div>
+<div class="line">            {                                                                                                                                                  \</div>
+<div class="line">                a op                                                                                                                                           \</div>
+<div class="line">            };                                                                                                                                                 \</div>
+<div class="line">        }                                                                                                                                                      \</div>
+<div class="line">    struct name&lt;T&gt; : <span class="keyword">public</span> Wrapper&lt;T&gt;                                                                                                                         \</div>
+<div class="line">    {                                                                                                                                                          \</div>
+<div class="line">        inline T&amp; <span class="keyword">operator</span> op(<span class="keywordtype">int</span>)                                                                                                                             \</div>
+<div class="line">        {                                                                                                                                                      \</div>
+<div class="line">            return (this-&gt;<span class="keyword">get</span>() op);                                                                                                                           \</div>
+<div class="line">        }                                                                                                                                                      \</div>
+<div class="line">    };                                                                                                                                                         \</div>
+<div class="line">                                                                                                                                                               \</div>
+<div class="line">    template &lt;typename T&gt;                                                                                                                                      \</div>
+<div class="line">        requires(!<a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a23fdca7da2e3558a0c6e97a842b69a9f">requires</a>(T&amp; a) {                                                                                                                             \</div>
+<div class="line">            {                                                                                                                                                  \</div>
+<div class="line">                a op                                                                                                                                           \</div>
+<div class="line">            };                                                                                                                                                 \</div>
+<div class="line">        })                                                                                                                                                     \</div>
+<div class="line">    <span class="keyword">struct</span> name&lt;T&gt; : <span class="keyword">public</span> Wrapper&lt;T&gt;                                                                                                                         \</div>
+<div class="line">    {                                                                                                                                                          \</div>
+<div class="line">        inline T&amp; <span class="keyword">operator</span> op(<span class="keywordtype">int</span>)                                                                                                                             \</div>
+<div class="line">        {                                                                                                                                                      \</div>
+<div class="line">            static_assert(operator_not_available&lt;T&gt;, <span class="stringliteral">&quot;error: invalid operand of types ‘T’ to unary suffix ‘operator&quot;</span> #op <span class="stringliteral">&quot;’&quot;</span>);                                 \</div>
+<div class="line">            return (this-&gt;<span class="keyword">get</span>());                                                                                                                              \</div>
+<div class="line">        }                                                                                                                                                      \</div>
+<div class="line">    }</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../de/de5/primitive__type__wrapper_8hpp_source.html#l00091">91</a> of file <a class="el" href="../../de/de5/primitive__type__wrapper_8hpp_source.html">primitive_type_wrapper.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/de5/primitive__type__wrapper_8hpp_source.html#l00122">122</a> of file <a class="el" href="../../de/de5/primitive__type__wrapper_8hpp_source.html">primitive_type_wrapper.hpp</a>.</p>
 
 </div>
 </div>

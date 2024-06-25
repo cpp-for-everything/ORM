@@ -87,7 +87,7 @@ Static Public Member Functions</h2></td></tr>
 struct pfr::detail::print_impl&lt; I, N &gt;</h3>
 
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d81/detail_2io_8hpp_source.html#l00047">47</a> of file <a class="el" href="../../d2/d81/detail_2io_8hpp_source.html">io.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d81/detail_2io_8hpp_source.html#l00051">51</a> of file <a class="el" href="../../d2/d81/detail_2io_8hpp_source.html">io.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a88ebe815d8c9d3454155c4867b0a3b04"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a88ebe815d8c9d3454155c4867b0a3b04">&#9670;&nbsp;</a></span>print()</h2>
@@ -127,13 +127,16 @@ template&lt;class Stream , class T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d81/detail_2io_8hpp_source.html#l00049">49</a> of file <a class="el" href="../../d2/d81/detail_2io_8hpp_source.html">io.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;                                                    {</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        <span class="keywordflow">if</span> (!!I) out &lt;&lt; <span class="stringliteral">&quot;, &quot;</span>;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        out &lt;&lt; detail::quoted_helper(pfr::detail::sequence_tuple::get&lt;I&gt;(value));</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <a class="code" href="../../d6/de2/structpfr_1_1detail_1_1print__impl.html#a88ebe815d8c9d3454155c4867b0a3b04">print_impl&lt;I + 1, N&gt;::print</a>(out, value);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    }</div>
-<div class="ttc" id="astructpfr_1_1detail_1_1print__impl_html_a88ebe815d8c9d3454155c4867b0a3b04"><div class="ttname"><a href="../../d6/de2/structpfr_1_1detail_1_1print__impl.html#a88ebe815d8c9d3454155c4867b0a3b04">pfr::detail::print_impl::print</a></div><div class="ttdeci">static void print(Stream &amp;out, const T &amp;value)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d81/detail_2io_8hpp_source.html#l00049">io.hpp:49</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d2/d81/detail_2io_8hpp_source.html#l00053">53</a> of file <a class="el" href="../../d2/d81/detail_2io_8hpp_source.html">io.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            {</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                <span class="keywordflow">if</span> (!!I)</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                {</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                    out &lt;&lt; <span class="stringliteral">&quot;, &quot;</span>;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                }</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                out &lt;&lt; detail::quoted_helper(pfr::detail::sequence_tuple::get&lt;I&gt;(value));</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                <a class="code" href="../../d6/de2/structpfr_1_1detail_1_1print__impl.html#a88ebe815d8c9d3454155c4867b0a3b04">print_impl&lt;I + 1, N&gt;::print</a>(out, value);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;            }</div>
+<div class="ttc" id="astructpfr_1_1detail_1_1print__impl_html_a88ebe815d8c9d3454155c4867b0a3b04"><div class="ttname"><a href="../../d6/de2/structpfr_1_1detail_1_1print__impl.html#a88ebe815d8c9d3454155c4867b0a3b04">pfr::detail::print_impl::print</a></div><div class="ttdeci">static void print(Stream &amp;out, const T &amp;value)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d81/detail_2io_8hpp_source.html#l00053">io.hpp:53</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
