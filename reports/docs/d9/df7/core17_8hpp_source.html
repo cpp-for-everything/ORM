@@ -76,84 +76,85 @@ $(function() {
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">// Distributed under the Boost Software License, Version 1.0. (See accompanying</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#ifndef PFR_DETAIL_CORE17_HPP</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#define PFR_DETAIL_CORE17_HPP</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="../../d9/d9c/core17__generated_8hpp.html">pfr/detail/core17_generated.hpp</a>&gt;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="../../d1/d92/fields__count_8hpp.html">pfr/detail/fields_count.hpp</a>&gt;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="../../d1/d44/for__each__field__impl_8hpp.html">pfr/detail/for_each_field_impl.hpp</a>&gt;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="../../d2/dfb/rvalue__t_8hpp.html">pfr/detail/rvalue_t.hpp</a>&gt;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span><a class="code" href="../../d4/d26/namespacepfr.html">pfr</a> { <span class="keyword">namespace </span>detail {</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#ifndef _MSC_VER </span><span class="comment">// MSVC fails to compile the following code, but compiles the structured bindings in core17_generated.hpp</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="../../dc/dc0/structpfr_1_1detail_1_1do__not__define__std__tuple__size__for__me.html">   19</a></span>&#160;<span class="keyword">struct </span><a class="code" href="../../dc/dc0/structpfr_1_1detail_1_1do__not__define__std__tuple__size__for__me.html">do_not_define_std_tuple_size_for_me</a> {</div>
-<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="../../dc/dc0/structpfr_1_1detail_1_1do__not__define__std__tuple__size__for__me.html#aa8a6ee33dc79e9905ecb95f686241cf0">   20</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="../../dc/dc0/structpfr_1_1detail_1_1do__not__define__std__tuple__size__for__me.html#aa8a6ee33dc79e9905ecb95f686241cf0">test1</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;};</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="../../d9/d07/namespacepfr_1_1detail.html#a553c70c6a1a25a44423881e1d5653981">   24</a></span>&#160;constexpr <span class="keywordtype">bool</span> <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#a553c70c6a1a25a44423881e1d5653981">do_structured_bindings_work</a>() noexcept { <span class="comment">// ******************************************* IN CASE OF ERROR READ THE FOLLOWING LINES IN pfr/detail/core17.hpp FILE:</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    T val{};</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keyword">auto</span>&amp; [a] = val; <span class="comment">// ******************************************* IN CASE OF ERROR READ THE FOLLOWING LINES IN pfr/detail/core17.hpp FILE:</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">    /****************************************************************************</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">    *</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">    * It looks like your compiler or Standard Library can not handle C++17</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">    * structured bindings.</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">    *</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">    * Workaround: Define PFR_USE_CPP17 to 0</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">    * It will disable the C++17 features for Boost.PFR library.</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">    *</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">    * Sorry for the inconvenience caused.</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">    *</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">    ****************************************************************************/</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordflow">return</span> a;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;}</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#ifndef PFR_DETAIL_CORE17_HPP</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#define PFR_DETAIL_CORE17_HPP</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="../../d9/d9c/core17__generated_8hpp.html">pfr/detail/core17_generated.hpp</a>&gt;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="../../d1/d92/fields__count_8hpp.html">pfr/detail/fields_count.hpp</a>&gt;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="../../d1/d44/for__each__field__impl_8hpp.html">pfr/detail/for_each_field_impl.hpp</a>&gt;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="../../d2/dfb/rvalue__t_8hpp.html">pfr/detail/rvalue_t.hpp</a>&gt;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span><a class="code" href="../../d4/d26/namespacepfr.html">pfr</a></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;{</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <span class="keyword">namespace </span>detail</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#ifndef _MSC_VER </span><span class="comment">// MSVC fails to compile the following code, but compiles the structured bindings in core17_generated.hpp</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="../../dc/dc0/structpfr_1_1detail_1_1do__not__define__std__tuple__size__for__me.html">   21</a></span>&#160;        <span class="keyword">struct </span><a class="code" href="../../dc/dc0/structpfr_1_1detail_1_1do__not__define__std__tuple__size__for__me.html">do_not_define_std_tuple_size_for_me</a></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        {</div>
+<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="../../dc/dc0/structpfr_1_1detail_1_1do__not__define__std__tuple__size__for__me.html#aa8a6ee33dc79e9905ecb95f686241cf0">   23</a></span>&#160;            <span class="keywordtype">bool</span> <a class="code" href="../../dc/dc0/structpfr_1_1detail_1_1do__not__define__std__tuple__size__for__me.html#aa8a6ee33dc79e9905ecb95f686241cf0">test1</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        };</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
+<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="../../d9/d07/namespacepfr_1_1detail.html#a553c70c6a1a25a44423881e1d5653981">   26</a></span>&#160;        <span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt; constexpr <span class="keywordtype">bool</span> <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#a553c70c6a1a25a44423881e1d5653981">do_structured_bindings_work</a>() noexcept</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        { <span class="comment">// ******************************************* IN CASE OF ERROR READ THE FOLLOWING LINES IN pfr/detail/core17.hpp FILE:</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;            T val{};</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;            <span class="keyword">auto</span>&amp; [a] = val; <span class="comment">// ******************************************* IN CASE OF ERROR READ THE FOLLOWING LINES IN pfr/detail/core17.hpp FILE:</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">            /****************************************************************************</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">             *</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">             * It looks like your compiler or Standard Library can not handle C++17</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">             * structured bindings.</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">             *</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">             * Workaround: Define PFR_USE_CPP17 to 0</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">             * It will disable the C++17 features for Boost.PFR library.</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">             *</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">             * Sorry for the inconvenience caused.</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment">             *</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">             ****************************************************************************/</span></div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;static_assert(</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    do_structured_bindings_work&lt;do_not_define_std_tuple_size_for_me&gt;(),</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="stringliteral">&quot;====================&gt; Boost.PFR: Your compiler can not handle C++17 structured bindings. Read the above comments for workarounds.&quot;</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;);</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// #ifndef _MSC_VER</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="../../d9/d07/namespacepfr_1_1detail.html#a23198c8e9fda04215274be43bccfb94b">   50</a></span>&#160;constexpr <span class="keyword">auto</span> <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ae4a6f202c475b551fd2a84a8cc35c9c5">tie_as_tuple</a>(T&amp; val) noexcept {</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  static_assert(</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    !std::is_union&lt;T&gt;::value,</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="stringliteral">&quot;====================&gt; Boost.PFR: For safety reasons it is forbidden to reflect unions. See `Reflection of unions` section in the docs for more info.&quot;</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  );</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="keyword">typedef</span> <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#a259a643f8f6204f4fdac2a2baf4519e6">size_t_&lt;pfr::detail::fields_count&lt;T&gt;</a>()&gt; fields_count_tag;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ae4a6f202c475b551fd2a84a8cc35c9c5">pfr::detail::tie_as_tuple</a>(val, fields_count_tag{});</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;}</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class </span>T, <span class="keyword">class </span>F, std::size_t... I&gt;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#a47fc6565c89bad2c6952b0de06342f4b">for_each_field_dispatcher</a>(T&amp; t, F&amp;&amp; f, std::index_sequence&lt;I...&gt;) {</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    static_assert(</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        !std::is_union&lt;T&gt;::value,</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        <span class="stringliteral">&quot;====================&gt; Boost.PFR: For safety reasons it is forbidden to reflect unions. See `Reflection of unions` section in the docs for more info.&quot;</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    );</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    std::forward&lt;F&gt;(f)(</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ae4a6f202c475b551fd2a84a8cc35c9c5">detail::tie_as_tuple</a>(t)</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    );</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;}</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            <span class="keywordflow">return</span> a;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        }</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        static_assert(</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            do_structured_bindings_work&lt;do_not_define_std_tuple_size_for_me&gt;(),</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <span class="stringliteral">&quot;====================&gt; Boost.PFR: Your compiler can not handle C++17 structured bindings. Read the above comments for workarounds.&quot;</span>);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// #ifndef _MSC_VER</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
+<div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="../../d9/d07/namespacepfr_1_1detail.html#a23198c8e9fda04215274be43bccfb94b">   51</a></span>&#160;        <span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt; constexpr <span class="keyword">auto</span> <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ae4a6f202c475b551fd2a84a8cc35c9c5">tie_as_tuple</a>(T&amp; val) noexcept</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        {</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            static_assert(</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                !std::is_union&lt;T&gt;::value,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                <span class="stringliteral">&quot;====================&gt; Boost.PFR: For safety reasons it is forbidden to reflect unions. See `Reflection of unions` section in the docs for &quot;</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                <span class="stringliteral">&quot;more info.&quot;</span>);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            <span class="keyword">typedef</span> <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#aa3caea0fc58618a14b4c3e9afa96a101">size_t_&lt;pfr::detail::fields_count&lt;T&gt;</a>()&gt; fields_count_tag;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;            <span class="keywordflow">return</span> <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ae4a6f202c475b551fd2a84a8cc35c9c5">pfr::detail::tie_as_tuple</a>(val, fields_count_tag{});</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        }</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        <span class="keyword">template</span> &lt;<span class="keyword">class </span>T, <span class="keyword">class </span>F, std::size_t... I&gt; <span class="keywordtype">void</span> <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#a47fc6565c89bad2c6952b0de06342f4b">for_each_field_dispatcher</a>(T&amp; t, F&amp;&amp; f, std::index_sequence&lt;I...&gt;)</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        {</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;            static_assert(</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                !std::is_union&lt;T&gt;::value,</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                <span class="stringliteral">&quot;====================&gt; Boost.PFR: For safety reasons it is forbidden to reflect unions. See `Reflection of unions` section in the docs for &quot;</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                <span class="stringliteral">&quot;more info.&quot;</span>);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;            std::forward&lt;F&gt;(f)(<a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ae4a6f202c475b551fd2a84a8cc35c9c5">detail::tie_as_tuple</a>(t));</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        }</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;}} <span class="comment">// namespace pfr::detail</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// PFR_DETAIL_CORE17_HPP</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    } <span class="comment">// namespace detail</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;} <span class="comment">// namespace pfr</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// PFR_DETAIL_CORE17_HPP</span></div>
 <div class="ttc" id="acore17__generated_8hpp_html"><div class="ttname"><a href="../../d9/d9c/core17__generated_8hpp.html">core17_generated.hpp</a></div></div>
 <div class="ttc" id="afields__count_8hpp_html"><div class="ttname"><a href="../../d1/d92/fields__count_8hpp.html">fields_count.hpp</a></div></div>
 <div class="ttc" id="afor__each__field__impl_8hpp_html"><div class="ttname"><a href="../../d1/d44/for__each__field__impl_8hpp.html">for_each_field_impl.hpp</a></div></div>
-<div class="ttc" id="anamespacepfr_1_1detail_html_a259a643f8f6204f4fdac2a2baf4519e6"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#a259a643f8f6204f4fdac2a2baf4519e6">pfr::detail::size_t_</a></div><div class="ttdeci">std::integral_constant&lt; std::size_t, Index &gt; size_t_</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d44/for__each__field__impl_8hpp_source.html#l00020">for_each_field_impl.hpp:20</a></div></div>
-<div class="ttc" id="anamespacepfr_1_1detail_html_a47fc6565c89bad2c6952b0de06342f4b"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#a47fc6565c89bad2c6952b0de06342f4b">pfr::detail::for_each_field_dispatcher</a></div><div class="ttdeci">void for_each_field_dispatcher(T &amp;t, F &amp;&amp;f, std::index_sequence&lt; I... &gt;)</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00681">core14_classic.hpp:681</a></div></div>
-<div class="ttc" id="anamespacepfr_1_1detail_html_a553c70c6a1a25a44423881e1d5653981"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#a553c70c6a1a25a44423881e1d5653981">pfr::detail::do_structured_bindings_work</a></div><div class="ttdeci">constexpr bool do_structured_bindings_work() noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/df7/core17_8hpp_source.html#l00024">core17.hpp:24</a></div></div>
-<div class="ttc" id="anamespacepfr_1_1detail_html_ae4a6f202c475b551fd2a84a8cc35c9c5"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#ae4a6f202c475b551fd2a84a8cc35c9c5">pfr::detail::tie_as_tuple</a></div><div class="ttdeci">auto tie_as_tuple(T &amp;val) noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00571">core14_classic.hpp:571</a></div></div>
-<div class="ttc" id="anamespacepfr_html"><div class="ttname"><a href="../../d4/d26/namespacepfr.html">pfr</a></div><div class="ttdef"><b>Definition:</b> <a href="../../da/d47/core_8hpp_source.html#l00030">core.hpp:30</a></div></div>
+<div class="ttc" id="anamespacepfr_1_1detail_html_a47fc6565c89bad2c6952b0de06342f4b"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#a47fc6565c89bad2c6952b0de06342f4b">pfr::detail::for_each_field_dispatcher</a></div><div class="ttdeci">void for_each_field_dispatcher(T &amp;t, F &amp;&amp;f, std::index_sequence&lt; I... &gt;)</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00660">core14_classic.hpp:660</a></div></div>
+<div class="ttc" id="anamespacepfr_1_1detail_html_a553c70c6a1a25a44423881e1d5653981"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#a553c70c6a1a25a44423881e1d5653981">pfr::detail::do_structured_bindings_work</a></div><div class="ttdeci">constexpr bool do_structured_bindings_work() noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/df7/core17_8hpp_source.html#l00026">core17.hpp:26</a></div></div>
+<div class="ttc" id="anamespacepfr_1_1detail_html_aa3caea0fc58618a14b4c3e9afa96a101"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#aa3caea0fc58618a14b4c3e9afa96a101">pfr::detail::size_t_</a></div><div class="ttdeci">std::integral_constant&lt; std::size_t, Index &gt; size_t_</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d44/for__each__field__impl_8hpp_source.html#l00022">for_each_field_impl.hpp:22</a></div></div>
+<div class="ttc" id="anamespacepfr_1_1detail_html_ae4a6f202c475b551fd2a84a8cc35c9c5"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#ae4a6f202c475b551fd2a84a8cc35c9c5">pfr::detail::tie_as_tuple</a></div><div class="ttdeci">auto tie_as_tuple(T &amp;val) noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00568">core14_classic.hpp:568</a></div></div>
+<div class="ttc" id="anamespacepfr_html"><div class="ttname"><a href="../../d4/d26/namespacepfr.html">pfr</a></div><div class="ttdef"><b>Definition:</b> <a href="../../da/d47/core_8hpp_source.html#l00030">core.hpp:31</a></div></div>
 <div class="ttc" id="arvalue__t_8hpp_html"><div class="ttname"><a href="../../d2/dfb/rvalue__t_8hpp.html">rvalue_t.hpp</a></div></div>
-<div class="ttc" id="astructpfr_1_1detail_1_1do__not__define__std__tuple__size__for__me_html"><div class="ttname"><a href="../../dc/dc0/structpfr_1_1detail_1_1do__not__define__std__tuple__size__for__me.html">pfr::detail::do_not_define_std_tuple_size_for_me</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d9/df7/core17_8hpp_source.html#l00019">core17.hpp:19</a></div></div>
-<div class="ttc" id="astructpfr_1_1detail_1_1do__not__define__std__tuple__size__for__me_html_aa8a6ee33dc79e9905ecb95f686241cf0"><div class="ttname"><a href="../../dc/dc0/structpfr_1_1detail_1_1do__not__define__std__tuple__size__for__me.html#aa8a6ee33dc79e9905ecb95f686241cf0">pfr::detail::do_not_define_std_tuple_size_for_me::test1</a></div><div class="ttdeci">bool test1</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/df7/core17_8hpp_source.html#l00020">core17.hpp:20</a></div></div>
+<div class="ttc" id="astructpfr_1_1detail_1_1do__not__define__std__tuple__size__for__me_html"><div class="ttname"><a href="../../dc/dc0/structpfr_1_1detail_1_1do__not__define__std__tuple__size__for__me.html">pfr::detail::do_not_define_std_tuple_size_for_me</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d9/df7/core17_8hpp_source.html#l00021">core17.hpp:22</a></div></div>
+<div class="ttc" id="astructpfr_1_1detail_1_1do__not__define__std__tuple__size__for__me_html_aa8a6ee33dc79e9905ecb95f686241cf0"><div class="ttname"><a href="../../dc/dc0/structpfr_1_1detail_1_1do__not__define__std__tuple__size__for__me.html#aa8a6ee33dc79e9905ecb95f686241cf0">pfr::detail::do_not_define_std_tuple_size_for_me::test1</a></div><div class="ttdeci">bool test1</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/df7/core17_8hpp_source.html#l00023">core17.hpp:23</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

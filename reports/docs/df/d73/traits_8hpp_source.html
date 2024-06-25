@@ -86,38 +86,40 @@ $(function() {
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;type_traits&gt;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span><a class="code" href="../../d4/d26/namespacepfr.html">pfr</a> {</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T, <span class="keyword">class</span> WhatFor&gt;</div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="../../d3/d05/structpfr_1_1is__reflectable.html">   36</a></span>&#160;<span class="keyword">struct </span><a class="code" href="../../d3/d05/structpfr_1_1is__reflectable.html">is_reflectable</a> { <span class="comment">/*  do not has &#39;value&#39; because value is unknown */</span> };</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">// these specs can&#39;t be inherited from &#39;std::integral_constant&lt; bool, pfr::is_reflectable&lt;T, WhatFor&gt;::value &gt;&#39;,</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">// because it will break the sfinae-friendliness</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T, <span class="keyword">class</span> WhatFor&gt;</div>
-<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="../../da/d63/structpfr_1_1is__reflectable_3_01const_01_t_00_01_what_for_01_4.html">   41</a></span>&#160;<span class="keyword">struct </span><a class="code" href="../../d3/d05/structpfr_1_1is__reflectable.html">is_reflectable</a>&lt;const T, WhatFor&gt; : <a class="code" href="../../d3/d05/structpfr_1_1is__reflectable.html">pfr::is_reflectable</a>&lt;T, WhatFor&gt; {};</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T, <span class="keyword">class</span> WhatFor&gt;</div>
-<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="../../d0/d63/structpfr_1_1is__reflectable_3_01volatile_01_t_00_01_what_for_01_4.html">   44</a></span>&#160;<span class="keyword">struct </span><a class="code" href="../../d3/d05/structpfr_1_1is__reflectable.html">is_reflectable</a>&lt;volatile T, WhatFor&gt; : <a class="code" href="../../d3/d05/structpfr_1_1is__reflectable.html">pfr::is_reflectable</a>&lt;T, WhatFor&gt; {};</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span><a class="code" href="../../d4/d26/namespacepfr.html">pfr</a></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;{</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="../../d3/d05/structpfr_1_1is__reflectable.html">   36</a></span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keyword">class</span> WhatFor&gt; <span class="keyword">struct </span><a class="code" href="../../d3/d05/structpfr_1_1is__reflectable.html">is_reflectable</a></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    { <span class="comment">/*  do not has &#39;value&#39; because value is unknown */</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    };</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="comment">// these specs can&#39;t be inherited from &#39;std::integral_constant&lt; bool, pfr::is_reflectable&lt;T, WhatFor&gt;::value &gt;&#39;,</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="comment">// because it will break the sfinae-friendliness</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="../../da/d63/structpfr_1_1is__reflectable_3_01const_01_t_00_01_what_for_01_4.html">   42</a></span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keyword">class</span> WhatFor&gt; <span class="keyword">struct </span><a class="code" href="../../d3/d05/structpfr_1_1is__reflectable.html">is_reflectable</a>&lt;const T, WhatFor&gt; : <a class="code" href="../../d3/d05/structpfr_1_1is__reflectable.html">pfr::is_reflectable</a>&lt;T, WhatFor&gt;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    {</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    };</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T, <span class="keyword">class</span> WhatFor&gt;</div>
-<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="../../da/d4a/structpfr_1_1is__reflectable_3_01const_01volatile_01_t_00_01_what_for_01_4.html">   47</a></span>&#160;<span class="keyword">struct </span><a class="code" href="../../d3/d05/structpfr_1_1is__reflectable.html">is_reflectable</a>&lt;const volatile T, WhatFor&gt; : <a class="code" href="../../d3/d05/structpfr_1_1is__reflectable.html">pfr::is_reflectable</a>&lt;T, WhatFor&gt; {};</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">#if PFR_ENABLE_IMPLICIT_REFLECTION</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T, <span class="keyword">class</span> WhatFor&gt;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="keyword">using</span> is_implicitly_reflectable = std::integral_constant&lt; bool, pfr::detail::possible_reflectable&lt;T, WhatFor&gt;(1L) &gt;;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T, <span class="keyword">class</span> WhatFor&gt;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;constexpr <span class="keywordtype">bool</span> is_implicitly_reflectable_v = is_implicitly_reflectable&lt;T, WhatFor&gt;::value;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;} <span class="comment">// namespace pfr</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// PFR_TRAITS_HPP</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
+<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="../../d0/d63/structpfr_1_1is__reflectable_3_01volatile_01_t_00_01_what_for_01_4.html">   46</a></span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keyword">class</span> WhatFor&gt; <span class="keyword">struct </span><a class="code" href="../../d3/d05/structpfr_1_1is__reflectable.html">is_reflectable</a>&lt;volatile T, WhatFor&gt; : <a class="code" href="../../d3/d05/structpfr_1_1is__reflectable.html">pfr::is_reflectable</a>&lt;T, WhatFor&gt;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    {</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    };</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
+<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="../../da/d4a/structpfr_1_1is__reflectable_3_01const_01volatile_01_t_00_01_what_for_01_4.html">   50</a></span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keyword">class</span> WhatFor&gt; <span class="keyword">struct </span><a class="code" href="../../d3/d05/structpfr_1_1is__reflectable.html">is_reflectable</a>&lt;const volatile T, WhatFor&gt; : <a class="code" href="../../d3/d05/structpfr_1_1is__reflectable.html">pfr::is_reflectable</a>&lt;T, WhatFor&gt;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    {</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    };</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor">#if PFR_ENABLE_IMPLICIT_REFLECTION</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keyword">class</span> WhatFor&gt; <span class="keyword">using</span> is_implicitly_reflectable = std::integral_constant&lt;bool, pfr::detail::possible_reflectable&lt;T, WhatFor&gt;(1L)&gt;;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keyword">class</span> WhatFor&gt; constexpr <span class="keywordtype">bool</span> is_implicitly_reflectable_v = is_implicitly_reflectable&lt;T, WhatFor&gt;::value;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;} <span class="comment">// namespace pfr</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// PFR_TRAITS_HPP</span></div>
 <div class="ttc" id="adetail_2config_8hpp_html"><div class="ttname"><a href="../../da/d84/detail_2config_8hpp.html">config.hpp</a></div></div>
-<div class="ttc" id="anamespacepfr_html"><div class="ttname"><a href="../../d4/d26/namespacepfr.html">pfr</a></div><div class="ttdef"><b>Definition:</b> <a href="../../da/d47/core_8hpp_source.html#l00030">core.hpp:30</a></div></div>
+<div class="ttc" id="anamespacepfr_html"><div class="ttname"><a href="../../d4/d26/namespacepfr.html">pfr</a></div><div class="ttdef"><b>Definition:</b> <a href="../../da/d47/core_8hpp_source.html#l00030">core.hpp:31</a></div></div>
 <div class="ttc" id="apossible__reflectable_8hpp_html"><div class="ttname"><a href="../../d6/d30/possible__reflectable_8hpp.html">possible_reflectable.hpp</a></div></div>
-<div class="ttc" id="astructpfr_1_1is__reflectable_html"><div class="ttname"><a href="../../d3/d05/structpfr_1_1is__reflectable.html">pfr::is_reflectable</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/d73/traits_8hpp_source.html#l00036">traits.hpp:36</a></div></div>
+<div class="ttc" id="astructpfr_1_1is__reflectable_html"><div class="ttname"><a href="../../d3/d05/structpfr_1_1is__reflectable.html">pfr::is_reflectable</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/d73/traits_8hpp_source.html#l00036">traits.hpp:37</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

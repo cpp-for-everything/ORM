@@ -78,7 +78,7 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a69b742844a447d1a84972709bed60ba4"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d3e/structpfr_1_1detail_1_1not__appliable.html#a69b742844a447d1a84972709bed60ba4">value</a></td></tr>
+<tr class="memitem:a69b742844a447d1a84972709bed60ba4"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d3e/structpfr_1_1detail_1_1not__appliable.html#a69b742844a447d1a84972709bed60ba4">value</a> = std::is_same&lt;Detector&lt;Tleft, Tright&gt;, <a class="el" href="../../d1/d5c/structpfr_1_1detail_1_1can__not__apply.html">can_not_apply</a>&gt;::value</td></tr>
 <tr class="separator:a69b742844a447d1a84972709bed60ba4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -86,7 +86,7 @@ Static Public Attributes</h2></td></tr>
 struct pfr::detail::not_appliable&lt; Detector, Tleft, Tright &gt;</h3>
 
 
-<p class="definition">Definition at line <a class="el" href="../../dc/d23/detectors_8hpp_source.html#l00020">20</a> of file <a class="el" href="../../dc/d23/detectors_8hpp_source.html">detectors.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dc/d23/detectors_8hpp_source.html#l00024">24</a> of file <a class="el" href="../../dc/d23/detectors_8hpp_source.html">detectors.hpp</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="a69b742844a447d1a84972709bed60ba4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a69b742844a447d1a84972709bed60ba4">&#9670;&nbsp;</a></span>value</h2>
@@ -100,7 +100,7 @@ template&lt;template&lt; class, class &gt; class Detector, class Tleft , class T
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr bool <a class="el" href="../../d3/d3e/structpfr_1_1detail_1_1not__appliable.html">pfr::detail::not_appliable</a>&lt; Detector, Tleft, Tright &gt;::value</td>
+          <td class="memname">constexpr bool <a class="el" href="../../d3/d3e/structpfr_1_1detail_1_1not__appliable.html">pfr::detail::not_appliable</a>&lt; Detector, Tleft, Tright &gt;::value = std::is_same&lt;Detector&lt;Tleft, Tright&gt;, <a class="el" href="../../d1/d5c/structpfr_1_1detail_1_1can__not__apply.html">can_not_apply</a>&gt;::value</td>
         </tr>
       </table>
   </td>
@@ -109,13 +109,8 @@ template&lt;template&lt; class, class &gt; class Detector, class Tleft , class T
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= std::is_same&lt;</div>
-<div class="line">            Detector&lt;Tleft, Tright&gt;,</div>
-<div class="line">            can_not_apply</div>
-<div class="line">        &gt;<a class="code" href="../../d3/d3e/structpfr_1_1detail_1_1not__appliable.html#a69b742844a447d1a84972709bed60ba4">::value</a></div>
-<div class="ttc" id="astructpfr_1_1detail_1_1not__appliable_html_a69b742844a447d1a84972709bed60ba4"><div class="ttname"><a href="../../d3/d3e/structpfr_1_1detail_1_1not__appliable.html#a69b742844a447d1a84972709bed60ba4">pfr::detail::not_appliable::value</a></div><div class="ttdeci">static constexpr bool value</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d23/detectors_8hpp_source.html#l00021">detectors.hpp:21</a></div></div>
-</div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../dc/d23/detectors_8hpp_source.html#l00021">21</a> of file <a class="el" href="../../dc/d23/detectors_8hpp_source.html">detectors.hpp</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="../../dc/d23/detectors_8hpp_source.html#l00026">26</a> of file <a class="el" href="../../dc/d23/detectors_8hpp_source.html">detectors.hpp</a>.</p>
 
 </div>
 </div>

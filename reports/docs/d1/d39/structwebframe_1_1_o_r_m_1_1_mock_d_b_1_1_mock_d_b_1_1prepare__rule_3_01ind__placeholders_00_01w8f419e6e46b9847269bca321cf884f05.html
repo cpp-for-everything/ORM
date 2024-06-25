@@ -84,7 +84,7 @@ Static Public Member Functions</h2></td></tr>
 struct webframe::ORM::MockDB::MockDB::prepare_rule&lt; ind_placeholders, webframe::ORM::Rule&lt; T1, op, T2 &gt; &gt;</h3>
 
 
-<p class="definition">Definition at line <a class="el" href="../../dd/ded/init_8hpp_source.html#l00048">48</a> of file <a class="el" href="../../dd/ded/init_8hpp_source.html">init.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dd/ded/init_8hpp_source.html#l00050">50</a> of file <a class="el" href="../../dd/ded/init_8hpp_source.html">init.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="ac7febdb2c9c2e706438e76c3d348d830"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac7febdb2c9c2e706438e76c3d348d830">&#9670;&nbsp;</a></span>run()</h2>
@@ -111,23 +111,27 @@ template&lt;size_t ind_placeholders, typename T1 , auto op, typename T2 &gt; </d
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../dd/ded/init_8hpp_source.html#l00049">49</a> of file <a class="el" href="../../dd/ded/init_8hpp_source.html">init.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;                                              {</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;                    <span class="keywordflow">if</span> constexpr (std::derived_from&lt;T1, webframe::ORM::IRule&gt;) {</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;                        constexpr <span class="keywordtype">size_t</span> new_placeholder = prepare_rule&lt;ind_placeholders, T1&gt;::run();</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                        <span class="keywordflow">if</span> constexpr (std::derived_from&lt;T2, webframe::ORM::IRule&gt;) {</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                            <span class="keywordflow">return</span> prepare_rule&lt;new_placeholder, T2&gt;::run();</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                        }</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                        <span class="keywordflow">return</span> new_placeholder;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                    }</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                    <span class="keywordflow">if</span> constexpr (!std::derived_from&lt;T1, webframe::ORM::IRule&gt;) {</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                        constexpr <span class="keywordtype">size_t</span> new_placeholder = ind_placeholders + (webframe::ORM::details::is_orm_placeholder&lt;T1&gt;);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                        <span class="keywordflow">if</span> constexpr (std::derived_from&lt;T2, webframe::ORM::IRule&gt;) {</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                            <span class="keywordflow">return</span> prepare_rule&lt;new_placeholder, T2&gt;::run();</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                        }</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                        <span class="keywordflow">return</span> new_placeholder;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                    }</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                }</div>
+<p class="definition">Definition at line <a class="el" href="../../dd/ded/init_8hpp_source.html#l00052">52</a> of file <a class="el" href="../../dd/ded/init_8hpp_source.html">init.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                {</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                    <span class="keywordflow">if</span> constexpr (std::derived_from&lt;T1, webframe::ORM::IRule&gt;)</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                    {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                        constexpr <span class="keywordtype">size_t</span> new_placeholder = prepare_rule&lt;ind_placeholders, T1&gt;::run();</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                        <span class="keywordflow">if</span> constexpr (std::derived_from&lt;T2, webframe::ORM::IRule&gt;)</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                        {</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                            <span class="keywordflow">return</span> prepare_rule&lt;new_placeholder, T2&gt;::run();</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                        }</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                        <span class="keywordflow">return</span> new_placeholder;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                    }</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                    <span class="keywordflow">if</span> constexpr (!std::derived_from&lt;T1, webframe::ORM::IRule&gt;)</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                    {</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                        constexpr <span class="keywordtype">size_t</span> new_placeholder = ind_placeholders + (webframe::ORM::details::is_orm_placeholder&lt;T1&gt;);</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                        <span class="keywordflow">if</span> constexpr (std::derived_from&lt;T2, webframe::ORM::IRule&gt;)</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                        {</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                            <span class="keywordflow">return</span> prepare_rule&lt;new_placeholder, T2&gt;::run();</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                        }</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                        <span class="keywordflow">return</span> new_placeholder;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                    }</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;                }</div>
 </div><!-- fragment -->
 </div>
 </div>

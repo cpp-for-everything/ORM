@@ -94,7 +94,7 @@ Static Public Member Functions</h2></td></tr>
 struct webframe::ORM::CRUD::details::second_properties&lt; webframe::ORM::details::orm_tuple&lt; Statement1, Statements... &gt; &gt;</h3>
 
 
-<p class="definition">Definition at line <a class="el" href="../../df/d93/utils_8hpp_source.html#l00098">98</a> of file <a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d93/utils_8hpp_source.html#l00104">104</a> of file <a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a7be2590652262b7a734e3fae9c9fbd8f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7be2590652262b7a734e3fae9c9fbd8f">&#9670;&nbsp;</a></span>orm_tuple_type</h2>
@@ -110,7 +110,7 @@ template&lt;typename Statement1 , typename... Statements&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/d93/utils_8hpp_source.html#l00127">127</a> of file <a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d93/utils_8hpp_source.html#l00133">133</a> of file <a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>.</p>
 
 </div>
 </div>
@@ -128,7 +128,7 @@ template&lt;typename Statement1 , typename... Statements&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/d93/utils_8hpp_source.html#l00126">126</a> of file <a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d93/utils_8hpp_source.html#l00132">132</a> of file <a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>.</p>
 
 </div>
 </div>
@@ -158,36 +158,33 @@ template&lt;typename Statement1 , typename... Statements&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/d93/utils_8hpp_source.html#l00099">99</a> of file <a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;                                            {</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;            <span class="keyword">using</span> T = decltype(std::declval&lt;Statement1&gt;()._2);</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;            <span class="keyword">using</span> Ts = <a class="code" href="../../d5/dcf/classwebframe_1_1_o_r_m_1_1details_1_1orm__tuple.html">webframe::ORM::details::orm_tuple</a>&lt;Statements...&gt;;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;            <span class="comment">//constexpr bool is_property = webframe::ORM::details::is_property&lt;T&gt;;</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;            <span class="comment">// skip property things</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;            <span class="comment">//if constexpr (is_property) {</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;            <span class="comment">//    if constexpr (Ts::size == 0)</span></div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;            <span class="comment">//        return type_container&lt;std::tuple&lt;&gt;&gt;();</span></div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;            <span class="comment">//    if constexpr (Ts::size != 0)</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;            <span class="comment">//        return second_properties&lt;Ts&gt;::empty_tuple();</span></div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;            <span class="comment">//}</span></div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;            <span class="comment">//if constexpr (!is_property) </span></div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;            {</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;                <span class="comment">// so we end up with a property</span></div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;                <span class="keywordflow">if</span> constexpr (Ts::size == 0)</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;                    return type_container&lt;std::tuple&lt;T&gt;&gt;();</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;                </div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;                constexpr auto empty_tuple_of_righter_tables = second_properties&lt;Ts&gt;::<a class="code" href="../../df/d7e/structwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1details_1_1second__properties_3_01webframe_1_1_o_r_m_1_11755ab06d88aef3563a850701641a557.html#a26b02d0d1972769592dff5b7aa09d810">empty_tuple</a>();</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;                </div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;                return type_container&lt;decltype(std::tuple_cat(</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;                    std::tuple&lt;T&gt;(),</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;                    typename decltype(empty_tuple_of_righter_tables)::type()</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;                ))&gt;();</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;            </div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;            }</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;            static_assert(true, &quot;balo si e mamata&quot;);</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        }</div>
-<div class="ttc" id="aclasswebframe_1_1_o_r_m_1_1details_1_1orm__tuple_html"><div class="ttname"><a href="../../d5/dcf/classwebframe_1_1_o_r_m_1_1details_1_1orm__tuple.html">webframe::ORM::details::orm_tuple</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/orm__tuple_8hpp_source.html#l00013">orm_tuple.hpp:13</a></div></div>
-<div class="ttc" id="astructwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1details_1_1second__properties_3_01webframe_1_1_o_r_m_1_11755ab06d88aef3563a850701641a557_html_a26b02d0d1972769592dff5b7aa09d810"><div class="ttname"><a href="../../df/d7e/structwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1details_1_1second__properties_3_01webframe_1_1_o_r_m_1_11755ab06d88aef3563a850701641a557.html#a26b02d0d1972769592dff5b7aa09d810">webframe::ORM::CRUD::details::second_properties&lt; webframe::ORM::details::orm_tuple&lt; Statement1, Statements... &gt; &gt;::empty_tuple</a></div><div class="ttdeci">static constexpr auto empty_tuple()</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d93/utils_8hpp_source.html#l00099">utils.hpp:99</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../df/d93/utils_8hpp_source.html#l00106">106</a> of file <a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;        {</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;            <span class="keyword">using</span> T = decltype(std::declval&lt;Statement1&gt;()._2);</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;            <span class="keyword">using</span> Ts = <a class="code" href="../../d5/dcf/classwebframe_1_1_o_r_m_1_1details_1_1orm__tuple.html">webframe::ORM::details::orm_tuple</a>&lt;Statements...&gt;;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;            <span class="comment">// constexpr bool is_property = webframe::ORM::details::is_property&lt;T&gt;;</span></div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;            <span class="comment">//  skip property things</span></div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;            <span class="comment">// if constexpr (is_property) {</span></div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;            <span class="comment">//     if constexpr (Ts::size == 0)</span></div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;            <span class="comment">//         return type_container&lt;std::tuple&lt;&gt;&gt;();</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;            <span class="comment">//     if constexpr (Ts::size != 0)</span></div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;            <span class="comment">//         return second_properties&lt;Ts&gt;::empty_tuple();</span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;            <span class="comment">// }</span></div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;            <span class="comment">// if constexpr (!is_property)</span></div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;            {</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;                <span class="comment">// so we end up with a property</span></div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;                <span class="keywordflow">if</span> constexpr (Ts::size == 0)</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;                {</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;                    <span class="keywordflow">return</span> type_container&lt;std::tuple&lt;T&gt;&gt;();</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;                }</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160; </div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;                constexpr <span class="keyword">auto</span> empty_tuple_of_righter_tables = second_properties&lt;Ts&gt;::empty_tuple();</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160; </div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;                <span class="keywordflow">return</span> type_container&lt;decltype(std::tuple_cat(std::tuple&lt;T&gt;(), <span class="keyword">typename</span> decltype(empty_tuple_of_righter_tables)::type()))&gt;();</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;            }</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;            static_assert(<span class="keyword">true</span>, <span class="stringliteral">&quot;balo si e mamata&quot;</span>);</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;        }</div>
+<div class="ttc" id="aclasswebframe_1_1_o_r_m_1_1details_1_1orm__tuple_html"><div class="ttname"><a href="../../d5/dcf/classwebframe_1_1_o_r_m_1_1details_1_1orm__tuple.html">webframe::ORM::details::orm_tuple</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/orm__tuple_8hpp_source.html#l00013">orm_tuple.hpp:14</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>

@@ -14,11 +14,11 @@
 //
 // The whole PFR library is build on top of those two functions.
 #if PFR_USE_CPP17
-#include <pfr/detail/core17.hpp>
+	#include <pfr/detail/core17.hpp>
 #elif PFR_USE_LOOPHOLE
-#include <pfr/detail/core14_loophole.hpp>
+	#include <pfr/detail/core14_loophole.hpp>
 #else
-#include <pfr/detail/core14_classic.hpp>
+	#include <pfr/detail/core14_classic.hpp>
 #endif
 
 #endif // PFR_DETAIL_CORE_HPP

@@ -101,7 +101,7 @@ Static Public Attributes</h2></td></tr>
 class webframe::ORM::details::convertible_tuples&lt; webframe::ORM::details::orm_tuple&lt; Ts... &gt;, webframe::ORM::details::orm_tuple&lt; Us... &gt; &gt;</h3>
 
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/orm__tuple_8hpp_source.html#l00107">107</a> of file <a class="el" href="../../d3/d68/orm__tuple_8hpp_source.html">orm_tuple.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/orm__tuple_8hpp_source.html#l00120">120</a> of file <a class="el" href="../../d3/d68/orm__tuple_8hpp_source.html">orm_tuple.hpp</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a8af09d77e8a8ed88f23129bed67862b9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8af09d77e8a8ed88f23129bed67862b9">&#9670;&nbsp;</a></span>T</h2>
@@ -117,7 +117,7 @@ template&lt;typename... Ts, typename... Us&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/orm__tuple_8hpp_source.html#l00109">109</a> of file <a class="el" href="../../d3/d68/orm__tuple_8hpp_source.html">orm_tuple.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/orm__tuple_8hpp_source.html#l00123">123</a> of file <a class="el" href="../../d3/d68/orm__tuple_8hpp_source.html">orm_tuple.hpp</a>.</p>
 
 </div>
 </div>
@@ -135,7 +135,7 @@ template&lt;typename... Ts, typename... Us&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/orm__tuple_8hpp_source.html#l00110">110</a> of file <a class="el" href="../../d3/d68/orm__tuple_8hpp_source.html">orm_tuple.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/orm__tuple_8hpp_source.html#l00124">124</a> of file <a class="el" href="../../d3/d68/orm__tuple_8hpp_source.html">orm_tuple.hpp</a>.</p>
 
 </div>
 </div>
@@ -168,16 +168,19 @@ template&lt;size_t... ind&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/orm__tuple_8hpp_source.html#l00112">112</a> of file <a class="el" href="../../d3/d68/orm__tuple_8hpp_source.html">orm_tuple.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;                                                              {</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;            <span class="keywordflow">if</span> constexpr (T::size == 0) return <a class="code" href="../../d0/dd9/classwebframe_1_1_o_r_m_1_1details_1_1convertible__tuples_3_01webframe_1_1_o_r_m_1_1details_1_1o6486f00362fa604daa2f39b9ded04489.html#aff511a434e5fbb14936527899a272d48">U</a>::size == 0;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;            return (<a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a6bf90b3b7c9b3eb525e2bc00a6027fa2">requires</a>(typename normalize_type&lt;typename <a class="code" href="../../d0/dd9/classwebframe_1_1_o_r_m_1_1details_1_1convertible__tuples_3_01webframe_1_1_o_r_m_1_1details_1_1o6486f00362fa604daa2f39b9ded04489.html#a8af09d77e8a8ed88f23129bed67862b9">T</a>::template orm_type&lt;ind % <a class="code" href="../../d0/dd9/classwebframe_1_1_o_r_m_1_1details_1_1convertible__tuples_3_01webframe_1_1_o_r_m_1_1details_1_1o6486f00362fa604daa2f39b9ded04489.html#a8af09d77e8a8ed88f23129bed67862b9">T</a>::size&gt;&gt;::type var) {</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;                { var = std::declval&lt;typename U::template orm_type&lt;ind&gt;&gt;() };</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;            } &amp;&amp; ...);</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        }</div>
-<div class="ttc" id="aclasswebframe_1_1_o_r_m_1_1details_1_1convertible__tuples_3_01webframe_1_1_o_r_m_1_1details_1_1o6486f00362fa604daa2f39b9ded04489_html_a8af09d77e8a8ed88f23129bed67862b9"><div class="ttname"><a href="../../d0/dd9/classwebframe_1_1_o_r_m_1_1details_1_1convertible__tuples_3_01webframe_1_1_o_r_m_1_1details_1_1o6486f00362fa604daa2f39b9ded04489.html#a8af09d77e8a8ed88f23129bed67862b9">webframe::ORM::details::convertible_tuples&lt; webframe::ORM::details::orm_tuple&lt; Ts... &gt;, webframe::ORM::details::orm_tuple&lt; Us... &gt; &gt;::T</a></div><div class="ttdeci">webframe::ORM::details::orm_tuple&lt; Ts... &gt; T</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/orm__tuple_8hpp_source.html#l00109">orm_tuple.hpp:109</a></div></div>
-<div class="ttc" id="aclasswebframe_1_1_o_r_m_1_1details_1_1convertible__tuples_3_01webframe_1_1_o_r_m_1_1details_1_1o6486f00362fa604daa2f39b9ded04489_html_aff511a434e5fbb14936527899a272d48"><div class="ttname"><a href="../../d0/dd9/classwebframe_1_1_o_r_m_1_1details_1_1convertible__tuples_3_01webframe_1_1_o_r_m_1_1details_1_1o6486f00362fa604daa2f39b9ded04489.html#aff511a434e5fbb14936527899a272d48">webframe::ORM::details::convertible_tuples&lt; webframe::ORM::details::orm_tuple&lt; Ts... &gt;, webframe::ORM::details::orm_tuple&lt; Us... &gt; &gt;::U</a></div><div class="ttdeci">webframe::ORM::details::orm_tuple&lt; Us... &gt; U</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/orm__tuple_8hpp_source.html#l00110">orm_tuple.hpp:110</a></div></div>
-<div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_a6bf90b3b7c9b3eb525e2bc00a6027fa2"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a6bf90b3b7c9b3eb525e2bc00a6027fa2">webframe::ORM::details::requires</a></div><div class="ttdeci">requires requires</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbe/result__type_8hpp_source.html#l00018">result_type.hpp:18</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/orm__tuple_8hpp_source.html#l00125">125</a> of file <a class="el" href="../../d3/d68/orm__tuple_8hpp_source.html">orm_tuple.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;        {</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;            <span class="keywordflow">if</span> constexpr (T::size == 0)</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;            {</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;                <span class="keywordflow">return</span> U::size == 0;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;            }</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;            <span class="keywordflow">return</span> (<a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a6bf90b3b7c9b3eb525e2bc00a6027fa2">requires</a>(<span class="keyword">typename</span> normalize_type&lt;<span class="keyword">typename</span> T::template orm_type&lt;ind % T::size&gt;&gt;::type var) {</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;                {</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;                    var = std::declval&lt;typename U::template orm_type&lt;ind&gt;&gt;()</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;                };</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;            } &amp;&amp; ...);</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;        }</div>
+<div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_a6bf90b3b7c9b3eb525e2bc00a6027fa2"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a6bf90b3b7c9b3eb525e2bc00a6027fa2">webframe::ORM::details::requires</a></div><div class="ttdeci">requires requires</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbe/result__type_8hpp_source.html#l00020">result_type.hpp:20</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -204,7 +207,7 @@ template&lt;typename... Ts, typename... Us&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d68/orm__tuple_8hpp_source.html#l00118">118</a> of file <a class="el" href="../../d3/d68/orm__tuple_8hpp_source.html">orm_tuple.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d68/orm__tuple_8hpp_source.html#l00137">137</a> of file <a class="el" href="../../d3/d68/orm__tuple_8hpp_source.html">orm_tuple.hpp</a>.</p>
 
 </div>
 </div>

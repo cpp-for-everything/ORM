@@ -75,28 +75,28 @@ $(function() {
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#if defined(_MSC_VER)</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_PUSH           __pragma(warning( push ))</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_PUSH3          __pragma(warning( push, 3 ))</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_POP            __pragma(warning( pop )) </span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING(warningNumber) __pragma(warning( disable : warningNumber ))</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_PUSH __pragma(warning(push))</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_PUSH3 __pragma(warning(push, 3))</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_POP __pragma(warning(pop))</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING(warningNumber) __pragma(warning(disable : warningNumber))</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_UNREACHABLE_CODE    DISABLE_WARNING(4702)</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_LOSS_OF_DATA        DISABLE_WARNING(4244)</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_UNREACHABLE_CODE DISABLE_WARNING(4702)</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_LOSS_OF_DATA DISABLE_WARNING(4244)</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#elif defined(__GNUC__) || defined(__clang__)</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">    #define DO_PRAGMA(X) _Pragma(#X)</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_PUSH           DO_PRAGMA(GCC diagnostic push)</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_PUSH3          </span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_POP            DO_PRAGMA(GCC diagnostic pop) </span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING(warningName)   DO_PRAGMA(GCC diagnostic ignored #warningName)</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_PUSH DO_PRAGMA(GCC diagnostic push)</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_PUSH3 </span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_POP DO_PRAGMA(GCC diagnostic pop)</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING(warningName) DO_PRAGMA(GCC diagnostic ignored #warningName)</span></div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_UNREACHABLE_CODE    DISABLE_WARNING(-Wunreachable-code)</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_LOSS_OF_DATA        DISABLE_WARNING(-Wconversion)</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_UNREACHABLE_CODE DISABLE_WARNING(-Wunreachable-code)</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_LOSS_OF_DATA DISABLE_WARNING(-Wconversion)</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="../../da/d64/warnings_8hpp.html#a24b263e8b4b7f2ebc6534700f8157a48">   28</a></span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_PUSH               </span></div>
-<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="../../da/d64/warnings_8hpp.html#a87eb097fc5c82bcc02d3951eb632a6c5">   29</a></span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_PUSH3              </span></div>
-<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="../../da/d64/warnings_8hpp.html#aa38484cb49798c69a90b8a8dcd050087">   30</a></span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_POP                </span></div>
-<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="../../da/d64/warnings_8hpp.html#abcdd80ad5329b01c5f349f12c2d711e9">   31</a></span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_UNREACHABLE_CODE   </span></div>
-<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="../../da/d64/warnings_8hpp.html#acb9e0492273472451205bdafccf9aba9">   32</a></span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_LOSS_OF_DATA       </span></div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="../../da/d64/warnings_8hpp.html#a24b263e8b4b7f2ebc6534700f8157a48">   28</a></span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_PUSH             </span></div>
+<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="../../da/d64/warnings_8hpp.html#a87eb097fc5c82bcc02d3951eb632a6c5">   29</a></span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_PUSH3            </span></div>
+<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="../../da/d64/warnings_8hpp.html#aa38484cb49798c69a90b8a8dcd050087">   30</a></span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_POP              </span></div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="../../da/d64/warnings_8hpp.html#abcdd80ad5329b01c5f349f12c2d711e9">   31</a></span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_UNREACHABLE_CODE </span></div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="../../da/d64/warnings_8hpp.html#acb9e0492273472451205bdafccf9aba9">   32</a></span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_LOSS_OF_DATA     </span></div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
 <div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="../../da/d64/warnings_8hpp.html#a0159f37b7f6f7613d0d42391d2679b59">   34</a></span>&#160;<span class="preprocessor">    #define DISABLE_WARNING_USER_DEFINED_COMMA </span></div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#endif</span></div>

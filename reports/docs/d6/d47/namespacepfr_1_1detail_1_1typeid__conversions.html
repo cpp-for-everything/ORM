@@ -78,12 +78,12 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a03fb8643994ce8c2f8861c8884e7a60b"><td class="memTemplParams" colspan="2">template&lt;std::size_t Index, std::size_t Extension&gt; </td></tr>
-<tr class="memitem:a03fb8643994ce8c2f8861c8884e7a60b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a03fb8643994ce8c2f8861c8884e7a60b">if_extension</a> = std::enable_if_t&lt;(Index &amp;<a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a28838a9a9d602f06c768f68d4505146e">extension_mask</a>)==Extension &gt; *</td></tr>
-<tr class="separator:a03fb8643994ce8c2f8861c8884e7a60b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7816cf58d0626ef5718ff2860afef440"><td class="memTemplParams" colspan="2">template&lt;std::size_t Index&gt; </td></tr>
-<tr class="memitem:a7816cf58d0626ef5718ff2860afef440"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a7816cf58d0626ef5718ff2860afef440">remove_1_ext</a> = <a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a259a643f8f6204f4fdac2a2baf4519e6">size_t_</a>&lt;((Index &amp;~<a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac302de0012b3ac323a7b75baeac9b4a6">native_types_mask</a>)&lt;&lt; <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>)|(Index &amp;<a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac302de0012b3ac323a7b75baeac9b4a6">native_types_mask</a>) &gt;</td></tr>
-<tr class="separator:a7816cf58d0626ef5718ff2860afef440"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab917f2dd18a7259baf89a310f4fe1754"><td class="memTemplParams" colspan="2">template&lt;std::size_t Index, std::size_t Extension&gt; </td></tr>
+<tr class="memitem:ab917f2dd18a7259baf89a310f4fe1754"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ab917f2dd18a7259baf89a310f4fe1754">if_extension</a> = std::enable_if_t&lt;(Index &amp;<a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a28838a9a9d602f06c768f68d4505146e">extension_mask</a>)==Extension &gt; *</td></tr>
+<tr class="separator:ab917f2dd18a7259baf89a310f4fe1754"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d4c90da662628b24e36e5ca88a41abe"><td class="memTemplParams" colspan="2">template&lt;std::size_t Index&gt; </td></tr>
+<tr class="memitem:a7d4c90da662628b24e36e5ca88a41abe"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a7d4c90da662628b24e36e5ca88a41abe">remove_1_ext</a> = <a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#aa3caea0fc58618a14b4c3e9afa96a101">size_t_</a>&lt;((Index &amp;~<a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac302de0012b3ac323a7b75baeac9b4a6">native_types_mask</a>)&lt;&lt; <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>)|(Index &amp;<a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac302de0012b3ac323a7b75baeac9b4a6">native_types_mask</a>)&gt;</td></tr>
+<tr class="separator:a7d4c90da662628b24e36e5ca88a41abe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -118,19 +118,19 @@ Functions</h2></td></tr>
 <tr class="memitem:a70b81c99de507bd1e2fe7ee569d93097"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="../../d4/dff/structpfr_1_1detail_1_1size__array.html">size_array</a>&lt; sizeof(Type) *3 &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a70b81c99de507bd1e2fe7ee569d93097">type_to_id</a> (<a class="el" href="../../db/d83/structpfr_1_1detail_1_1identity.html">identity</a>&lt; Type &gt;, std::enable_if_t&lt;!std::is_enum&lt; Type &gt;::value &amp;&amp;!std::is_empty&lt; Type &gt;::value &amp;&amp;!std::is_union&lt; Type &gt;::value &gt; *=0) noexcept</td></tr>
 <tr class="separator:a70b81c99de507bd1e2fe7ee569d93097"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5eccf4d2c07a912eb10bfa47caface77"><td class="memTemplParams" colspan="2">template&lt;std::size_t Index&gt; </td></tr>
-<tr class="memitem:a5eccf4d2c07a912eb10bfa47caface77"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a5eccf4d2c07a912eb10bfa47caface77">id_to_type</a> (<a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a259a643f8f6204f4fdac2a2baf4519e6">size_t_</a>&lt; Index &gt;, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a03fb8643994ce8c2f8861c8884e7a60b">if_extension</a>&lt; Index, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac726749b353b6feb4ec9e17009ae46f0">native_const_ptr_type</a> &gt;=nullptr) noexcept</td></tr>
+<tr class="memitem:a5eccf4d2c07a912eb10bfa47caface77"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a5eccf4d2c07a912eb10bfa47caface77">id_to_type</a> (<a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#aa3caea0fc58618a14b4c3e9afa96a101">size_t_</a>&lt; Index &gt;, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ab917f2dd18a7259baf89a310f4fe1754">if_extension</a>&lt; Index, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac726749b353b6feb4ec9e17009ae46f0">native_const_ptr_type</a> &gt;=nullptr) noexcept</td></tr>
 <tr class="separator:a5eccf4d2c07a912eb10bfa47caface77"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a248fde69c0896f0da6f536441b80a185"><td class="memTemplParams" colspan="2">template&lt;std::size_t Index&gt; </td></tr>
-<tr class="memitem:a248fde69c0896f0da6f536441b80a185"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a248fde69c0896f0da6f536441b80a185">id_to_type</a> (<a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a259a643f8f6204f4fdac2a2baf4519e6">size_t_</a>&lt; Index &gt;, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a03fb8643994ce8c2f8861c8884e7a60b">if_extension</a>&lt; Index, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8f57bd312703b308f4f0e1d1962de1c5">native_ptr_type</a> &gt;=nullptr) noexcept</td></tr>
+<tr class="memitem:a248fde69c0896f0da6f536441b80a185"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a248fde69c0896f0da6f536441b80a185">id_to_type</a> (<a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#aa3caea0fc58618a14b4c3e9afa96a101">size_t_</a>&lt; Index &gt;, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ab917f2dd18a7259baf89a310f4fe1754">if_extension</a>&lt; Index, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8f57bd312703b308f4f0e1d1962de1c5">native_ptr_type</a> &gt;=nullptr) noexcept</td></tr>
 <tr class="separator:a248fde69c0896f0da6f536441b80a185"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a649a257092e4b456360d69c083389cbd"><td class="memTemplParams" colspan="2">template&lt;std::size_t Index&gt; </td></tr>
-<tr class="memitem:a649a257092e4b456360d69c083389cbd"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a649a257092e4b456360d69c083389cbd">id_to_type</a> (<a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a259a643f8f6204f4fdac2a2baf4519e6">size_t_</a>&lt; Index &gt;, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a03fb8643994ce8c2f8861c8884e7a60b">if_extension</a>&lt; Index, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ab88c06e07f35ede004da8b3ed3d6a79b">native_const_volatile_ptr_type</a> &gt;=nullptr) noexcept</td></tr>
+<tr class="memitem:a649a257092e4b456360d69c083389cbd"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a649a257092e4b456360d69c083389cbd">id_to_type</a> (<a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#aa3caea0fc58618a14b4c3e9afa96a101">size_t_</a>&lt; Index &gt;, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ab917f2dd18a7259baf89a310f4fe1754">if_extension</a>&lt; Index, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ab88c06e07f35ede004da8b3ed3d6a79b">native_const_volatile_ptr_type</a> &gt;=nullptr) noexcept</td></tr>
 <tr class="separator:a649a257092e4b456360d69c083389cbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae981cd031ba13cefc614dd2da5e09e9f"><td class="memTemplParams" colspan="2">template&lt;std::size_t Index&gt; </td></tr>
-<tr class="memitem:ae981cd031ba13cefc614dd2da5e09e9f"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ae981cd031ba13cefc614dd2da5e09e9f">id_to_type</a> (<a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a259a643f8f6204f4fdac2a2baf4519e6">size_t_</a>&lt; Index &gt;, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a03fb8643994ce8c2f8861c8884e7a60b">if_extension</a>&lt; Index, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ae83aa3478e6556077c836ead80509a9a">native_volatile_ptr_type</a> &gt;=nullptr) noexcept</td></tr>
+<tr class="memitem:ae981cd031ba13cefc614dd2da5e09e9f"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ae981cd031ba13cefc614dd2da5e09e9f">id_to_type</a> (<a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#aa3caea0fc58618a14b4c3e9afa96a101">size_t_</a>&lt; Index &gt;, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ab917f2dd18a7259baf89a310f4fe1754">if_extension</a>&lt; Index, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ae83aa3478e6556077c836ead80509a9a">native_volatile_ptr_type</a> &gt;=nullptr) noexcept</td></tr>
 <tr class="separator:ae981cd031ba13cefc614dd2da5e09e9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ec653ac56af347953b802a54f91676a"><td class="memTemplParams" colspan="2">template&lt;std::size_t Index&gt; </td></tr>
-<tr class="memitem:a8ec653ac56af347953b802a54f91676a"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8ec653ac56af347953b802a54f91676a">id_to_type</a> (<a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a259a643f8f6204f4fdac2a2baf4519e6">size_t_</a>&lt; Index &gt;, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a03fb8643994ce8c2f8861c8884e7a60b">if_extension</a>&lt; Index, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#aeab80f2b81178b96fc231483a35d20ba">native_ref_type</a> &gt;=nullptr) noexcept</td></tr>
+<tr class="memitem:a8ec653ac56af347953b802a54f91676a"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8ec653ac56af347953b802a54f91676a">id_to_type</a> (<a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#aa3caea0fc58618a14b4c3e9afa96a101">size_t_</a>&lt; Index &gt;, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ab917f2dd18a7259baf89a310f4fe1754">if_extension</a>&lt; Index, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#aeab80f2b81178b96fc231483a35d20ba">native_ref_type</a> &gt;=nullptr) noexcept</td></tr>
 <tr class="separator:a8ec653ac56af347953b802a54f91676a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
@@ -141,7 +141,7 @@ Variables</h2></td></tr>
 <tr class="separator:a2a45a51fb0332c574af63afa114e8f90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28838a9a9d602f06c768f68d4505146e"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a28838a9a9d602f06c768f68d4505146e">extension_mask</a></td></tr>
 <tr class="separator:a28838a9a9d602f06c768f68d4505146e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f57bd312703b308f4f0e1d1962de1c5"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8f57bd312703b308f4f0e1d1962de1c5">native_ptr_type</a></td></tr>
+<tr class="memitem:a8f57bd312703b308f4f0e1d1962de1c5"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8f57bd312703b308f4f0e1d1962de1c5">native_ptr_type</a> = (static_cast&lt;std::size_t&gt;(1) &lt;&lt; static_cast&lt;std::size_t&gt;(sizeof(std::size_t) * 8 - <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>))</td></tr>
 <tr class="separator:a8f57bd312703b308f4f0e1d1962de1c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac726749b353b6feb4ec9e17009ae46f0"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac726749b353b6feb4ec9e17009ae46f0">native_const_ptr_type</a></td></tr>
 <tr class="separator:ac726749b353b6feb4ec9e17009ae46f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -149,7 +149,7 @@ Variables</h2></td></tr>
 <tr class="separator:ab88c06e07f35ede004da8b3ed3d6a79b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae83aa3478e6556077c836ead80509a9a"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ae83aa3478e6556077c836ead80509a9a">native_volatile_ptr_type</a></td></tr>
 <tr class="separator:ae83aa3478e6556077c836ead80509a9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeab80f2b81178b96fc231483a35d20ba"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#aeab80f2b81178b96fc231483a35d20ba">native_ref_type</a></td></tr>
+<tr class="memitem:aeab80f2b81178b96fc231483a35d20ba"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#aeab80f2b81178b96fc231483a35d20ba">native_ref_type</a> = (static_cast&lt;std::size_t&gt;(5) &lt;&lt; static_cast&lt;std::size_t&gt;(sizeof(std::size_t) * 8 - <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>))</td></tr>
 <tr class="separator:aeab80f2b81178b96fc231483a35d20ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a080ec98af81e1fe50a04b9651fd24d9c"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a080ec98af81e1fe50a04b9651fd24d9c">tuple_begin_tag</a> = 24</td></tr>
 <tr class="separator:a080ec98af81e1fe50a04b9651fd24d9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -157,8 +157,8 @@ Variables</h2></td></tr>
 <tr class="separator:a35badb00d4ac566b6eff233a579e7f33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
-<a id="a03fb8643994ce8c2f8861c8884e7a60b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a03fb8643994ce8c2f8861c8884e7a60b">&#9670;&nbsp;</a></span>if_extension</h2>
+<a id="ab917f2dd18a7259baf89a310f4fe1754"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab917f2dd18a7259baf89a310f4fe1754">&#9670;&nbsp;</a></span>if_extension</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -166,17 +166,17 @@ Variables</h2></td></tr>
 template&lt;std::size_t Index, std::size_t Extension&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a03fb8643994ce8c2f8861c8884e7a60b">pfr::detail::typeid_conversions::if_extension</a> = typedef std::enable_if_t&lt; (Index &amp; <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a28838a9a9d602f06c768f68d4505146e">extension_mask</a>) == Extension &gt;*</td>
+          <td class="memname">using <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ab917f2dd18a7259baf89a310f4fe1754">pfr::detail::typeid_conversions::if_extension</a> = typedef std::enable_if_t&lt;(Index &amp; <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a28838a9a9d602f06c768f68d4505146e">extension_mask</a>) == Extension&gt;*</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00090">90</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00080">80</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a7816cf58d0626ef5718ff2860afef440"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7816cf58d0626ef5718ff2860afef440">&#9670;&nbsp;</a></span>remove_1_ext</h2>
+<a id="a7d4c90da662628b24e36e5ca88a41abe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d4c90da662628b24e36e5ca88a41abe">&#9670;&nbsp;</a></span>remove_1_ext</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -184,12 +184,12 @@ template&lt;std::size_t Index, std::size_t Extension&gt; </div>
 template&lt;std::size_t Index&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a7816cf58d0626ef5718ff2860afef440">pfr::detail::typeid_conversions::remove_1_ext</a> = typedef <a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a259a643f8f6204f4fdac2a2baf4519e6">size_t_</a>&lt; ((Index &amp; ~<a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac302de0012b3ac323a7b75baeac9b4a6">native_types_mask</a>) &lt;&lt; <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>) | (Index &amp; <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac302de0012b3ac323a7b75baeac9b4a6">native_types_mask</a>) &gt;</td>
+          <td class="memname">using <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a7d4c90da662628b24e36e5ca88a41abe">pfr::detail::typeid_conversions::remove_1_ext</a> = typedef <a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#aa3caea0fc58618a14b4c3e9afa96a101">size_t_</a>&lt;((Index &amp; ~<a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac302de0012b3ac323a7b75baeac9b4a6">native_types_mask</a>) &lt;&lt; <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>) | (Index &amp; <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac302de0012b3ac323a7b75baeac9b4a6">native_types_mask</a>)&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00106">106</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00095">95</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
 
 </div>
 </div>
@@ -208,13 +208,13 @@ template&lt;std::size_t Index&gt; </div>
         <tr>
           <td class="memname">constexpr auto pfr::detail::typeid_conversions::id_to_type </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a259a643f8f6204f4fdac2a2baf4519e6">size_t_</a>&lt; Index &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#aa3caea0fc58618a14b4c3e9afa96a101">size_t_</a>&lt; Index &gt;&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a03fb8643994ce8c2f8861c8884e7a60b">if_extension</a>&lt; Index, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac726749b353b6feb4ec9e17009ae46f0">native_const_ptr_type</a> &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ab917f2dd18a7259baf89a310f4fe1754">if_extension</a>&lt; Index, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac726749b353b6feb4ec9e17009ae46f0">native_const_ptr_type</a> &gt;&#160;</td>
           <td class="paramname"> = <code>nullptr</code>&#160;</td>
         </tr>
         <tr>
@@ -230,12 +230,12 @@ template&lt;std::size_t Index&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00274">274</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;                                                                                                {</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">const</span> decltype( <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8ec653ac56af347953b802a54f91676a">typeid_conversions::id_to_type</a>(remove_1_ext&lt;Index&gt;()) )* res_t;</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;    <span class="keywordflow">return</span> detail::construct_helper&lt;res_t&gt;();</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;}</div>
-<div class="ttc" id="anamespacepfr_1_1detail_1_1typeid__conversions_html_a8ec653ac56af347953b802a54f91676a"><div class="ttname"><a href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8ec653ac56af347953b802a54f91676a">pfr::detail::typeid_conversions::id_to_type</a></div><div class="ttdeci">constexpr auto id_to_type(size_t_&lt; Index &gt;, if_extension&lt; Index, native_ref_type &gt;=nullptr) noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00294">core14_classic.hpp:294</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00263">263</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;            {</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;                <span class="keyword">typedef</span> <span class="keyword">const</span> decltype(<a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8ec653ac56af347953b802a54f91676a">typeid_conversions::id_to_type</a>(remove_1_ext&lt;Index&gt;()))* res_t;</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;                <span class="keywordflow">return</span> detail::construct_helper&lt;res_t&gt;();</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;            }</div>
+<div class="ttc" id="anamespacepfr_1_1detail_1_1typeid__conversions_html_a8ec653ac56af347953b802a54f91676a"><div class="ttname"><a href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8ec653ac56af347953b802a54f91676a">pfr::detail::typeid_conversions::id_to_type</a></div><div class="ttdeci">constexpr auto id_to_type(size_t_&lt; Index &gt;, if_extension&lt; Index, native_ref_type &gt;=nullptr) noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00281">core14_classic.hpp:281</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -253,13 +253,13 @@ template&lt;std::size_t Index&gt; </div>
         <tr>
           <td class="memname">constexpr auto pfr::detail::typeid_conversions::id_to_type </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a259a643f8f6204f4fdac2a2baf4519e6">size_t_</a>&lt; Index &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#aa3caea0fc58618a14b4c3e9afa96a101">size_t_</a>&lt; Index &gt;&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a03fb8643994ce8c2f8861c8884e7a60b">if_extension</a>&lt; Index, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ab88c06e07f35ede004da8b3ed3d6a79b">native_const_volatile_ptr_type</a> &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ab917f2dd18a7259baf89a310f4fe1754">if_extension</a>&lt; Index, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ab88c06e07f35ede004da8b3ed3d6a79b">native_const_volatile_ptr_type</a> &gt;&#160;</td>
           <td class="paramname"> = <code>nullptr</code>&#160;</td>
         </tr>
         <tr>
@@ -275,11 +275,11 @@ template&lt;std::size_t Index&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00280">280</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;                                                                                                         {</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">const</span> <span class="keyword">volatile</span> decltype( <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8ec653ac56af347953b802a54f91676a">typeid_conversions::id_to_type</a>(remove_1_ext&lt;Index&gt;()) )* res_t;</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;    <span class="keywordflow">return</span> detail::construct_helper&lt;res_t&gt;();</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;}</div>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00269">269</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;            {</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;                <span class="keyword">typedef</span> <span class="keyword">const</span> <span class="keyword">volatile</span> decltype(<a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8ec653ac56af347953b802a54f91676a">typeid_conversions::id_to_type</a>(remove_1_ext&lt;Index&gt;()))* res_t;</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;                <span class="keywordflow">return</span> detail::construct_helper&lt;res_t&gt;();</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;            }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -297,13 +297,13 @@ template&lt;std::size_t Index&gt; </div>
         <tr>
           <td class="memname">constexpr auto pfr::detail::typeid_conversions::id_to_type </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a259a643f8f6204f4fdac2a2baf4519e6">size_t_</a>&lt; Index &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#aa3caea0fc58618a14b4c3e9afa96a101">size_t_</a>&lt; Index &gt;&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a03fb8643994ce8c2f8861c8884e7a60b">if_extension</a>&lt; Index, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8f57bd312703b308f4f0e1d1962de1c5">native_ptr_type</a> &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ab917f2dd18a7259baf89a310f4fe1754">if_extension</a>&lt; Index, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8f57bd312703b308f4f0e1d1962de1c5">native_ptr_type</a> &gt;&#160;</td>
           <td class="paramname"> = <code>nullptr</code>&#160;</td>
         </tr>
         <tr>
@@ -319,11 +319,11 @@ template&lt;std::size_t Index&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00268">268</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;                                                                                          {</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;    <span class="keyword">typedef</span> decltype( <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8ec653ac56af347953b802a54f91676a">typeid_conversions::id_to_type</a>(remove_1_ext&lt;Index&gt;()) )* res_t;</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;    <span class="keywordflow">return</span> detail::construct_helper&lt;res_t&gt;();</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;}</div>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00257">257</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;            {</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;                <span class="keyword">typedef</span> decltype(<a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8ec653ac56af347953b802a54f91676a">typeid_conversions::id_to_type</a>(remove_1_ext&lt;Index&gt;()))* res_t;</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;                <span class="keywordflow">return</span> detail::construct_helper&lt;res_t&gt;();</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;            }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -341,13 +341,13 @@ template&lt;std::size_t Index&gt; </div>
         <tr>
           <td class="memname">constexpr auto pfr::detail::typeid_conversions::id_to_type </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a259a643f8f6204f4fdac2a2baf4519e6">size_t_</a>&lt; Index &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#aa3caea0fc58618a14b4c3e9afa96a101">size_t_</a>&lt; Index &gt;&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a03fb8643994ce8c2f8861c8884e7a60b">if_extension</a>&lt; Index, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#aeab80f2b81178b96fc231483a35d20ba">native_ref_type</a> &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ab917f2dd18a7259baf89a310f4fe1754">if_extension</a>&lt; Index, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#aeab80f2b81178b96fc231483a35d20ba">native_ref_type</a> &gt;&#160;</td>
           <td class="paramname"> = <code>nullptr</code>&#160;</td>
         </tr>
         <tr>
@@ -363,11 +363,11 @@ template&lt;std::size_t Index&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00294">294</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;                                                                                          {</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    static_assert(!Index, <span class="stringliteral">&quot;====================&gt; Boost.PFR: References are not supported&quot;</span>);</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;}</div>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00281">281</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;            {</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;                static_assert(!Index, <span class="stringliteral">&quot;====================&gt; Boost.PFR: References are not supported&quot;</span>);</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;            }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -385,13 +385,13 @@ template&lt;std::size_t Index&gt; </div>
         <tr>
           <td class="memname">constexpr auto pfr::detail::typeid_conversions::id_to_type </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a259a643f8f6204f4fdac2a2baf4519e6">size_t_</a>&lt; Index &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#aa3caea0fc58618a14b4c3e9afa96a101">size_t_</a>&lt; Index &gt;&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a03fb8643994ce8c2f8861c8884e7a60b">if_extension</a>&lt; Index, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ae83aa3478e6556077c836ead80509a9a">native_volatile_ptr_type</a> &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ab917f2dd18a7259baf89a310f4fe1754">if_extension</a>&lt; Index, <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ae83aa3478e6556077c836ead80509a9a">native_volatile_ptr_type</a> &gt;&#160;</td>
           <td class="paramname"> = <code>nullptr</code>&#160;</td>
         </tr>
         <tr>
@@ -407,11 +407,11 @@ template&lt;std::size_t Index&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00287">287</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;                                                                                                   {</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">volatile</span> decltype( <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8ec653ac56af347953b802a54f91676a">typeid_conversions::id_to_type</a>(remove_1_ext&lt;Index&gt;()) )* res_t;</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    <span class="keywordflow">return</span> detail::construct_helper&lt;res_t&gt;();</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;}</div>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00275">275</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;            {</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;                <span class="keyword">typedef</span> <span class="keyword">volatile</span> decltype(<a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8ec653ac56af347953b802a54f91676a">typeid_conversions::id_to_type</a>(remove_1_ext&lt;Index&gt;()))* res_t;</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;                <span class="keywordflow">return</span> detail::construct_helper&lt;res_t&gt;();</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;            }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -441,16 +441,15 @@ template&lt;class Type &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00187">187</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;                                                               {</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    constexpr <span class="keyword">auto</span> unptr = <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a70b81c99de507bd1e2fe7ee569d93097">typeid_conversions::type_to_id</a>(identity&lt;Type&gt;{});</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    static_assert(</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;        std::is_same&lt;<span class="keyword">const</span> std::size_t, decltype(unptr)&gt;::value,</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;        <span class="stringliteral">&quot;====================&gt; Boost.PFR: Const pointers to user defined types are not supported.&quot;</span></div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    );</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;    <span class="keywordflow">return</span> typeid_conversions::type_to_id_extension_apply&lt;unptr&gt;(<a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac726749b353b6feb4ec9e17009ae46f0">native_const_ptr_type</a>);</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;}</div>
-<div class="ttc" id="anamespacepfr_1_1detail_1_1typeid__conversions_html_a70b81c99de507bd1e2fe7ee569d93097"><div class="ttname"><a href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a70b81c99de507bd1e2fe7ee569d93097">pfr::detail::typeid_conversions::type_to_id</a></div><div class="ttdeci">constexpr size_array&lt; sizeof(Type) *3 &gt; type_to_id(identity&lt; Type &gt;, std::enable_if_t&lt;!std::is_enum&lt; Type &gt;::value &amp;&amp;!std::is_empty&lt; Type &gt;::value &amp;&amp;!std::is_union&lt; Type &gt;::value &gt; *=0) noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00247">core14_classic.hpp:247</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00174">174</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;            {</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;                constexpr <span class="keyword">auto</span> unptr = <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a70b81c99de507bd1e2fe7ee569d93097">typeid_conversions::type_to_id</a>(identity&lt;Type&gt;{});</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;                static_assert(</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;                    std::is_same&lt;<span class="keyword">const</span> std::size_t, decltype(unptr)&gt;::value,</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;                    <span class="stringliteral">&quot;====================&gt; Boost.PFR: Const pointers to user defined types are not supported.&quot;</span>);</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;                <span class="keywordflow">return</span> typeid_conversions::type_to_id_extension_apply&lt;unptr&gt;(<a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac726749b353b6feb4ec9e17009ae46f0">native_const_ptr_type</a>);</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;            }</div>
+<div class="ttc" id="anamespacepfr_1_1detail_1_1typeid__conversions_html_a70b81c99de507bd1e2fe7ee569d93097"><div class="ttname"><a href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a70b81c99de507bd1e2fe7ee569d93097">pfr::detail::typeid_conversions::type_to_id</a></div><div class="ttdeci">constexpr size_array&lt; sizeof(Type) *3 &gt; type_to_id(identity&lt; Type &gt;, std::enable_if_t&lt;!std::is_enum&lt; Type &gt;::value &amp;&amp;!std::is_empty&lt; Type &gt;::value &amp;&amp;!std::is_union&lt; Type &gt;::value &gt; *=0) noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00231">core14_classic.hpp:231</a></div></div>
 <div class="ttc" id="anamespacepfr_1_1detail_1_1typeid__conversions_html_ac726749b353b6feb4ec9e17009ae46f0"><div class="ttname"><a href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac726749b353b6feb4ec9e17009ae46f0">pfr::detail::typeid_conversions::native_const_ptr_type</a></div><div class="ttdeci">constexpr std::size_t native_const_ptr_type</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00069">core14_classic.hpp:69</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -481,16 +480,15 @@ template&lt;class Type &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00197">197</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;                                                                        {</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    constexpr <span class="keyword">auto</span> unptr = <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a70b81c99de507bd1e2fe7ee569d93097">typeid_conversions::type_to_id</a>(identity&lt;Type&gt;{});</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    static_assert(</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;        std::is_same&lt;<span class="keyword">const</span> std::size_t, decltype(unptr)&gt;::value,</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;        <span class="stringliteral">&quot;====================&gt; Boost.PFR: Const volatile pointers to user defined types are not supported.&quot;</span></div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    );</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;    <span class="keywordflow">return</span> typeid_conversions::type_to_id_extension_apply&lt;unptr&gt;(<a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ab88c06e07f35ede004da8b3ed3d6a79b">native_const_volatile_ptr_type</a>);</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;}</div>
-<div class="ttc" id="anamespacepfr_1_1detail_1_1typeid__conversions_html_ab88c06e07f35ede004da8b3ed3d6a79b"><div class="ttname"><a href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ab88c06e07f35ede004da8b3ed3d6a79b">pfr::detail::typeid_conversions::native_const_volatile_ptr_type</a></div><div class="ttdeci">constexpr std::size_t native_const_volatile_ptr_type</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00074">core14_classic.hpp:74</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00183">183</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;            {</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;                constexpr <span class="keyword">auto</span> unptr = <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a70b81c99de507bd1e2fe7ee569d93097">typeid_conversions::type_to_id</a>(identity&lt;Type&gt;{});</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;                static_assert(</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;                    std::is_same&lt;<span class="keyword">const</span> std::size_t, decltype(unptr)&gt;::value,</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;                    <span class="stringliteral">&quot;====================&gt; Boost.PFR: Const volatile pointers to user defined types are not supported.&quot;</span>);</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;                <span class="keywordflow">return</span> typeid_conversions::type_to_id_extension_apply&lt;unptr&gt;(<a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ab88c06e07f35ede004da8b3ed3d6a79b">native_const_volatile_ptr_type</a>);</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;            }</div>
+<div class="ttc" id="anamespacepfr_1_1detail_1_1typeid__conversions_html_ab88c06e07f35ede004da8b3ed3d6a79b"><div class="ttname"><a href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ab88c06e07f35ede004da8b3ed3d6a79b">pfr::detail::typeid_conversions::native_const_volatile_ptr_type</a></div><div class="ttdeci">constexpr std::size_t native_const_volatile_ptr_type</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00072">core14_classic.hpp:72</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -520,16 +518,15 @@ template&lt;class Type &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00217">217</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;                                                         {</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    constexpr <span class="keyword">auto</span> unptr = <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a70b81c99de507bd1e2fe7ee569d93097">typeid_conversions::type_to_id</a>(identity&lt;Type&gt;{});</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;    static_assert(</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;        std::is_same&lt;<span class="keyword">const</span> std::size_t, decltype(unptr)&gt;::value,</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;        <span class="stringliteral">&quot;====================&gt; Boost.PFR: References to user defined types are not supported.&quot;</span></div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    );</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;    <span class="keywordflow">return</span> typeid_conversions::type_to_id_extension_apply&lt;unptr&gt;(<a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#aeab80f2b81178b96fc231483a35d20ba">native_ref_type</a>);</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;}</div>
-<div class="ttc" id="anamespacepfr_1_1detail_1_1typeid__conversions_html_aeab80f2b81178b96fc231483a35d20ba"><div class="ttname"><a href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#aeab80f2b81178b96fc231483a35d20ba">pfr::detail::typeid_conversions::native_ref_type</a></div><div class="ttdeci">constexpr std::size_t native_ref_type</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00084">core14_classic.hpp:84</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00201">201</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;            {</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;                constexpr <span class="keyword">auto</span> unptr = <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a70b81c99de507bd1e2fe7ee569d93097">typeid_conversions::type_to_id</a>(identity&lt;Type&gt;{});</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;                static_assert(</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;                    std::is_same&lt;<span class="keyword">const</span> std::size_t, decltype(unptr)&gt;::value,</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;                    <span class="stringliteral">&quot;====================&gt; Boost.PFR: References to user defined types are not supported.&quot;</span>);</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;                <span class="keywordflow">return</span> typeid_conversions::type_to_id_extension_apply&lt;unptr&gt;(<a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#aeab80f2b81178b96fc231483a35d20ba">native_ref_type</a>);</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;            }</div>
+<div class="ttc" id="anamespacepfr_1_1detail_1_1typeid__conversions_html_aeab80f2b81178b96fc231483a35d20ba"><div class="ttname"><a href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#aeab80f2b81178b96fc231483a35d20ba">pfr::detail::typeid_conversions::native_ref_type</a></div><div class="ttdeci">constexpr std::size_t native_ref_type</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00078">core14_classic.hpp:78</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -559,16 +556,15 @@ template&lt;class Type &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00177">177</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;                                                         {</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    constexpr <span class="keyword">auto</span> unptr = <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a70b81c99de507bd1e2fe7ee569d93097">typeid_conversions::type_to_id</a>(identity&lt;Type&gt;{});</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;    static_assert(</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;        std::is_same&lt;<span class="keyword">const</span> std::size_t, decltype(unptr)&gt;::value,</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;        <span class="stringliteral">&quot;====================&gt; Boost.PFR: Pointers to user defined types are not supported.&quot;</span></div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;    );</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;    <span class="keywordflow">return</span> typeid_conversions::type_to_id_extension_apply&lt;unptr&gt;(<a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8f57bd312703b308f4f0e1d1962de1c5">native_ptr_type</a>);</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;}</div>
-<div class="ttc" id="anamespacepfr_1_1detail_1_1typeid__conversions_html_a8f57bd312703b308f4f0e1d1962de1c5"><div class="ttname"><a href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8f57bd312703b308f4f0e1d1962de1c5">pfr::detail::typeid_conversions::native_ptr_type</a></div><div class="ttdeci">constexpr std::size_t native_ptr_type</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00065">core14_classic.hpp:65</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00165">165</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;            {</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;                constexpr <span class="keyword">auto</span> unptr = <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a70b81c99de507bd1e2fe7ee569d93097">typeid_conversions::type_to_id</a>(identity&lt;Type&gt;{});</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;                static_assert(</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;                    std::is_same&lt;<span class="keyword">const</span> std::size_t, decltype(unptr)&gt;::value,</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;                    <span class="stringliteral">&quot;====================&gt; Boost.PFR: Pointers to user defined types are not supported.&quot;</span>);</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;                <span class="keywordflow">return</span> typeid_conversions::type_to_id_extension_apply&lt;unptr&gt;(<a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8f57bd312703b308f4f0e1d1962de1c5">native_ptr_type</a>);</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;            }</div>
+<div class="ttc" id="anamespacepfr_1_1detail_1_1typeid__conversions_html_a8f57bd312703b308f4f0e1d1962de1c5"><div class="ttname"><a href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8f57bd312703b308f4f0e1d1962de1c5">pfr::detail::typeid_conversions::native_ptr_type</a></div><div class="ttdeci">constexpr std::size_t native_ptr_type</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00068">core14_classic.hpp:68</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -608,11 +604,11 @@ template&lt;class Type &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00232">232</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;                                                                                                 {</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    static_assert(!std::is_empty&lt;Type&gt;::value, <span class="stringliteral">&quot;====================&gt; Boost.PFR: Empty classes/structures as members are not supported.&quot;</span>);</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;}</div>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00215">215</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;            {</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;                static_assert(!std::is_empty&lt;Type&gt;::value, <span class="stringliteral">&quot;====================&gt; Boost.PFR: Empty classes/structures as members are not supported.&quot;</span>);</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;                <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;            }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -652,10 +648,10 @@ template&lt;class Type &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00227">227</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;                                                                                                {</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a70b81c99de507bd1e2fe7ee569d93097">typeid_conversions::type_to_id</a>(identity&lt;<span class="keyword">typename</span> std::underlying_type&lt;Type&gt;::type &gt;{});</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;}</div>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00210">210</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;            {</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;                <span class="keywordflow">return</span> <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a70b81c99de507bd1e2fe7ee569d93097">typeid_conversions::type_to_id</a>(identity&lt;<span class="keyword">typename</span> std::underlying_type&lt;Type&gt;::type&gt;{});</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;            }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -695,14 +691,14 @@ template&lt;class Type &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00238">238</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;                                                                                                 {</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;    static_assert(</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;        !std::is_union&lt;Type&gt;::value,</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;        <span class="stringliteral">&quot;====================&gt; Boost.PFR: For safety reasons it is forbidden to reflect unions. See `Reflection of unions` section in the docs for more info.&quot;</span></div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    );</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;}</div>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00221">221</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;            {</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;                static_assert(</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;                    !std::is_union&lt;Type&gt;::value,</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;                    <span class="stringliteral">&quot;====================&gt; Boost.PFR: For safety reasons it is forbidden to reflect unions. See `Reflection of unions` section in the docs for &quot;</span></div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;                    <span class="stringliteral">&quot;more info.&quot;</span>);</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;                <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;            }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -742,26 +738,32 @@ template&lt;class Type &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00247">247</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;                                                                                                                                                                          {</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;    constexpr <span class="keyword">auto</span> t = detail::flat_array_of_type_ids&lt;Type&gt;();</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    size_array&lt;<span class="keyword">sizeof</span>(Type) * 3&gt; result {{<a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a080ec98af81e1fe50a04b9651fd24d9c">tuple_begin_tag</a>}};</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;    constexpr <span class="keywordtype">bool</span> requires_tuplening = (</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;        (t.count_nonzeros() != 1)  || (t.count_nonzeros() == t.count_from_opening_till_matching_parenthis_seq(0, <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a080ec98af81e1fe50a04b9651fd24d9c">tuple_begin_tag</a>, <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a35badb00d4ac566b6eff233a579e7f33">tuple_end_tag</a>))</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;    );</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160; </div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    <span class="keywordflow">if</span> (requires_tuplening) {</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;        <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; t.size(); ++i)</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;            result.data[i + 1] = t.data[i];</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;        result.data[result.size() - 1] = <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a35badb00d4ac566b6eff233a579e7f33">tuple_end_tag</a>;</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;        <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; t.size(); ++i)</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;            result.data[i] = t.data[i];</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;    }</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;}</div>
-<div class="ttc" id="anamespacepfr_1_1detail_1_1typeid__conversions_html_a080ec98af81e1fe50a04b9651fd24d9c"><div class="ttname"><a href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a080ec98af81e1fe50a04b9651fd24d9c">pfr::detail::typeid_conversions::tuple_begin_tag</a></div><div class="ttdeci">constexpr std::size_t tuple_begin_tag</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00170">core14_classic.hpp:170</a></div></div>
-<div class="ttc" id="anamespacepfr_1_1detail_1_1typeid__conversions_html_a35badb00d4ac566b6eff233a579e7f33"><div class="ttname"><a href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a35badb00d4ac566b6eff233a579e7f33">pfr::detail::typeid_conversions::tuple_end_tag</a></div><div class="ttdeci">constexpr std::size_t tuple_end_tag</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00171">core14_classic.hpp:171</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00231">231</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;            {</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;                constexpr <span class="keyword">auto</span> t = detail::flat_array_of_type_ids&lt;Type&gt;();</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;                size_array&lt;<span class="keyword">sizeof</span>(Type) * 3&gt; result{{<a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a080ec98af81e1fe50a04b9651fd24d9c">tuple_begin_tag</a>}};</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;                constexpr <span class="keywordtype">bool</span> requires_tuplening =</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;                    ((t.count_nonzeros() != 1) || (t.count_nonzeros() == t.count_from_opening_till_matching_parenthis_seq(0, <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a080ec98af81e1fe50a04b9651fd24d9c">tuple_begin_tag</a>, <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a35badb00d4ac566b6eff233a579e7f33">tuple_end_tag</a>)));</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160; </div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;                <span class="keywordflow">if</span> (requires_tuplening)</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;                {</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;                    <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; t.size(); ++i)</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;                    {</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;                        result.data[i + 1] = t.data[i];</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;                    }</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;                    result.data[result.size() - 1] = <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a35badb00d4ac566b6eff233a579e7f33">tuple_end_tag</a>;</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;                }</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;                <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;                {</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;                    <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; t.size(); ++i)</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;                    {</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;                        result.data[i] = t.data[i];</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;                    }</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;                }</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;                <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;            }</div>
+<div class="ttc" id="anamespacepfr_1_1detail_1_1typeid__conversions_html_a080ec98af81e1fe50a04b9651fd24d9c"><div class="ttname"><a href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a080ec98af81e1fe50a04b9651fd24d9c">pfr::detail::typeid_conversions::tuple_begin_tag</a></div><div class="ttdeci">constexpr std::size_t tuple_begin_tag</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00159">core14_classic.hpp:159</a></div></div>
+<div class="ttc" id="anamespacepfr_1_1detail_1_1typeid__conversions_html_a35badb00d4ac566b6eff233a579e7f33"><div class="ttname"><a href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a35badb00d4ac566b6eff233a579e7f33">pfr::detail::typeid_conversions::tuple_end_tag</a></div><div class="ttdeci">constexpr std::size_t tuple_end_tag</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00160">core14_classic.hpp:160</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -791,16 +793,15 @@ template&lt;class Type &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00207">207</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;                                                                  {</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    constexpr <span class="keyword">auto</span> unptr = <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a70b81c99de507bd1e2fe7ee569d93097">typeid_conversions::type_to_id</a>(identity&lt;Type&gt;{});</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;    static_assert(</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;        std::is_same&lt;<span class="keyword">const</span> std::size_t, decltype(unptr)&gt;::value,</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;        <span class="stringliteral">&quot;====================&gt; Boost.PFR: Volatile pointers to user defined types are not supported.&quot;</span></div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;    );</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;    <span class="keywordflow">return</span> typeid_conversions::type_to_id_extension_apply&lt;unptr&gt;(<a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ae83aa3478e6556077c836ead80509a9a">native_volatile_ptr_type</a>);</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;}</div>
-<div class="ttc" id="anamespacepfr_1_1detail_1_1typeid__conversions_html_ae83aa3478e6556077c836ead80509a9a"><div class="ttname"><a href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ae83aa3478e6556077c836ead80509a9a">pfr::detail::typeid_conversions::native_volatile_ptr_type</a></div><div class="ttdeci">constexpr std::size_t native_volatile_ptr_type</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00079">core14_classic.hpp:79</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00192">192</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;            {</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;                constexpr <span class="keyword">auto</span> unptr = <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a70b81c99de507bd1e2fe7ee569d93097">typeid_conversions::type_to_id</a>(identity&lt;Type&gt;{});</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;                static_assert(</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;                    std::is_same&lt;<span class="keyword">const</span> std::size_t, decltype(unptr)&gt;::value,</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;                    <span class="stringliteral">&quot;====================&gt; Boost.PFR: Volatile pointers to user defined types are not supported.&quot;</span>);</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;                <span class="keywordflow">return</span> typeid_conversions::type_to_id_extension_apply&lt;unptr&gt;(<a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ae83aa3478e6556077c836ead80509a9a">native_volatile_ptr_type</a>);</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;            }</div>
+<div class="ttc" id="anamespacepfr_1_1detail_1_1typeid__conversions_html_ae83aa3478e6556077c836ead80509a9a"><div class="ttname"><a href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ae83aa3478e6556077c836ead80509a9a">pfr::detail::typeid_conversions::native_volatile_ptr_type</a></div><div class="ttdeci">constexpr std::size_t native_volatile_ptr_type</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00075">core14_classic.hpp:75</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -830,19 +831,19 @@ template&lt;std::size_t Unptr&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00094">94</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;                                                                       {</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    constexpr std::size_t native_id = (Unptr &amp; <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac302de0012b3ac323a7b75baeac9b4a6">native_types_mask</a>);</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    constexpr std::size_t extensions = (Unptr &amp; ~<a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac302de0012b3ac323a7b75baeac9b4a6">native_types_mask</a>);</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    static_assert(</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        !((extensions &gt;&gt; <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>) &amp; <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac302de0012b3ac323a7b75baeac9b4a6">native_types_mask</a>),</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;        <span class="stringliteral">&quot;====================&gt; Boost.PFR: Too many extensions for a single field (something close to `int************************** p;` is in the POD type).&quot;</span></div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    );</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160; </div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keywordflow">return</span> (extensions &gt;&gt; <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>) | native_id | ext;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;}</div>
-<div class="ttc" id="anamespacepfr_1_1detail_1_1typeid__conversions_html_a2a45a51fb0332c574af63afa114e8f90"><div class="ttname"><a href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">pfr::detail::typeid_conversions::bits_per_extension</a></div><div class="ttdeci">constexpr std::size_t bits_per_extension</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00060">core14_classic.hpp:60</a></div></div>
-<div class="ttc" id="anamespacepfr_1_1detail_1_1typeid__conversions_html_ac302de0012b3ac323a7b75baeac9b4a6"><div class="ttname"><a href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac302de0012b3ac323a7b75baeac9b4a6">pfr::detail::typeid_conversions::native_types_mask</a></div><div class="ttdeci">constexpr std::size_t native_types_mask</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00059">core14_classic.hpp:59</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00083">83</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;            {</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;                constexpr std::size_t native_id = (Unptr &amp; <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac302de0012b3ac323a7b75baeac9b4a6">native_types_mask</a>);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                constexpr std::size_t extensions = (Unptr &amp; ~<a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac302de0012b3ac323a7b75baeac9b4a6">native_types_mask</a>);</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;                static_assert(</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                    !((extensions &gt;&gt; <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>) &amp; <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac302de0012b3ac323a7b75baeac9b4a6">native_types_mask</a>),</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;                    <span class="stringliteral">&quot;====================&gt; Boost.PFR: Too many extensions for a single field (something close to `int************************** p;` is in the &quot;</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;                    <span class="stringliteral">&quot;POD type).&quot;</span>);</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                <span class="keywordflow">return</span> (extensions &gt;&gt; <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>) | native_id | ext;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;            }</div>
+<div class="ttc" id="anamespacepfr_1_1detail_1_1typeid__conversions_html_a2a45a51fb0332c574af63afa114e8f90"><div class="ttname"><a href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">pfr::detail::typeid_conversions::bits_per_extension</a></div><div class="ttdeci">constexpr std::size_t bits_per_extension</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00065">core14_classic.hpp:65</a></div></div>
+<div class="ttc" id="anamespacepfr_1_1detail_1_1typeid__conversions_html_ac302de0012b3ac323a7b75baeac9b4a6"><div class="ttname"><a href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac302de0012b3ac323a7b75baeac9b4a6">pfr::detail::typeid_conversions::native_types_mask</a></div><div class="ttdeci">constexpr std::size_t native_types_mask</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00064">core14_classic.hpp:64</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -867,7 +868,7 @@ template&lt;std::size_t Unptr&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00060">60</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00065">65</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
 
 </div>
 </div>
@@ -890,12 +891,10 @@ template&lt;std::size_t Unptr&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= (</div>
-<div class="line">    <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>((1 &lt;&lt; <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>) - 1)</div>
-<div class="line">        &lt;&lt; <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<span class="keyword">sizeof</span>(std::size_t) * 8 - <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>)</div>
-<div class="line">)</div>
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">                (<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>((1 &lt;&lt; <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>) - 1) &lt;&lt; <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<span class="keyword">sizeof</span>(std::size_t) * 8 - <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>))</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00061">61</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00066">66</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
 
 </div>
 </div>
@@ -918,10 +917,8 @@ template&lt;std::size_t Unptr&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= (</div>
-<div class="line">    <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(2)</div>
-<div class="line">        &lt;&lt; <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<span class="keyword">sizeof</span>(std::size_t) * 8 - <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>)</div>
-<div class="line">)</div>
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">                (<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(2) &lt;&lt; <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<span class="keyword">sizeof</span>(std::size_t) * 8 - <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>))</div>
 </div><!-- fragment -->
 <p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00069">69</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
 
@@ -946,12 +943,10 @@ template&lt;std::size_t Unptr&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= (</div>
-<div class="line">    <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(3)</div>
-<div class="line">        &lt;&lt; <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<span class="keyword">sizeof</span>(std::size_t) * 8 - <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>)</div>
-<div class="line">)</div>
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">                (<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(3) &lt;&lt; <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<span class="keyword">sizeof</span>(std::size_t) * 8 - <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>))</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00074">74</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00072">72</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
 
 </div>
 </div>
@@ -965,7 +960,7 @@ template&lt;std::size_t Unptr&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr std::size_t pfr::detail::typeid_conversions::native_ptr_type</td>
+          <td class="memname">constexpr std::size_t pfr::detail::typeid_conversions::native_ptr_type = (static_cast&lt;std::size_t&gt;(1) &lt;&lt; static_cast&lt;std::size_t&gt;(sizeof(std::size_t) * 8 - <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>))</td>
         </tr>
       </table>
   </td>
@@ -974,12 +969,8 @@ template&lt;std::size_t Unptr&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= (</div>
-<div class="line">    <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(1)</div>
-<div class="line">        &lt;&lt; <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<span class="keyword">sizeof</span>(std::size_t) * 8 - <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>)</div>
-<div class="line">)</div>
-</div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00065">65</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00068">68</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
 
 </div>
 </div>
@@ -993,7 +984,7 @@ template&lt;std::size_t Unptr&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr std::size_t pfr::detail::typeid_conversions::native_ref_type</td>
+          <td class="memname">constexpr std::size_t pfr::detail::typeid_conversions::native_ref_type = (static_cast&lt;std::size_t&gt;(5) &lt;&lt; static_cast&lt;std::size_t&gt;(sizeof(std::size_t) * 8 - <a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>))</td>
         </tr>
       </table>
   </td>
@@ -1002,12 +993,8 @@ template&lt;std::size_t Unptr&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= (</div>
-<div class="line">    <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(5)</div>
-<div class="line">        &lt;&lt; <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<span class="keyword">sizeof</span>(std::size_t) * 8 - <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>)</div>
-<div class="line">)</div>
-</div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00084">84</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00078">78</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
 
 </div>
 </div>
@@ -1031,7 +1018,7 @@ template&lt;std::size_t Unptr&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00059">59</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00064">64</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
 
 </div>
 </div>
@@ -1054,12 +1041,10 @@ template&lt;std::size_t Unptr&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= (</div>
-<div class="line">    <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(4)</div>
-<div class="line">        &lt;&lt; <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<span class="keyword">sizeof</span>(std::size_t) * 8 - <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>)</div>
-<div class="line">)</div>
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">                (<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(4) &lt;&lt; <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<span class="keyword">sizeof</span>(std::size_t) * 8 - <a class="code" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a2a45a51fb0332c574af63afa114e8f90">bits_per_extension</a>))</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00079">79</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00075">75</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
 
 </div>
 </div>
@@ -1084,7 +1069,7 @@ template&lt;std::size_t Unptr&gt; </div>
 </div><div class="memdoc">
 <p>Definitions of type_to_id and id_to_type for fundamental types </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00170">170</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00159">159</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
 
 </div>
 </div>
@@ -1108,7 +1093,7 @@ template&lt;std::size_t Unptr&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00171">171</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00160">160</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
 
 </div>
 </div>

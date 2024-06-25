@@ -1,3 +1,3 @@
 #include "fields.hpp"
-#include "rules.hpp"
 #include "table.hpp"
+#include "rules.hpp"

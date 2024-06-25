@@ -86,7 +86,7 @@ Friends</h2></td></tr>
 struct pfr::detail::fn_def_lref&lt; T, U, N, B &gt;</h3>
 
 
-<p class="definition">Definition at line <a class="el" href="../../d8/d31/core14__loophole_8hpp_source.html#l00066">66</a> of file <a class="el" href="../../d8/d31/core14__loophole_8hpp_source.html">core14_loophole.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/d31/core14__loophole_8hpp_source.html#l00065">65</a> of file <a class="el" href="../../d8/d31/core14__loophole_8hpp_source.html">core14_loophole.hpp</a>.</p>
 </div><h2 class="groupheader">Friends And Related Function Documentation</h2>
 <a id="a96100314a4c088d676b7a5c48e603a2f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a96100314a4c088d676b7a5c48e603a2f">&#9670;&nbsp;</a></span>loophole</h2>
@@ -115,16 +115,15 @@ template&lt;class T , class U , std::size_t N, bool B&gt; </div>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="../../d8/d31/core14__loophole_8hpp_source.html#l00067">67</a> of file <a class="el" href="../../d8/d31/core14__loophole_8hpp_source.html">core14_loophole.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                                   {</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        <span class="comment">// Standard Library containers do not SFINAE on invalid copy constructor. Because of that std::vector&lt;std::unique_ptr&lt;int&gt;&gt; reports that it is copyable,</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        <span class="comment">// which leads to an instantiation error at this place.</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        <span class="comment">//</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <span class="comment">// To workaround the issue, we check that the type U is movable, and move it in that case.</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <span class="keyword">using</span> no_extents_t = std::remove_all_extents_t&lt;U&gt;;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span> std::conditional_t&lt;std::is_move_constructible&lt;no_extents_t&gt;::value, no_extents_t&amp;&amp;, no_extents_t&amp;<span class="keyword">&gt;</span> &gt;(</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;            pfr::detail::unsafe_declval&lt;no_extents_t&amp;&gt;()</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        );</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    }</div>
+<div class="fragment"><div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;            {</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                <span class="comment">// Standard Library containers do not SFINAE on invalid copy constructor. Because of that std::vector&lt;std::unique_ptr&lt;int&gt;&gt; reports that it is</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                <span class="comment">// copyable, which leads to an instantiation error at this place.</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                <span class="comment">//</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;                <span class="comment">// To workaround the issue, we check that the type U is movable, and move it in that case.</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                <span class="keyword">using</span> no_extents_t = std::remove_all_extents_t&lt;U&gt;;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>std::conditional_t&lt;std::is_move_constructible&lt;no_extents_t&gt;::value, no_extents_t&amp;&amp;, no_extents_t&amp;<span class="keyword">&gt;</span>&gt;(</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                    pfr::detail::unsafe_declval&lt;no_extents_t&amp;&gt;());</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;            }</div>
 </div><!-- fragment -->
 </div>
 </div>

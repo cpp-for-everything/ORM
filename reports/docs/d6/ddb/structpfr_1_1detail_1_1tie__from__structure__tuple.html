@@ -104,7 +104,7 @@ struct pfr::detail::tie_from_structure_tuple&lt; Elements &gt;</h3>
 <p>A <code>std::tuple</code> capable of de-structuring assignment used to support a tie of multiple lvalue references to fields of an aggregate T. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="../../d4/d26/namespacepfr.html#a11d4b2ba9c7e94a210ea381971bb3499" title="std::tie-like function that allows assigning to tied values from aggregates.">pfr::tie_from_structure</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/dbe/tie__from__structure__tuple_8hpp_source.html#l00028">28</a> of file <a class="el" href="../../d2/dbe/tie__from__structure__tuple_8hpp_source.html">tie_from_structure_tuple.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/dbe/tie__from__structure__tuple_8hpp_source.html#l00030">30</a> of file <a class="el" href="../../d2/dbe/tie__from__structure__tuple_8hpp_source.html">tie_from_structure_tuple.hpp</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="adc9c70d4769d8bbf1b87f8a2a28389e9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adc9c70d4769d8bbf1b87f8a2a28389e9">&#9670;&nbsp;</a></span>base</h2>
@@ -120,7 +120,7 @@ template&lt;typename... Elements&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/dbe/tie__from__structure__tuple_8hpp_source.html#l00029">29</a> of file <a class="el" href="../../d2/dbe/tie__from__structure__tuple_8hpp_source.html">tie_from_structure_tuple.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/dbe/tie__from__structure__tuple_8hpp_source.html#l00032">32</a> of file <a class="el" href="../../d2/dbe/tie__from__structure__tuple_8hpp_source.html">tie_from_structure_tuple.hpp</a>.</p>
 
 </div>
 </div>
@@ -153,18 +153,15 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/dbe/tie__from__structure__tuple_8hpp_source.html#l00033">33</a> of file <a class="el" href="../../d2/dbe/tie__from__structure__tuple_8hpp_source.html">tie_from_structure_tuple.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;                                                               {</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <a class="code" href="../../d4/d86/namespacewebframe_1_1_o_r_m.html#af60288bb3fd98783c9d7598ee3fe2f7b">base::operator=</a>(</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;            <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ab6954467d7c6df95754517a9473e3e03">detail::make_stdtiedtuple_from_tietuple</a>(</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;                <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ae4a6f202c475b551fd2a84a8cc35c9c5">detail::tie_as_tuple</a>(t),</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ab0796d8dffdae14a3769d81b541def9e">detail::make_index_sequence</a>&lt;tuple_size_v&lt;T&gt;&gt;()));</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    }</div>
-<div class="ttc" id="anamespacepfr_1_1detail_html_ab0796d8dffdae14a3769d81b541def9e"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#ab0796d8dffdae14a3769d81b541def9e">pfr::detail::make_index_sequence</a></div><div class="ttdeci">make_integer_sequence&lt; std::size_t, N &gt; make_index_sequence</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d99/make__integer__sequence_8hpp_source.html#l00082">make_integer_sequence.hpp:82</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d2/dbe/tie__from__structure__tuple_8hpp_source.html#l00035">35</a> of file <a class="el" href="../../d2/dbe/tie__from__structure__tuple_8hpp_source.html">tie_from_structure_tuple.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;            {</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                <a class="code" href="../../d4/d86/namespacewebframe_1_1_o_r_m.html#af60288bb3fd98783c9d7598ee3fe2f7b">base::operator=</a>(<a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ab6954467d7c6df95754517a9473e3e03">detail::make_stdtiedtuple_from_tietuple</a>(<a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ae4a6f202c475b551fd2a84a8cc35c9c5">detail::tie_as_tuple</a>(t), <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ab0796d8dffdae14a3769d81b541def9e">detail::make_index_sequence</a>&lt;tuple_size_v&lt;T&gt;&gt;()));</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            }</div>
+<div class="ttc" id="anamespacepfr_1_1detail_html_ab0796d8dffdae14a3769d81b541def9e"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#ab0796d8dffdae14a3769d81b541def9e">pfr::detail::make_index_sequence</a></div><div class="ttdeci">make_integer_sequence&lt; std::size_t, N &gt; make_index_sequence</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d99/make__integer__sequence_8hpp_source.html#l00080">make_integer_sequence.hpp:80</a></div></div>
 <div class="ttc" id="anamespacepfr_1_1detail_html_ab6954467d7c6df95754517a9473e3e03"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#ab6954467d7c6df95754517a9473e3e03">pfr::detail::make_stdtiedtuple_from_tietuple</a></div><div class="ttdeci">constexpr auto make_stdtiedtuple_from_tietuple(const T &amp;t, std::index_sequence&lt; I... &gt;) noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/dee/stdtuple_8hpp_source.html#l00027">stdtuple.hpp:27</a></div></div>
-<div class="ttc" id="anamespacepfr_1_1detail_html_ae4a6f202c475b551fd2a84a8cc35c9c5"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#ae4a6f202c475b551fd2a84a8cc35c9c5">pfr::detail::tie_as_tuple</a></div><div class="ttdeci">auto tie_as_tuple(T &amp;val) noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00571">core14_classic.hpp:571</a></div></div>
-<div class="ttc" id="anamespacewebframe_1_1_o_r_m_html_af60288bb3fd98783c9d7598ee3fe2f7b"><div class="ttname"><a href="../../d4/d86/namespacewebframe_1_1_o_r_m.html#af60288bb3fd98783c9d7598ee3fe2f7b">webframe::ORM::operator=</a></div><div class="ttdeci">const T &amp; operator=(auto _value)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/df8/fields_8hpp_source.html#l00059">fields.hpp:59</a></div></div>
+<div class="ttc" id="anamespacepfr_1_1detail_html_ae4a6f202c475b551fd2a84a8cc35c9c5"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#ae4a6f202c475b551fd2a84a8cc35c9c5">pfr::detail::tie_as_tuple</a></div><div class="ttdeci">auto tie_as_tuple(T &amp;val) noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00568">core14_classic.hpp:568</a></div></div>
+<div class="ttc" id="anamespacewebframe_1_1_o_r_m_html_af60288bb3fd98783c9d7598ee3fe2f7b"><div class="ttname"><a href="../../d4/d86/namespacewebframe_1_1_o_r_m.html#af60288bb3fd98783c9d7598ee3fe2f7b">webframe::ORM::operator=</a></div><div class="ttdeci">const T &amp; operator=(auto _value)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/df8/fields_8hpp_source.html#l00082">fields.hpp:82</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>

@@ -13,12 +13,12 @@ jobs:
       with:
         submodules: 'recursive'
         ref: ${{ github.head_ref }}
-    - uses: DoozyX/clang-format-lint-action@v0.13
+    - uses: DoozyX/clang-format-lint-action@v0.17
       with:
         source: '.'
         exclude: './lib/inja ./lib/url-matcher ./tests/Catch2'
         extensions: 'h,cpp,hpp'
-        clangFormatVersion: 12
+        clangFormatVersion: 16
         inplace: True
     - uses: EndBug/add-and-commit@v4
       with:

@@ -119,15 +119,15 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a03fb8643994ce8c2f8861c8884e7a60b"><td class="memTemplParams" colspan="2">template&lt;std::size_t Index, std::size_t Extension&gt; </td></tr>
-<tr class="memitem:a03fb8643994ce8c2f8861c8884e7a60b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a03fb8643994ce8c2f8861c8884e7a60b">pfr::detail::typeid_conversions::if_extension</a> = std::enable_if_t&lt;(Index &amp;extension_mask)==Extension &gt; *</td></tr>
-<tr class="separator:a03fb8643994ce8c2f8861c8884e7a60b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7816cf58d0626ef5718ff2860afef440"><td class="memTemplParams" colspan="2">template&lt;std::size_t Index&gt; </td></tr>
-<tr class="memitem:a7816cf58d0626ef5718ff2860afef440"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a7816cf58d0626ef5718ff2860afef440">pfr::detail::typeid_conversions::remove_1_ext</a> = size_t_&lt;((Index &amp;~native_types_mask)&lt;&lt; bits_per_extension)|(Index &amp;native_types_mask) &gt;</td></tr>
-<tr class="separator:a7816cf58d0626ef5718ff2860afef440"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a99c709bd61ee8479d7e1398ec179f319"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:a99c709bd61ee8479d7e1398ec179f319"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a99c709bd61ee8479d7e1398ec179f319">pfr::detail::internal_tuple_with_same_alignment_t</a> = decltype(detail::internal_tuple_with_same_alignment&lt; T &gt;())</td></tr>
-<tr class="separator:a99c709bd61ee8479d7e1398ec179f319"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab917f2dd18a7259baf89a310f4fe1754"><td class="memTemplParams" colspan="2">template&lt;std::size_t Index, std::size_t Extension&gt; </td></tr>
+<tr class="memitem:ab917f2dd18a7259baf89a310f4fe1754"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ab917f2dd18a7259baf89a310f4fe1754">pfr::detail::typeid_conversions::if_extension</a> = std::enable_if_t&lt;(Index &amp;extension_mask)==Extension &gt; *</td></tr>
+<tr class="separator:ab917f2dd18a7259baf89a310f4fe1754"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d4c90da662628b24e36e5ca88a41abe"><td class="memTemplParams" colspan="2">template&lt;std::size_t Index&gt; </td></tr>
+<tr class="memitem:a7d4c90da662628b24e36e5ca88a41abe"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a7d4c90da662628b24e36e5ca88a41abe">pfr::detail::typeid_conversions::remove_1_ext</a> = size_t_&lt;((Index &amp;~native_types_mask)&lt;&lt; bits_per_extension)|(Index &amp;native_types_mask)&gt;</td></tr>
+<tr class="separator:a7d4c90da662628b24e36e5ca88a41abe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05b198f0010f234f3c277db3113031df"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a05b198f0010f234f3c277db3113031df"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a05b198f0010f234f3c277db3113031df">pfr::detail::internal_tuple_with_same_alignment_t</a> = decltype(detail::internal_tuple_with_same_alignment&lt; T &gt;())</td></tr>
+<tr class="separator:a05b198f0010f234f3c277db3113031df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -260,7 +260,7 @@ Variables</h2></td></tr>
 <tr class="separator:a2a45a51fb0332c574af63afa114e8f90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28838a9a9d602f06c768f68d4505146e"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a28838a9a9d602f06c768f68d4505146e">pfr::detail::typeid_conversions::extension_mask</a></td></tr>
 <tr class="separator:a28838a9a9d602f06c768f68d4505146e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f57bd312703b308f4f0e1d1962de1c5"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8f57bd312703b308f4f0e1d1962de1c5">pfr::detail::typeid_conversions::native_ptr_type</a></td></tr>
+<tr class="memitem:a8f57bd312703b308f4f0e1d1962de1c5"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a8f57bd312703b308f4f0e1d1962de1c5">pfr::detail::typeid_conversions::native_ptr_type</a> = (static_cast&lt;std::size_t&gt;(1) &lt;&lt; static_cast&lt;std::size_t&gt;(sizeof(std::size_t) * 8 - bits_per_extension))</td></tr>
 <tr class="separator:a8f57bd312703b308f4f0e1d1962de1c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac726749b353b6feb4ec9e17009ae46f0"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ac726749b353b6feb4ec9e17009ae46f0">pfr::detail::typeid_conversions::native_const_ptr_type</a></td></tr>
 <tr class="separator:ac726749b353b6feb4ec9e17009ae46f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -268,7 +268,7 @@ Variables</h2></td></tr>
 <tr class="separator:ab88c06e07f35ede004da8b3ed3d6a79b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae83aa3478e6556077c836ead80509a9a"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#ae83aa3478e6556077c836ead80509a9a">pfr::detail::typeid_conversions::native_volatile_ptr_type</a></td></tr>
 <tr class="separator:ae83aa3478e6556077c836ead80509a9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeab80f2b81178b96fc231483a35d20ba"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#aeab80f2b81178b96fc231483a35d20ba">pfr::detail::typeid_conversions::native_ref_type</a></td></tr>
+<tr class="memitem:aeab80f2b81178b96fc231483a35d20ba"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#aeab80f2b81178b96fc231483a35d20ba">pfr::detail::typeid_conversions::native_ref_type</a> = (static_cast&lt;std::size_t&gt;(5) &lt;&lt; static_cast&lt;std::size_t&gt;(sizeof(std::size_t) * 8 - bits_per_extension))</td></tr>
 <tr class="separator:aeab80f2b81178b96fc231483a35d20ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a080ec98af81e1fe50a04b9651fd24d9c"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a080ec98af81e1fe50a04b9651fd24d9c">pfr::detail::typeid_conversions::tuple_begin_tag</a> = 24</td></tr>
 <tr class="separator:a080ec98af81e1fe50a04b9651fd24d9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
