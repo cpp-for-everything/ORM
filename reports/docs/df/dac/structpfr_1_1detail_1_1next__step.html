@@ -95,7 +95,7 @@ Data Fields</h2></td></tr>
 struct pfr::detail::next_step&lt; T, F, IndexSeq, Fields &gt;</h3>
 
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00626">626</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00620">620</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a4f9d8e0f19843bd7532074d7e7fab22f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4f9d8e0f19843bd7532074d7e7fab22f">&#9670;&nbsp;</a></span>operator Field()</h2>
@@ -124,21 +124,15 @@ template&lt;class Field &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00631">631</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;                           {</div>
-<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;         <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#afd8af97e47504ceeaf1513921491c8f2">pfr::detail::for_each_field_in_depth</a>(</div>
-<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;             <a class="code" href="../../df/dac/structpfr_1_1detail_1_1next__step.html#aa90dbb9f1dabf90bfb6e6c5dcaece7c7">t</a>,</div>
-<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;             std::forward&lt;F&gt;(<a class="code" href="../../df/dac/structpfr_1_1detail_1_1next__step.html#a8bb8d08b18afeeb26eb83370c810b6ef">f</a>),</div>
-<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;             IndexSeq{},</div>
-<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;             identity&lt;Fields&gt;{}...,</div>
-<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;             identity&lt;Field&gt;{}</div>
-<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;         );</div>
-<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160; </div>
-<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;         <span class="keywordflow">return</span> {};</div>
-<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;    }</div>
-<div class="ttc" id="anamespacepfr_1_1detail_html_afd8af97e47504ceeaf1513921491c8f2"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#afd8af97e47504ceeaf1513921491c8f2">pfr::detail::for_each_field_in_depth</a></div><div class="ttdeci">void for_each_field_in_depth(T &amp;t, F &amp;&amp;f, std::index_sequence&lt; I0, I... &gt;, identity&lt; Fields &gt;...)</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00645">core14_classic.hpp:645</a></div></div>
-<div class="ttc" id="astructpfr_1_1detail_1_1next__step_html_a8bb8d08b18afeeb26eb83370c810b6ef"><div class="ttname"><a href="../../df/dac/structpfr_1_1detail_1_1next__step.html#a8bb8d08b18afeeb26eb83370c810b6ef">pfr::detail::next_step::f</a></div><div class="ttdeci">F &amp; f</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00628">core14_classic.hpp:628</a></div></div>
-<div class="ttc" id="astructpfr_1_1detail_1_1next__step_html_aa90dbb9f1dabf90bfb6e6c5dcaece7c7"><div class="ttname"><a href="../../df/dac/structpfr_1_1detail_1_1next__step.html#aa90dbb9f1dabf90bfb6e6c5dcaece7c7">pfr::detail::next_step::t</a></div><div class="ttdeci">T &amp; t</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00627">core14_classic.hpp:627</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00625">625</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;            {</div>
+<div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160;                <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#afd8af97e47504ceeaf1513921491c8f2">pfr::detail::for_each_field_in_depth</a>(<a class="code" href="../../df/dac/structpfr_1_1detail_1_1next__step.html#aa90dbb9f1dabf90bfb6e6c5dcaece7c7">t</a>, std::forward&lt;F&gt;(<a class="code" href="../../df/dac/structpfr_1_1detail_1_1next__step.html#a8bb8d08b18afeeb26eb83370c810b6ef">f</a>), IndexSeq{}, identity&lt;Fields&gt;{}..., identity&lt;Field&gt;{});</div>
+<div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160; </div>
+<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;                <span class="keywordflow">return</span> {};</div>
+<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;            }</div>
+<div class="ttc" id="anamespacepfr_1_1detail_html_afd8af97e47504ceeaf1513921491c8f2"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#afd8af97e47504ceeaf1513921491c8f2">pfr::detail::for_each_field_in_depth</a></div><div class="ttdeci">void for_each_field_in_depth(T &amp;t, F &amp;&amp;f, std::index_sequence&lt; I0, I... &gt;, identity&lt; Fields &gt;...)</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00634">core14_classic.hpp:634</a></div></div>
+<div class="ttc" id="astructpfr_1_1detail_1_1next__step_html_a8bb8d08b18afeeb26eb83370c810b6ef"><div class="ttname"><a href="../../df/dac/structpfr_1_1detail_1_1next__step.html#a8bb8d08b18afeeb26eb83370c810b6ef">pfr::detail::next_step::f</a></div><div class="ttdeci">F &amp; f</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00623">core14_classic.hpp:623</a></div></div>
+<div class="ttc" id="astructpfr_1_1detail_1_1next__step_html_aa90dbb9f1dabf90bfb6e6c5dcaece7c7"><div class="ttname"><a href="../../df/dac/structpfr_1_1detail_1_1next__step.html#aa90dbb9f1dabf90bfb6e6c5dcaece7c7">pfr::detail::next_step::t</a></div><div class="ttdeci">T &amp; t</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d54/core14__classic_8hpp_source.html#l00622">core14_classic.hpp:622</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -157,7 +151,7 @@ template&lt;class T , class F , class IndexSeq , class... Fields&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00628">628</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00623">623</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
 
 </div>
 </div>
@@ -175,7 +169,7 @@ template&lt;class T , class F , class IndexSeq , class... Fields&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00627">627</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html#l00622">622</a> of file <a class="el" href="../../d9/d54/core14__classic_8hpp_source.html">core14_classic.hpp</a>.</p>
 
 </div>
 </div>

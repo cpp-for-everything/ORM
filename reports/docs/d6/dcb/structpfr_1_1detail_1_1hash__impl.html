@@ -87,7 +87,7 @@ Static Public Member Functions</h2></td></tr>
 struct pfr::detail::hash_impl&lt; I, N &gt;</h3>
 
 
-<p class="definition">Definition at line <a class="el" href="../../d2/db4/functional_8hpp_source.html#l00185">185</a> of file <a class="el" href="../../d2/db4/functional_8hpp_source.html">functional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/db4/functional_8hpp_source.html#l00186">186</a> of file <a class="el" href="../../d2/db4/functional_8hpp_source.html">functional.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a0f97b2ed2d249fb7c1c65da91cc91c9b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0f97b2ed2d249fb7c1c65da91cc91c9b">&#9670;&nbsp;</a></span>compute()</h2>
@@ -117,15 +117,15 @@ template&lt;class T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/db4/functional_8hpp_source.html#l00187">187</a> of file <a class="el" href="../../d2/db4/functional_8hpp_source.html">functional.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;                                                                  {</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;            std::size_t h = <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#abe94f4e4cebd45542dd4bf9a931aec5d">detail::compute_hash</a>( ::pfr::detail::sequence_tuple::get&lt;I&gt;(val), 1L );</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;            <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ae313b919e354f0518482fbe9bfd8b466">detail::hash_combine</a>(h, <a class="code" href="../../d6/dcb/structpfr_1_1detail_1_1hash__impl.html#a0f97b2ed2d249fb7c1c65da91cc91c9b">hash_impl&lt;I + 1, N&gt;::compute</a>(val) );</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;            <span class="keywordflow">return</span> h;</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;        }</div>
-<div class="ttc" id="anamespacepfr_1_1detail_html_abe94f4e4cebd45542dd4bf9a931aec5d"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#abe94f4e4cebd45542dd4bf9a931aec5d">pfr::detail::compute_hash</a></div><div class="ttdeci">auto compute_hash(const T &amp;value, long) -&gt; decltype(std::hash&lt; T &gt;()(value))</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db4/functional_8hpp_source.html#l00172">functional.hpp:172</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d2/db4/functional_8hpp_source.html#l00188">188</a> of file <a class="el" href="../../d2/db4/functional_8hpp_source.html">functional.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;            {</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;                std::size_t h = <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#abe94f4e4cebd45542dd4bf9a931aec5d">detail::compute_hash</a>(::pfr::detail::sequence_tuple::get&lt;I&gt;(val), 1L);</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;                <a class="code" href="../../d9/d07/namespacepfr_1_1detail.html#ae313b919e354f0518482fbe9bfd8b466">detail::hash_combine</a>(h, <a class="code" href="../../d6/dcb/structpfr_1_1detail_1_1hash__impl.html#a0f97b2ed2d249fb7c1c65da91cc91c9b">hash_impl&lt;I + 1, N&gt;::compute</a>(val));</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;                <span class="keywordflow">return</span> h;</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;            }</div>
+<div class="ttc" id="anamespacepfr_1_1detail_html_abe94f4e4cebd45542dd4bf9a931aec5d"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#abe94f4e4cebd45542dd4bf9a931aec5d">pfr::detail::compute_hash</a></div><div class="ttdeci">auto compute_hash(const T &amp;value, long) -&gt; decltype(std::hash&lt; T &gt;()(value))</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db4/functional_8hpp_source.html#l00175">functional.hpp:175</a></div></div>
 <div class="ttc" id="anamespacepfr_1_1detail_html_ae313b919e354f0518482fbe9bfd8b466"><div class="ttname"><a href="../../d9/d07/namespacepfr_1_1detail.html#ae313b919e354f0518482fbe9bfd8b466">pfr::detail::hash_combine</a></div><div class="ttdeci">constexpr void hash_combine(SizeT &amp;seed, SizeT value) noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db4/functional_8hpp_source.html#l00132">functional.hpp:132</a></div></div>
-<div class="ttc" id="astructpfr_1_1detail_1_1hash__impl_html_a0f97b2ed2d249fb7c1c65da91cc91c9b"><div class="ttname"><a href="../../d6/dcb/structpfr_1_1detail_1_1hash__impl.html#a0f97b2ed2d249fb7c1c65da91cc91c9b">pfr::detail::hash_impl::compute</a></div><div class="ttdeci">constexpr static std::size_t compute(const T &amp;val) noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db4/functional_8hpp_source.html#l00187">functional.hpp:187</a></div></div>
+<div class="ttc" id="astructpfr_1_1detail_1_1hash__impl_html_a0f97b2ed2d249fb7c1c65da91cc91c9b"><div class="ttname"><a href="../../d6/dcb/structpfr_1_1detail_1_1hash__impl.html#a0f97b2ed2d249fb7c1c65da91cc91c9b">pfr::detail::hash_impl::compute</a></div><div class="ttdeci">constexpr static std::size_t compute(const T &amp;val) noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db4/functional_8hpp_source.html#l00188">functional.hpp:188</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>

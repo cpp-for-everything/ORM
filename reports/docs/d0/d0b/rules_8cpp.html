@@ -179,20 +179,23 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    <span class="keyword">template</span>&lt;auto P, <span class="keyword">typename</span> T1&gt; <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a6bf90b3b7c9b3eb525e2bc00a6027fa2">requires</a> (!std::is_same_v&lt;T1, nullptr_t&gt;) \</div>
-<div class="line">    constexpr <span class="keyword">inline</span> <span class="keyword">auto</span> <span class="keyword">operator</span> op (details::mem_ptr&lt;P&gt; a, T1 x) { \</div>
-<div class="line">        if constexpr (details::is_mem_ptr_t&lt;T1&gt;) \</div>
-<div class="line">            return Rule&lt;typename details::mem_ptr&lt;P&gt;::ptr_t, #op, <span class="keyword">typename</span> T1::ptr_t&gt;(a.get(), x.get()); \</div>
-<div class="line">        if constexpr (details::is_not_mem_ptr_t&lt;T1&gt;) \</div>
-<div class="line">            return Rule&lt;typename details::mem_ptr&lt;P&gt;::ptr_t, #op, T1&gt;(a.get(), x); \</div>
-<div class="line">    } \</div>
-<div class="line">    template&lt;auto P, typename T1&gt; <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a6bf90b3b7c9b3eb525e2bc00a6027fa2">requires</a> (!details::is_mem_ptr_t&lt;T1&gt;) \</div>
-<div class="line">    constexpr <span class="keyword">inline</span> <span class="keyword">auto</span> <span class="keyword">operator</span> op (T1 x, details::mem_ptr&lt;P&gt; a) { \</div>
-<div class="line">        return Rule&lt;T1, #op, typename details::mem_ptr&lt;P&gt;::ptr_t&gt;(x, a.get()); \</div>
+<b>Value:</b><div class="fragment"><div class="line">    <span class="keyword">template</span> &lt;auto P, <span class="keyword">typename</span> T1&gt;                                                                                                                             \</div>
+<div class="line">        requires(!std::is_same_v&lt;T1, nullptr_t&gt;)                                                                                                               \</div>
+<div class="line">    constexpr <span class="keyword">inline</span> <span class="keyword">auto</span> <span class="keyword">operator</span> op(details::mem_ptr&lt;P&gt; a, T1 x)                                                                                             \</div>
+<div class="line">    {                                                                                                                                                          \</div>
+<div class="line">        if constexpr (details::is_mem_ptr_t&lt;T1&gt;)                                                                                                               \</div>
+<div class="line">            return Rule&lt;typename details::mem_ptr&lt;P&gt;::ptr_t, #op, <span class="keyword">typename</span> T1::ptr_t&gt;(a.get(), x.get());                                                       \</div>
+<div class="line">        if constexpr (details::is_not_mem_ptr_t&lt;T1&gt;)                                                                                                           \</div>
+<div class="line">            return Rule&lt;typename details::mem_ptr&lt;P&gt;::ptr_t, #op, T1&gt;(a.get(), x);                                                                             \</div>
+<div class="line">    }                                                                                                                                                          \</div>
+<div class="line">    template &lt;auto P, typename T1&gt;                                                                                                                             \</div>
+<div class="line">        requires(!details::is_mem_ptr_t&lt;T1&gt;)                                                                                                                   \</div>
+<div class="line">    constexpr <span class="keyword">inline</span> <span class="keyword">auto</span> <span class="keyword">operator</span> op(T1 x, details::mem_ptr&lt;P&gt; a)                                                                                             \</div>
+<div class="line">    {                                                                                                                                                          \</div>
+<div class="line">        return Rule&lt;T1, #op, typename details::mem_ptr&lt;P&gt;::ptr_t&gt;(x, a.get());                                                                                 \</div>
 <div class="line">    }</div>
-<div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_a6bf90b3b7c9b3eb525e2bc00a6027fa2"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a6bf90b3b7c9b3eb525e2bc00a6027fa2">webframe::ORM::details::requires</a></div><div class="ttdeci">requires requires</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbe/result__type_8hpp_source.html#l00018">result_type.hpp:18</a></div></div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../d0/d0b/rules_8cpp_source.html#l00022">22</a> of file <a class="el" href="../../d0/d0b/rules_8cpp_source.html">rules.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d0b/rules_8cpp_source.html#l00020">20</a> of file <a class="el" href="../../d0/d0b/rules_8cpp_source.html">rules.cpp</a>.</p>
 
 </div>
 </div>
@@ -211,16 +214,16 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    <span class="keyword">template</span>&lt;auto P&gt; \</div>
-<div class="line">    constexpr <span class="keyword">inline</span> <span class="keyword">auto</span> <span class="keyword">operator</span> op (details::mem_ptr&lt;P&gt; a, nullptr_t) { \</div>
-<div class="line">        return Rule&lt;typename details::mem_ptr&lt;P&gt;::ptr_t, #op, nullptr_t&gt;(a.get(), <span class="keyword">nullptr</span>); \</div>
-<div class="line">    } \</div>
-<div class="line">    template&lt;auto P&gt; \</div>
-<div class="line">    constexpr <span class="keyword">inline</span> <span class="keyword">auto</span> <span class="keyword">operator</span> op (nullptr_t, details::mem_ptr&lt;P&gt; a) { \</div>
-<div class="line">        return Rule&lt;nullptr_t, #op, typename details::mem_ptr&lt;P&gt;::ptr_t&gt;(<span class="keyword">nullptr</span>, a.get()); \</div>
+<b>Value:</b><div class="fragment"><div class="line">    <span class="keyword">template</span> &lt;auto P&gt; constexpr <span class="keyword">inline</span> <span class="keyword">auto</span> <span class="keyword">operator</span> op(details::mem_ptr&lt;P&gt; a, nullptr_t)                                                                      \</div>
+<div class="line">    {                                                                                                                                                          \</div>
+<div class="line">        return Rule&lt;typename details::mem_ptr&lt;P&gt;::ptr_t, #op, nullptr_t&gt;(a.get(), <span class="keyword">nullptr</span>);                                                                    \</div>
+<div class="line">    }                                                                                                                                                          \</div>
+<div class="line">    template &lt;auto P&gt; constexpr <span class="keyword">inline</span> <span class="keyword">auto</span> <span class="keyword">operator</span> op(nullptr_t, details::mem_ptr&lt;P&gt; a)                                                                      \</div>
+<div class="line">    {                                                                                                                                                          \</div>
+<div class="line">        return Rule&lt;nullptr_t, #op, typename details::mem_ptr&lt;P&gt;::ptr_t&gt;(<span class="keyword">nullptr</span>, a.get());                                                                    \</div>
 <div class="line">    }</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../d0/d0b/rules_8cpp_source.html#l00035">35</a> of file <a class="el" href="../../d0/d0b/rules_8cpp_source.html">rules.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d0b/rules_8cpp_source.html#l00037">37</a> of file <a class="el" href="../../d0/d0b/rules_8cpp_source.html">rules.cpp</a>.</p>
 
 </div>
 </div>
@@ -239,12 +242,10 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    <span class="keyword">template</span>&lt; \</div>
-<div class="line">        typename T1, details::string_literal op1, <span class="keyword">typename</span> T2, \</div>
-<div class="line">        typename U1, details::string_literal op2, <span class="keyword">typename</span> U2 \</div>
-<div class="line">    &gt; \</div>
-<div class="line">    constexpr <span class="keyword">inline</span> Rule&lt;Rule&lt;T1, op1, T2&gt;, #op, Rule&lt;U1, op2, U2&gt;&gt; <span class="keyword">operator</span> op (Rule&lt;T1, op1, T2&gt; rule1, Rule&lt;U1, op2, U2&gt; rule2) { \</div>
-<div class="line">        return Rule&lt;Rule&lt;T1, op1, T2&gt;, #op, Rule&lt;U1, op2, U2&gt;&gt;(rule1, rule2); \</div>
+<b>Value:</b><div class="fragment"><div class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T1, details::<span class="keywordtype">string</span>_literal op1, <span class="keyword">typename</span> T2, <span class="keyword">typename</span> U1, details::<span class="keywordtype">string</span>_literal op2, <span class="keyword">typename</span> U2&gt;                                    \</div>
+<div class="line">    constexpr <span class="keyword">inline</span> Rule&lt;Rule&lt;T1, op1, T2&gt;, #op, Rule&lt;U1, op2, U2&gt;&gt; <span class="keyword">operator</span> op(Rule&lt;T1, op1, T2&gt; rule1, Rule&lt;U1, op2, U2&gt; rule2)                             \</div>
+<div class="line">    {                                                                                                                                                          \</div>
+<div class="line">        return Rule&lt;Rule&lt;T1, op1, T2&gt;, #op, Rule&lt;U1, op2, U2&gt;&gt;(rule1, rule2);                                                                                  \</div>
 <div class="line">    }</div>
 </div><!-- fragment -->
 <p class="definition">Definition at line <a class="el" href="../../d0/d0b/rules_8cpp_source.html#l00013">13</a> of file <a class="el" href="../../d0/d0b/rules_8cpp_source.html">rules.cpp</a>.</p>
