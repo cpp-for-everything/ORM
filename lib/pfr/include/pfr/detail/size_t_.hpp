@@ -7,12 +7,15 @@
 #define PFR_DETAIL_SIZE_T_HPP
 #pragma once
 
-namespace pfr { namespace detail {
+namespace pfr
+{
+	namespace detail
+	{
 
-///////////////////// General utility stuff
-template <std::size_t Index>
-using size_t_ = std::integral_constant<std::size_t, Index >;
+		///////////////////// General utility stuff
+		template <std::size_t Index> using size_t_ = std::integral_constant<std::size_t, Index>;
 
-}} // namespace pfr::detail
+	} // namespace detail
+} // namespace pfr
 
 #endif // PFR_DETAIL_SIZE_T_HPP

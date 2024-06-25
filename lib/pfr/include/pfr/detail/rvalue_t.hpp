@@ -8,7 +8,7 @@
 #pragma once
 
 #include <type_traits>
-#include <utility>      // std::enable_if_t
+#include <utility> // std::enable_if_t
 
 // This header provides aliases rvalue_t and lvalue_t.
 //
@@ -18,18 +18,24 @@
 //  * better type safety - you can validate at compile time that only rvalue reference is passed into the function
 //  * documentation and readability - rvalue_t<T> is much better than T&&+SFINAE
 
-namespace pfr { namespace detail {
+namespace pfr
+{
+	namespace detail
+	{
 
-/// Binds to rvalues only, no copying allowed.
-template <class T
+		/// Binds to rvalues only, no copying allowed.
+		template <
+			class T
 #ifdef PFR_DETAIL_STRICT_RVALUE_TESTING
-    , class = std::enable_if_t<std::is_rvalue_reference<T&&>::value>
+			,
+			class = std::enable_if_t<std::is_rvalue_reference<T&&>::value>
 #endif
->
-using rvalue_t = T&&;
+			>
+		using rvalue_t = T&&;
 
-/// Binds to mutable lvalues only
+		/// Binds to mutable lvalues only
 
-}} // namespace pfr::detail
+	} // namespace detail
+} // namespace pfr
 
 #endif // PFR_DETAIL_RVALUE_T_HPP

@@ -8,29 +8,38 @@
 using namespace std;
 using namespace webframe::ORM::literals;
 
-template<typename T, size_t i>
-constexpr void create_table_helper() {
-	if constexpr (i >= pfr::tuple_size<T>::value) return;
-	if constexpr (std::derived_from<decltype(pfr::get<i>(std::declval<T>())), webframe::ORM::details::property>) {
+template <typename T, size_t i> constexpr void create_table_helper()
+{
+	if constexpr (i >= pfr::tuple_size<T>::value)
+	{
+		return;
+	}
+	if constexpr (std::derived_from<decltype(pfr::get<i>(std::declval<T>())), webframe::ORM::details::property>)
+	{
 		constexpr std::string_view column_name = decltype(pfr::get<i>(std::declval<T>()))::_name();
 		using ColumnType = typename decltype(pfr::get<i>(std::declval<T>()))::var_t;
-		
+
 		std::cout << MockDB::MockDB::delim << /*T::table_name << "." <<*/ column_name << " " << typeid(ColumnType).name();
 	}
-	if constexpr (i+1 < pfr::tuple_size<T>::value) {
+	if constexpr (i + 1 < pfr::tuple_size<T>::value)
+	{
 		std::cout << ",";
 		create_table_helper<T, i + 1>();
 	}
 }
 
-template<typename T>
-void create_table() {
+template <typename T> void create_table()
+{
 	std::cout << "CREATE TABLE " << T::table_name << "(";
 	create_table_helper<T, 0>();
 	std::cout << "\n);";
 }
 
-#define my_assert(x) if (!(x)) { std::cout << "\"" << #x<< "\" failed." << std::endl; }
+#define my_assert(x)                                                                                                                                           \
+	if (!(x))                                                                                                                                                  \
+	{                                                                                                                                                          \
+		std::cout << "\"" << #x << "\" failed." << std::endl;                                                                                                  \
+	}
 
 int main()
 {
