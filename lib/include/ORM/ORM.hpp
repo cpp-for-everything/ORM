@@ -1,6 +1,6 @@
-/** 
- *  @file   ORM.hpp 
- *  @brief  Single header containing all the necessary tools regarding the abstract ORM 
+/**
+ *  @file   ORM.hpp
+ *  @brief  Single header containing all the necessary tools regarding the abstract ORM
  *  @author Alex Tsvetanov
  *  @date   2022-09-09
  ***********************************************/
@@ -23,20 +23,23 @@
 #include <ORM/CRUD/update.hpp>
 #include <ORM/CRUD/delete.hpp>
 #include <ORM/limits.hpp>
-//#include <ORM/db/connectors/interface.hpp>
+// #include <ORM/db/connectors/interface.hpp>
 #include <ORM/table.hpp>
 #include <ORM/db/connectors/MockDB/init.hpp>
 #include <ORM/db/types/db_type_wrappers.hpp>
 
-namespace webframe::ORM {
+namespace webframe::ORM
+{
 
-    template<typename Result>
-    class Query {
-    public:
-        using res_t = Result;
-        constexpr Query() {}
-    };
+	template <typename Result> class Query
+	{
+		public:
+		using res_t = Result;
+		constexpr Query()
+		{
+		}
+	};
 
-}
+} // namespace webframe::ORM
 
 #include "../../src/ORM/ORM.cpp"

@@ -9,13 +9,11 @@
 
 #include <pfr/detail/config.hpp>
 
-namespace pfr {
+namespace pfr
+{
 
-template<class T, class WhatFor>
-struct is_reflectable;
+	template <class T, class WhatFor> struct is_reflectable;
 
 } // namespace pfr
 
 #endif // PFR_DETAIL_TRAITS_FWD_HPP
-
-

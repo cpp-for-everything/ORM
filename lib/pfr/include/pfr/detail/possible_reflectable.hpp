@@ -12,26 +12,28 @@
 
 #include <type_traits> // for std::is_aggregate
 
-namespace pfr { namespace detail {
+namespace pfr
+{
+	namespace detail
+	{
 
-///////////////////// Returns false when the type exactly wasn't be reflectable
-template <class T, class WhatFor>
-constexpr decltype(is_reflectable<T, WhatFor>::value) possible_reflectable(long) noexcept {
-    return is_reflectable<T, WhatFor>::value;
-}
+		///////////////////// Returns false when the type exactly wasn't be reflectable
+		template <class T, class WhatFor> constexpr decltype(is_reflectable<T, WhatFor>::value) possible_reflectable(long) noexcept
+		{
+			return is_reflectable<T, WhatFor>::value;
+		}
 
-template <class T, class WhatFor>
-constexpr bool possible_reflectable(int) noexcept {
-#   if  defined(__cpp_lib_is_aggregate)
-    using type = std::remove_cv_t<T>;
-    return std::is_aggregate<type>();
-#   else
-    return true;
-#   endif
-}
+		template <class T, class WhatFor> constexpr bool possible_reflectable(int) noexcept
+		{
+#if defined(__cpp_lib_is_aggregate)
+			using type = std::remove_cv_t<T>;
+			return std::is_aggregate<type>();
+#else
+			return true;
+#endif
+		}
 
-}} // namespace pfr::detail
+	} // namespace detail
+} // namespace pfr
 
 #endif // PFR_DETAIL_POSSIBLE_REFLECTABLE_HPP
-
-

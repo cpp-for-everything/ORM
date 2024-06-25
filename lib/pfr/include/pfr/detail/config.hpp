@@ -12,7 +12,7 @@
 
 #if !PFR_ENABLED
 
-#error Boost.PFR library is not supported in your environment.             \
+	#error Boost.PFR library is not supported in your environment.             \
        Try one of the possible solutions:                                  \
        1. try to take away an '-DPFR_ENABLED=0', if it exists        \
        2. enable C++14;                                                    \
@@ -23,4 +23,3 @@
 #endif // !PFR_ENABLED
 
 #endif // PFR_DETAIL_CONFIG_HPP
-
