@@ -18,7 +18,7 @@ jobs:
         source: '.'
         exclude: './lib/inja ./lib/url-matcher ./tests/Catch2'
         extensions: 'h,cpp,hpp'
-        clangFormatVersion: 12
+        clangFormatVersion: 13
         inplace: True
     - uses: EndBug/add-and-commit@v4
       with:
