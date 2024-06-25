@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "details/string_literal.hpp"
 #include "details/member_pointer.hpp"
 #include "details/string_literal.hpp"
 #include <iostream>
@@ -14,10 +15,11 @@
 using namespace std::literals;
 
 namespace webframe::ORM {
-class IRule {};
-template <typename T>
-concept is_rule = std::derived_from<T, IRule>;
-template <typename T1, details::string_literal op, typename T2> class Rule;
-} // namespace webframe::ORM
+    class IRule {};
+    template<typename T>
+    concept is_rule = std::derived_from<T, IRule>;
+    template<typename T1, details::string_literal op, typename T2>
+    class Rule;
+}
 
 #include "../../src/ORM/rules.cpp"
