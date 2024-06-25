@@ -79,7 +79,7 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ae540b13646163d86d38709af7f358eba"><td class="memTemplParams" colspan="2">template&lt;std::size_t ... I&gt; </td></tr>
+<tr class="memitem:ae540b13646163d86d38709af7f358eba"><td class="memTemplParams" colspan="2">template&lt;std::size_t... I&gt; </td></tr>
 <tr class="memitem:ae540b13646163d86d38709af7f358eba"><td class="memTemplItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d0/d0d/structpfr_1_1detail_1_1is__aggregate__initializable__n.html#ae540b13646163d86d38709af7f358eba">is_not_constructible_n</a> (std::index_sequence&lt; I... &gt;) noexcept</td></tr>
 <tr class="separator:ae540b13646163d86d38709af7f358eba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -93,7 +93,7 @@ Static Public Attributes</h2></td></tr>
 struct pfr::detail::is_aggregate_initializable_n&lt; T, N &gt;</h3>
 
 
-<p class="definition">Definition at line <a class="el" href="../../d1/d92/fields__count_8hpp_source.html#l00078">78</a> of file <a class="el" href="../../d1/d92/fields__count_8hpp_source.html">fields_count.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d1/d92/fields__count_8hpp_source.html#l00087">87</a> of file <a class="el" href="../../d1/d92/fields__count_8hpp_source.html">fields_count.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="ae540b13646163d86d38709af7f358eba"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae540b13646163d86d38709af7f358eba">&#9670;&nbsp;</a></span>is_not_constructible_n()</h2>
@@ -103,7 +103,7 @@ struct pfr::detail::is_aggregate_initializable_n&lt; T, N &gt;</h3>
 <div class="memtemplate">
 template&lt;class T , std::size_t N&gt; </div>
 <div class="memtemplate">
-template&lt;std::size_t ... I&gt; </div>
+template&lt;std::size_t... I&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -123,13 +123,13 @@ template&lt;std::size_t ... I&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d1/d92/fields__count_8hpp_source.html#l00080">80</a> of file <a class="el" href="../../d1/d92/fields__count_8hpp_source.html">fields_count.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                                                                                   {</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        <span class="keywordflow">return</span> (!std::is_constructible&lt;T, decltype(ubiq_lref_constructor{I})...&gt;::<a class="code" href="../../d0/d0d/structpfr_1_1detail_1_1is__aggregate__initializable__n.html#a74d7af0f5533ebc3e5c3efe69e986842">value</a> &amp;&amp; !std::is_constructible&lt;T, decltype(ubiq_rref_constructor{I})...&gt;::<a class="code" href="../../d0/d0d/structpfr_1_1detail_1_1is__aggregate__initializable__n.html#a74d7af0f5533ebc3e5c3efe69e986842">value</a>)</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;            || is_single_field_and_aggregate_initializable&lt;N, T&gt;::value</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        ;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    }</div>
-<div class="ttc" id="astructpfr_1_1detail_1_1is__aggregate__initializable__n_html_a74d7af0f5533ebc3e5c3efe69e986842"><div class="ttname"><a href="../../d0/d0d/structpfr_1_1detail_1_1is__aggregate__initializable__n.html#a74d7af0f5533ebc3e5c3efe69e986842">pfr::detail::is_aggregate_initializable_n::value</a></div><div class="ttdeci">static constexpr bool value</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d92/fields__count_8hpp_source.html#l00086">fields_count.hpp:86</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d1/d92/fields__count_8hpp_source.html#l00089">89</a> of file <a class="el" href="../../d1/d92/fields__count_8hpp_source.html">fields_count.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;            {</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;                <span class="keywordflow">return</span> (!std::is_constructible&lt;T, decltype(ubiq_lref_constructor{I})...&gt;::<a class="code" href="../../d0/d0d/structpfr_1_1detail_1_1is__aggregate__initializable__n.html#a74d7af0f5533ebc3e5c3efe69e986842">value</a> &amp;&amp;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                        !std::is_constructible&lt;T, decltype(ubiq_rref_constructor{I})...&gt;::<a class="code" href="../../d0/d0d/structpfr_1_1detail_1_1is__aggregate__initializable__n.html#a74d7af0f5533ebc3e5c3efe69e986842">value</a>) ||</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                    is_single_field_and_aggregate_initializable&lt;N, T&gt;::value;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;            }</div>
+<div class="ttc" id="astructpfr_1_1detail_1_1is__aggregate__initializable__n_html_a74d7af0f5533ebc3e5c3efe69e986842"><div class="ttname"><a href="../../d0/d0d/structpfr_1_1detail_1_1is__aggregate__initializable__n.html#a74d7af0f5533ebc3e5c3efe69e986842">pfr::detail::is_aggregate_initializable_n::value</a></div><div class="ttdeci">static constexpr bool value</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d92/fields__count_8hpp_source.html#l00096">fields_count.hpp:96</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -156,13 +156,10 @@ template&lt;class T , std::size_t N&gt; </div>
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">           std::is_empty&lt;T&gt;::value</div>
-<div class="line">        || std::is_array&lt;T&gt;::value</div>
-<div class="line">        || std::is_fundamental&lt;T&gt;::value</div>
-<div class="line">        || <a class="code" href="../../d0/d0d/structpfr_1_1detail_1_1is__aggregate__initializable__n.html#ae540b13646163d86d38709af7f358eba">is_not_constructible_n</a>(detail::make_index_sequence&lt;N&gt;{})</div>
-<div class="ttc" id="astructpfr_1_1detail_1_1is__aggregate__initializable__n_html_ae540b13646163d86d38709af7f358eba"><div class="ttname"><a href="../../d0/d0d/structpfr_1_1detail_1_1is__aggregate__initializable__n.html#ae540b13646163d86d38709af7f358eba">pfr::detail::is_aggregate_initializable_n::is_not_constructible_n</a></div><div class="ttdeci">static constexpr bool is_not_constructible_n(std::index_sequence&lt; I... &gt;) noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d92/fields__count_8hpp_source.html#l00080">fields_count.hpp:80</a></div></div>
+<div class="line">                std::is_empty&lt;T&gt;::value || std::is_array&lt;T&gt;::value || std::is_fundamental&lt;T&gt;::value || <a class="code" href="../../d0/d0d/structpfr_1_1detail_1_1is__aggregate__initializable__n.html#ae540b13646163d86d38709af7f358eba">is_not_constructible_n</a>(detail::make_index_sequence&lt;N&gt;{})</div>
+<div class="ttc" id="astructpfr_1_1detail_1_1is__aggregate__initializable__n_html_ae540b13646163d86d38709af7f358eba"><div class="ttname"><a href="../../d0/d0d/structpfr_1_1detail_1_1is__aggregate__initializable__n.html#ae540b13646163d86d38709af7f358eba">pfr::detail::is_aggregate_initializable_n::is_not_constructible_n</a></div><div class="ttdeci">static constexpr bool is_not_constructible_n(std::index_sequence&lt; I... &gt;) noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d92/fields__count_8hpp_source.html#l00089">fields_count.hpp:89</a></div></div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../d1/d92/fields__count_8hpp_source.html#l00086">86</a> of file <a class="el" href="../../d1/d92/fields__count_8hpp_source.html">fields_count.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d1/d92/fields__count_8hpp_source.html#l00096">96</a> of file <a class="el" href="../../d1/d92/fields__count_8hpp_source.html">fields_count.hpp</a>.</p>
 
 </div>
 </div>

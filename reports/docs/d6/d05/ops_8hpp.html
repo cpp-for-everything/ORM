@@ -90,12 +90,12 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a6691fb5d2e5a48c781c39feecc18f085"><td class="memTemplParams" colspan="2">template&lt;template&lt; class, class &gt; class Detector, class T , class U &gt; </td></tr>
-<tr class="memitem:a6691fb5d2e5a48c781c39feecc18f085"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a6691fb5d2e5a48c781c39feecc18f085">pfr::detail::enable_not_comp_base_t</a> = std::enable_if_t&lt; not_appliable&lt; Detector, T const  &amp;, U const  &amp; &gt;::value, bool &gt;</td></tr>
-<tr class="separator:a6691fb5d2e5a48c781c39feecc18f085"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5bac11fc796ae7c97cba5d462abe136a"><td class="memTemplParams" colspan="2">template&lt;template&lt; class, class &gt; class Detector, class T , class U &gt; </td></tr>
-<tr class="memitem:a5bac11fc796ae7c97cba5d462abe136a"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a5bac11fc796ae7c97cba5d462abe136a">pfr::detail::enable_comp_base_t</a> = std::enable_if_t&lt; !not_appliable&lt; Detector, T const  &amp;, U const  &amp; &gt;::value, bool &gt;</td></tr>
-<tr class="separator:a5bac11fc796ae7c97cba5d462abe136a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0edbbecf597af1ec704548d31b9f1c47"><td class="memTemplParams" colspan="2">template&lt;template&lt; class, class &gt; class Detector, class T , class U &gt; </td></tr>
+<tr class="memitem:a0edbbecf597af1ec704548d31b9f1c47"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a0edbbecf597af1ec704548d31b9f1c47">pfr::detail::enable_not_comp_base_t</a> = std::enable_if_t&lt; not_appliable&lt; Detector, T const  &amp;, U const  &amp; &gt;::value, bool &gt;</td></tr>
+<tr class="separator:a0edbbecf597af1ec704548d31b9f1c47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd99383ed75cc3c9547e1525ab001a32"><td class="memTemplParams" colspan="2">template&lt;template&lt; class, class &gt; class Detector, class T , class U &gt; </td></tr>
+<tr class="memitem:acd99383ed75cc3c9547e1525ab001a32"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#acd99383ed75cc3c9547e1525ab001a32">pfr::detail::enable_comp_base_t</a> = std::enable_if_t&lt;!not_appliable&lt; Detector, T const  &amp;, U const  &amp; &gt;::value, bool &gt;</td></tr>
+<tr class="separator:acd99383ed75cc3c9547e1525ab001a32"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a732f66c646496043dd7da5949b736440"><td class="memTemplParams" colspan="2">template&lt;class T , class U &gt; </td></tr>
 <tr class="memitem:a732f66c646496043dd7da5949b736440"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a732f66c646496043dd7da5949b736440">pfr::detail::enable_not_eq_comp_t</a> = enable_not_comp_base_t&lt; comp_eq_detector, T, U &gt;</td></tr>
 <tr class="separator:a732f66c646496043dd7da5949b736440"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -114,9 +114,9 @@ Typedefs</h2></td></tr>
 <tr class="memitem:aca1fba6fcc68233fbeed69265f53bf60"><td class="memTemplParams" colspan="2">template&lt;class T , class U &gt; </td></tr>
 <tr class="memitem:aca1fba6fcc68233fbeed69265f53bf60"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#aca1fba6fcc68233fbeed69265f53bf60">pfr::detail::enable_not_ge_comp_t</a> = enable_not_comp_base_t&lt; comp_ge_detector, T, U &gt;</td></tr>
 <tr class="separator:aca1fba6fcc68233fbeed69265f53bf60"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a80e64dec4db4c68a7a0c9bf287aa88aa"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:a80e64dec4db4c68a7a0c9bf287aa88aa"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a80e64dec4db4c68a7a0c9bf287aa88aa">pfr::detail::enable_not_hashable_t</a> = std::enable_if_t&lt; not_appliable&lt; hash_detector, const T &amp;, const T &amp; &gt;::value, std::size_t &gt;</td></tr>
-<tr class="separator:a80e64dec4db4c68a7a0c9bf287aa88aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42cea6703fcec18015ac175b45895987"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a42cea6703fcec18015ac175b45895987"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a42cea6703fcec18015ac175b45895987">pfr::detail::enable_not_hashable_t</a> = std::enable_if_t&lt; not_appliable&lt; hash_detector, const T &amp;, const T &amp; &gt;::value, std::size_t &gt;</td></tr>
+<tr class="separator:a42cea6703fcec18015ac175b45895987"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa4af3cba890bec3b92194ff9f549cb7f"><td class="memTemplParams" colspan="2">template&lt;class T , class U &gt; </td></tr>
 <tr class="memitem:aa4af3cba890bec3b92194ff9f549cb7f"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#aa4af3cba890bec3b92194ff9f549cb7f">pfr::detail::enable_eq_comp_t</a> = enable_comp_base_t&lt; comp_eq_detector, T, U &gt;</td></tr>
 <tr class="separator:aa4af3cba890bec3b92194ff9f549cb7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -135,9 +135,9 @@ Typedefs</h2></td></tr>
 <tr class="memitem:acf4189fc0e7353eb527ba6a6ef0b90c4"><td class="memTemplParams" colspan="2">template&lt;class T , class U &gt; </td></tr>
 <tr class="memitem:acf4189fc0e7353eb527ba6a6ef0b90c4"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#acf4189fc0e7353eb527ba6a6ef0b90c4">pfr::detail::enable_ge_comp_t</a> = enable_comp_base_t&lt; comp_ge_detector, T, U &gt;</td></tr>
 <tr class="separator:acf4189fc0e7353eb527ba6a6ef0b90c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2dd6d8aacb3195700b6d57c4fd6e916c"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:a2dd6d8aacb3195700b6d57c4fd6e916c"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a2dd6d8aacb3195700b6d57c4fd6e916c">pfr::detail::enable_hashable_t</a> = std::enable_if_t&lt; !not_appliable&lt; hash_detector, const T &amp;, const T &amp; &gt;::value, std::size_t &gt;</td></tr>
-<tr class="separator:a2dd6d8aacb3195700b6d57c4fd6e916c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a992c82ebb200060670efcb732d598ff8"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a992c82ebb200060670efcb732d598ff8"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d9/d07/namespacepfr_1_1detail.html#a992c82ebb200060670efcb732d598ff8">pfr::detail::enable_hashable_t</a> = std::enable_if_t&lt;!not_appliable&lt; hash_detector, const T &amp;, const T &amp; &gt;::value, std::size_t &gt;</td></tr>
+<tr class="separator:a992c82ebb200060670efcb732d598ff8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -202,7 +202,7 @@ Functions</h2></td></tr>
 <div class="line">comparable_struct s1 {0, 1, <span class="stringliteral">&quot;Hello&quot;</span>, <span class="keyword">false</span>, 6,7,8,9,10,11};</div>
 <div class="line">comparable_struct s2 {0, 1, <span class="stringliteral">&quot;Hello&quot;</span>, <span class="keyword">false</span>, 6,7,8,9,10,11111};</div>
 <div class="line">assert(<a class="code" href="../../d4/d26/namespacepfr.html#a7710701d20486d74c27aab89bb5d1766">pfr::lt</a>(s1, s2));</div>
-<div class="ttc" id="anamespacepfr_html_a7710701d20486d74c27aab89bb5d1766"><div class="ttname"><a href="../../d4/d26/namespacepfr.html#a7710701d20486d74c27aab89bb5d1766">pfr::lt</a></div><div class="ttdeci">constexpr detail::enable_not_lt_comp_t&lt; T, U &gt; lt(const T &amp;lhs, const U &amp;rhs) noexcept</div><div class="ttdoc">Compares lhs and rhs for less-than using their own comparison and conversion operators; if no operato...</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d05/ops_8hpp_source.html#l00115">ops.hpp:115</a></div></div>
+<div class="ttc" id="anamespacepfr_html_a7710701d20486d74c27aab89bb5d1766"><div class="ttname"><a href="../../d4/d26/namespacepfr.html#a7710701d20486d74c27aab89bb5d1766">pfr::lt</a></div><div class="ttdeci">constexpr detail::enable_not_lt_comp_t&lt; T, U &gt; lt(const T &amp;lhs, const U &amp;rhs) noexcept</div><div class="ttdoc">Compares lhs and rhs for less-than using their own comparison and conversion operators; if no operato...</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d05/ops_8hpp_source.html#l00104">ops.hpp:104</a></div></div>
 <div class="ttc" id="aops_8hpp_html"><div class="ttname"><a href="../../d6/d05/ops_8hpp.html">ops.hpp</a></div></div>
 </div><!-- fragment --><p>\podops for other ways to define operators and more details.</p>
 <p><b>Synopsis:</b> </p>

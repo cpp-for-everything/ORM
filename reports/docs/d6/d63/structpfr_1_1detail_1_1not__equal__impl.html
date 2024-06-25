@@ -87,7 +87,7 @@ Static Public Member Functions</h2></td></tr>
 struct pfr::detail::not_equal_impl&lt; I, N &gt;</h3>
 
 
-<p class="definition">Definition at line <a class="el" href="../../d2/db4/functional_8hpp_source.html#l00036">36</a> of file <a class="el" href="../../d2/db4/functional_8hpp_source.html">functional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/db4/functional_8hpp_source.html#l00037">37</a> of file <a class="el" href="../../d2/db4/functional_8hpp_source.html">functional.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a4d1a646ea2b553d1f71bbc0e9d12446d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4d1a646ea2b553d1f71bbc0e9d12446d">&#9670;&nbsp;</a></span>cmp()</h2>
@@ -127,12 +127,11 @@ template&lt;class T , class U &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/db4/functional_8hpp_source.html#l00038">38</a> of file <a class="el" href="../../d2/db4/functional_8hpp_source.html">functional.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                                                                     {</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            return ::pfr::detail::sequence_tuple::get&lt;I&gt;(v1) != ::pfr::detail::sequence_tuple::get&lt;I&gt;(v2)</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                || <a class="code" href="../../d6/d63/structpfr_1_1detail_1_1not__equal__impl.html#a4d1a646ea2b553d1f71bbc0e9d12446d">not_equal_impl&lt;I + 1, N&gt;::cmp</a>(v1, v2);</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        }</div>
-<div class="ttc" id="astructpfr_1_1detail_1_1not__equal__impl_html_a4d1a646ea2b553d1f71bbc0e9d12446d"><div class="ttname"><a href="../../d6/d63/structpfr_1_1detail_1_1not__equal__impl.html#a4d1a646ea2b553d1f71bbc0e9d12446d">pfr::detail::not_equal_impl::cmp</a></div><div class="ttdeci">constexpr static bool cmp(const T &amp;v1, const U &amp;v2) noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db4/functional_8hpp_source.html#l00038">functional.hpp:38</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d2/db4/functional_8hpp_source.html#l00039">39</a> of file <a class="el" href="../../d2/db4/functional_8hpp_source.html">functional.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            {</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                return ::pfr::detail::sequence_tuple::get&lt;I&gt;(v1) != ::pfr::detail::sequence_tuple::get&lt;I&gt;(v2) || <a class="code" href="../../d6/d63/structpfr_1_1detail_1_1not__equal__impl.html#a4d1a646ea2b553d1f71bbc0e9d12446d">not_equal_impl&lt;I + 1, N&gt;::cmp</a>(v1, v2);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;            }</div>
+<div class="ttc" id="astructpfr_1_1detail_1_1not__equal__impl_html_a4d1a646ea2b553d1f71bbc0e9d12446d"><div class="ttname"><a href="../../d6/d63/structpfr_1_1detail_1_1not__equal__impl.html#a4d1a646ea2b553d1f71bbc0e9d12446d">pfr::detail::not_equal_impl::cmp</a></div><div class="ttdeci">constexpr static bool cmp(const T &amp;v1, const U &amp;v2) noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db4/functional_8hpp_source.html#l00039">functional.hpp:39</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>

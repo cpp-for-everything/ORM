@@ -176,20 +176,24 @@ template&lt;typename DB , is_query QueryType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/d93/utils_8hpp_source.html#l00258">258</a> of file <a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;                                                    {</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;        <span class="keywordflow">return</span> [db, query](<span class="keyword">auto</span>... args) <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a6bf90b3b7c9b3eb525e2bc00a6027fa2">requires</a> (<a class="code" href="../../dd/d8d/namespacewebframe_1_1_o_r_m_1_1_c_r_u_d_1_1details.html#a6ce26a0950f2b661eabbe0febc37d336">params_match</a>&lt;QueryType, decltype(args)...&gt;) {</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;            <span class="keywordflow">if</span> constexpr (std::is_same_v&lt;decltype(db.execute(query, args...)), <span class="keywordtype">void</span>&gt;) {</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;                db.execute(query, args...);</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;                <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;            }</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;            <span class="keywordflow">if</span> constexpr (!std::is_same_v&lt;decltype(db.execute(query, args...)), <span class="keywordtype">void</span>&gt;) {</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;                <span class="keywordflow">return</span> db.execute(query, args...);</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;            }</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;        };</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;    }</div>
-<div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1_c_r_u_d_1_1details_html_a6ce26a0950f2b661eabbe0febc37d336"><div class="ttname"><a href="../../dd/d8d/namespacewebframe_1_1_o_r_m_1_1_c_r_u_d_1_1details.html#a6ce26a0950f2b661eabbe0febc37d336">webframe::ORM::CRUD::details::params_match</a></div><div class="ttdeci">concept params_match</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d93/utils_8hpp_source.html#l00247">utils.hpp:247</a></div></div>
-<div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_a6bf90b3b7c9b3eb525e2bc00a6027fa2"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a6bf90b3b7c9b3eb525e2bc00a6027fa2">webframe::ORM::details::requires</a></div><div class="ttdeci">requires requires</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbe/result__type_8hpp_source.html#l00018">result_type.hpp:18</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../df/d93/utils_8hpp_source.html#l00279">279</a> of file <a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;    {</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;        <span class="keywordflow">return</span> [ db, query ](<span class="keyword">auto</span>... args)</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;            <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a6bf90b3b7c9b3eb525e2bc00a6027fa2">requires</a>(<a class="code" href="../../dd/d8d/namespacewebframe_1_1_o_r_m_1_1_c_r_u_d_1_1details.html#a6ce26a0950f2b661eabbe0febc37d336">params_match</a>&lt;QueryType, decltype(args)...&gt;)</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;        {</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;            <span class="keywordflow">if</span> constexpr (std::is_same_v&lt;decltype(db.execute(query, args...)), <span class="keywordtype">void</span>&gt;)</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;            {</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;                db.execute(query, args...);</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;                <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;            }</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;            <span class="keywordflow">if</span> constexpr (!std::is_same_v&lt;decltype(db.execute(query, args...)), <span class="keywordtype">void</span>&gt;)</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;            {</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;                <span class="keywordflow">return</span> db.execute(query, args...);</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;            }</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;        };</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    }</div>
+<div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1_c_r_u_d_1_1details_html_a6ce26a0950f2b661eabbe0febc37d336"><div class="ttname"><a href="../../dd/d8d/namespacewebframe_1_1_o_r_m_1_1_c_r_u_d_1_1details.html#a6ce26a0950f2b661eabbe0febc37d336">webframe::ORM::CRUD::details::params_match</a></div><div class="ttdeci">concept params_match</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d93/utils_8hpp_source.html#l00272">utils.hpp:272</a></div></div>
+<div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_a6bf90b3b7c9b3eb525e2bc00a6027fa2"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a6bf90b3b7c9b3eb525e2bc00a6027fa2">webframe::ORM::details::requires</a></div><div class="ttdeci">requires requires</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbe/result__type_8hpp_source.html#l00020">result_type.hpp:20</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -216,7 +220,7 @@ template&lt;typename U , typename Tuple &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/d93/utils_8hpp_source.html#l00029">29</a> of file <a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d93/utils_8hpp_source.html#l00030">30</a> of file <a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>.</p>
 
 </div>
 </div>
@@ -234,7 +238,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/d93/utils_8hpp_source.html#l00244">244</a> of file <a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d93/utils_8hpp_source.html#l00269">269</a> of file <a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>.</p>
 
 </div>
 </div>
@@ -252,7 +256,7 @@ template&lt;typename T , typename Tuple &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/d93/utils_8hpp_source.html#l00035">35</a> of file <a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d93/utils_8hpp_source.html#l00036">36</a> of file <a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>.</p>
 
 </div>
 </div>
@@ -270,7 +274,7 @@ template&lt;typename T , typename Tuple &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/d93/utils_8hpp_source.html#l00032">32</a> of file <a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d93/utils_8hpp_source.html#l00033">33</a> of file <a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>.</p>
 
 </div>
 </div>
@@ -288,18 +292,15 @@ template&lt;typename Query , typename... args&gt; </div>
       </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a6bf90b3b7c9b3eb525e2bc00a6027fa2">requires</a> {</div>
-<div class="line">        { </div>
-<div class="line">            <a class="code" href="../../da/dfd/classwebframe_1_1_o_r_m_1_1details_1_1convertible__tuples.html">webframe::ORM::details::convertible_tuples</a>&lt;</div>
-<div class="line">                <span class="keyword">typename</span> Query::properties, </div>
-<div class="line">                <span class="keyword">typename</span> <a class="code" href="../../d5/dcf/classwebframe_1_1_o_r_m_1_1details_1_1orm__tuple.html">webframe::ORM::details::orm_tuple</a>&lt;args...&gt;</div>
-<div class="line">            &gt;{} </div>
+<div class="line">        {</div>
+<div class="line">            <a class="code" href="../../da/dfd/classwebframe_1_1_o_r_m_1_1details_1_1convertible__tuples.html">webframe::ORM::details::convertible_tuples</a>&lt;<span class="keyword">typename</span> Query::properties, <span class="keyword">typename</span> <a class="code" href="../../d5/dcf/classwebframe_1_1_o_r_m_1_1details_1_1orm__tuple.html">webframe::ORM::details::orm_tuple</a>&lt;args...&gt;&gt;{}</div>
 <div class="line">        } -&gt; <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a332ad25223927239dd987e0b82998bc4">webframe::ORM::details::pseudo_concept</a>;</div>
 <div class="line">    }</div>
-<div class="ttc" id="aclasswebframe_1_1_o_r_m_1_1details_1_1convertible__tuples_html"><div class="ttname"><a href="../../da/dfd/classwebframe_1_1_o_r_m_1_1details_1_1convertible__tuples.html">webframe::ORM::details::convertible_tuples</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/orm__tuple_8hpp_source.html#l00104">orm_tuple.hpp:104</a></div></div>
-<div class="ttc" id="aclasswebframe_1_1_o_r_m_1_1details_1_1orm__tuple_html"><div class="ttname"><a href="../../d5/dcf/classwebframe_1_1_o_r_m_1_1details_1_1orm__tuple.html">webframe::ORM::details::orm_tuple</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/orm__tuple_8hpp_source.html#l00013">orm_tuple.hpp:13</a></div></div>
-<div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_a332ad25223927239dd987e0b82998bc4"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a332ad25223927239dd987e0b82998bc4">webframe::ORM::details::pseudo_concept</a></div><div class="ttdeci">concept pseudo_concept</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/orm__tuple_8hpp_source.html#l00122">orm_tuple.hpp:122</a></div></div>
+<div class="ttc" id="aclasswebframe_1_1_o_r_m_1_1details_1_1convertible__tuples_html"><div class="ttname"><a href="../../da/dfd/classwebframe_1_1_o_r_m_1_1details_1_1convertible__tuples.html">webframe::ORM::details::convertible_tuples</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/orm__tuple_8hpp_source.html#l00118">orm_tuple.hpp:118</a></div></div>
+<div class="ttc" id="aclasswebframe_1_1_o_r_m_1_1details_1_1orm__tuple_html"><div class="ttname"><a href="../../d5/dcf/classwebframe_1_1_o_r_m_1_1details_1_1orm__tuple.html">webframe::ORM::details::orm_tuple</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/orm__tuple_8hpp_source.html#l00013">orm_tuple.hpp:14</a></div></div>
+<div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_a332ad25223927239dd987e0b82998bc4"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a332ad25223927239dd987e0b82998bc4">webframe::ORM::details::pseudo_concept</a></div><div class="ttdeci">concept pseudo_concept</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d68/orm__tuple_8hpp_source.html#l00141">orm_tuple.hpp:141</a></div></div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../df/d93/utils_8hpp_source.html#l00247">247</a> of file <a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d93/utils_8hpp_source.html#l00272">272</a> of file <a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>.</p>
 
 </div>
 </div>

@@ -128,10 +128,10 @@ template&lt;class T , class U &gt; </div>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="../../d2/db4/functional_8hpp_source.html#l00089">89</a> of file <a class="el" href="../../d2/db4/functional_8hpp_source.html">functional.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;                                                                     {</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;            <span class="keywordflow">return</span> sequence_tuple::get&lt;I&gt;(v1) &gt; sequence_tuple::get&lt;I&gt;(v2)</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;                || (sequence_tuple::get&lt;I&gt;(v1) == sequence_tuple::get&lt;I&gt;(v2) &amp;&amp; <a class="code" href="../../d0/d07/structpfr_1_1detail_1_1greater__impl.html#ab535699538fef293e2ceb2b6e90f2ba0">greater_impl&lt;I + 1, N&gt;::cmp</a>(v1, v2));</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        }</div>
+<div class="fragment"><div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;            {</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;                <span class="keywordflow">return</span> sequence_tuple::get&lt;I&gt;(v1) &gt; sequence_tuple::get&lt;I&gt;(v2) ||</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                    (sequence_tuple::get&lt;I&gt;(v1) == sequence_tuple::get&lt;I&gt;(v2) &amp;&amp; <a class="code" href="../../d0/d07/structpfr_1_1detail_1_1greater__impl.html#ab535699538fef293e2ceb2b6e90f2ba0">greater_impl&lt;I + 1, N&gt;::cmp</a>(v1, v2));</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;            }</div>
 <div class="ttc" id="astructpfr_1_1detail_1_1greater__impl_html_ab535699538fef293e2ceb2b6e90f2ba0"><div class="ttname"><a href="../../d0/d07/structpfr_1_1detail_1_1greater__impl.html#ab535699538fef293e2ceb2b6e90f2ba0">pfr::detail::greater_impl::cmp</a></div><div class="ttdeci">constexpr static bool cmp(const T &amp;v1, const U &amp;v2) noexcept</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/db4/functional_8hpp_source.html#l00089">functional.hpp:89</a></div></div>
 </div><!-- fragment -->
 </div>
