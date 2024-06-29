@@ -143,19 +143,27 @@ Check [example/](https://github.com/WebFrame/ORM-Abstract/blob/main/example) for
 [![LinkedIn](https://img.shields.io/badge/linkedin-%230077B5.svg?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/alex-tsvetanov/)
 
 # ToDo
-1. Limits fix
-    - ```sql
-        [LIMIT [offset_value] number_rows | LIMIT number_rows OFFSET offset_value]
-      ```
+1. Properties
+    - ``== nullptr``
+    - ``!= nullptr``
 1. Result type
     - Member pointers and standard types
     - Get references by member pointer
     - Get references by table class
     - Get references by index
 1. Rules
+    - EXISTS
     - IN / NOT IN
 1. CRUD operations
+    - ~~Create / insert~~
     - Read / select
+      - ~~ALL~~
+      - ~~JOIN~~
+      - ~~WHERE~~
+      - ~~LIMIT~~
+      - DISTINCT / DISTINCTROW
+      - GROUP BY / HAVING
+      - ORDER BY
       - COUNT(*) / COUNT(...)
       ```sql
         SELECT [ ALL | DISTINCT | DISTINCTROW ]
@@ -172,11 +180,18 @@ Check [example/](https://github.com/WebFrame/ORM-Abstract/blob/main/example) for
         [HAVING condition]
         [ORDER BY expression [ ASC | DESC ]]
         [LIMIT [offset_value] number_rows | LIMIT number_rows OFFSET offset_value]
-        INTO [ OUTFILE 'file_name' options 
+        [INTO [ OUTFILE 'file_name' options 
             | DUMPFILE 'file_name'
             | @variable1, @variable2, ... @variable_n]
         [FOR UPDATE | LOCK IN SHARE MODE];
       ```
+    - Update / update
+      - ~~WHERE~~
+      - ORDER BY
+    - Delete / delete
+      - WHERE
+      - ORDER BY
+      - LIMIT
 1. Transferring the abstract database implementation from v1.1 to v2 using the new SQL-free query style
 1. Implement free MySQL driver
 1. Implement free MongoDB driver

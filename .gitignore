@@ -1,15 +1,7 @@
-.vscode/
 *.exe
 **/*.exe
-cmake_install.cmake
-CMakeCache.txt
-CMakeFiles/
-Makefile
-mysql-connector-c++-1.1.13/
-cmake/
-out/
 .vs/
 .vscode/
-WSL_Build/
+lib/include/ORM/ORM-version.hpp
 build*/
 **/.DS_Store
