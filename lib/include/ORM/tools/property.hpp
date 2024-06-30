@@ -16,7 +16,7 @@ namespace webframe::ORM
     {
     public:
         using db_type = T;
-        using native_type = T::native_type;
+        using native_type = typename T::native_type;
 
         static inline constexpr std::string_view name() { return column_name.to_sv(); }
         
