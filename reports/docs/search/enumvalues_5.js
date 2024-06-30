@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['one2many_1405',['one2many',['../d4/d86/namespacewebframe_1_1_o_r_m.html#a662644ae08d69778b01a10f4ae7f9c9bad1872ca01d9057ead4fcf1aa990b44b7',1,'webframe::ORM']]],
-  ['one2one_1406',['one2one',['../d4/d86/namespacewebframe_1_1_o_r_m.html#a662644ae08d69778b01a10f4ae7f9c9ba0f666cbd20c55fe4a9a6299e2579ef47',1,'webframe::ORM']]]
+  ['integer_183',['integer',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a55cc43c8cdfbf3c1c59a63f4696c007ba2d3ead14845a941d135062e5765a313a',1,'webframe::ORM::details']]]
 ];

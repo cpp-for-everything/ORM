@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['groupings_1237',['groupings',['../d0/d9e/classwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1select__query.html#a42bad9366503d3273d858057f7a9d054',1,'webframe::ORM::CRUD::select_query']]]
+  ['value_164',['value',['../da/d64/structwebframe_1_1_o_r_m_1_1details_1_1string__literal.html#a70653374c3882b9400c31e4dc527ffe7',1,'webframe::ORM::details::string_literal']]]
 ];
