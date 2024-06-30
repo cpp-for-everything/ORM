@@ -1,16 +1,9 @@
 var searchData=
 [
-  ['add_5fcv_5flike_12',['add_cv_like',['../d9/d07/namespacepfr_1_1detail.html#a0ec455fe36ac0a0889c0937be80696e1',1,'pfr::detail']]],
-  ['all_13',['ALL',['../d7/dc6/namespacewebframe_1_1_o_r_m_1_1modes.html#a4bcf9fbaaae95136fd362b552e98ac8caf88bf474ed0cf65a74c492db80511430',1,'webframe::ORM::modes']]],
-  ['andwrapper_14',['AndWrapper',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#ae7b4abc0a49c9e9848bb4ff63351ad19',1,'webframe::ORM::details']]],
-  ['are_5fsame_15',['are_same',['../d4/d86/namespacewebframe_1_1_o_r_m.html#a844283f84037f51baf9cb0e38d4f254d',1,'webframe::ORM::are_same(const Statement&lt; T1, op1, T2 &gt; &amp;Statement1, const Statement&lt; U1, op2, U2 &gt; &amp;Statement2)'],['../d4/d86/namespacewebframe_1_1_o_r_m.html#ad8ffbb7b8a0dfad994ea160c04a926cd',1,'webframe::ORM::are_same(const Rule&lt; T1, op1, T2 &gt; &amp;rule1, const Rule&lt; U1, op2, U2 &gt; &amp;rule2)']]],
-  ['args_16',['args',['../d5/df4/classwebframe_1_1_o_r_m_1_1_nullable.html#aec65108e93b33ccc9ec2e0f69a800124',1,'webframe::ORM::Nullable']]],
-  ['as_5fflat_5ftuple_5fimpl_17',['as_flat_tuple_impl',['../d9/d07/namespacepfr_1_1detail.html#afe1f8e6be3ba46772176259386efcb87',1,'pfr::detail::as_flat_tuple_impl(std::index_sequence&lt; First, I... &gt;) noexcept'],['../d9/d07/namespacepfr_1_1detail.html#af53d86e9e2b886908a0cb013b4f45cee',1,'pfr::detail::as_flat_tuple_impl(std::index_sequence&lt;&gt;) noexcept']]],
-  ['as_5fflat_5ftuple_5fimpl_5fdrop_5fhelpers_18',['as_flat_tuple_impl_drop_helpers',['../d9/d07/namespacepfr_1_1detail.html#af22aad0667dd369a4ab73741685be1f4',1,'pfr::detail']]],
-  ['asc_19',['ASC',['../d7/dc6/namespacewebframe_1_1_o_r_m_1_1modes.html#adabfc9c85f36e9589dd229068d69d0dda8c4cf709d3a234acaa7b23b70a7a3079',1,'webframe::ORM::modes']]],
-  ['assert_5ffirst_5fnot_5fbase_20',['assert_first_not_base',['../d9/d07/namespacepfr_1_1detail.html#a10b0672d65a90b053c2b48e994977d6a',1,'pfr::detail::assert_first_not_base(std::index_sequence&lt;&gt;) noexcept'],['../d9/d07/namespacepfr_1_1detail.html#ad3412eaf7a2f68182a1120d4bf51da65',1,'pfr::detail::assert_first_not_base(std::index_sequence&lt; I0, I... &gt;) noexcept -&gt; typename std::add_pointer&lt; decltype(T{ubiq_lref_base_asserting&lt; T &gt;{}, ubiq_lref_constructor{I}...})&gt;::type']]],
-  ['assign_21',['assign',['../db/d73/structpfr_1_1detail_1_1ubiq__val.html#a8c638e603439b5ca67a4ab772e84ac38',1,'pfr::detail::ubiq_val::assign(const T &amp;typeids) const noexcept'],['../db/d73/structpfr_1_1detail_1_1ubiq__val.html#af3d8ec8bd0ed2ff4377070c6b63df3d2',1,'pfr::detail::ubiq_val::assign(std::size_t val) const noexcept']]],
-  ['assignmentbitwiseandwrapper_22',['AssignmentBitWiseAndWrapper',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a0a8479afe5e2c9b9f4acf955b05c7d8c',1,'webframe::ORM::details']]],
-  ['assignmentbitwisexorwrapper_23',['AssignmentBitWiseXorWrapper',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aaf1c7e4247281f860815aec1d774dc36',1,'webframe::ORM::details']]],
-  ['assignmentmultiplicationwrapper_24',['AssignmentMultiplicationWrapper',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#adfee082c539a94b7dee34ee7818cf5cc',1,'webframe::ORM::details']]]
+  ['b_2',['b',['../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a2767bf2154fd9ce54684318632f08a8c',1,'webframe::ORM::Rule']]],
+  ['big_5fint_3',['big_int',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a55cc43c8cdfbf3c1c59a63f4696c007bab6db7738b4bfb0b8e1d621c9349d4ed4',1,'webframe::ORM::details']]],
+  ['binary_5ffixed_5fstring_4',['binary_fixed_string',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a55cc43c8cdfbf3c1c59a63f4696c007bad9b93d6994d5dce227b37a0b2bedbf23',1,'webframe::ORM::details']]],
+  ['binary_5fvariadic_5fstring_5',['binary_variadic_string',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a55cc43c8cdfbf3c1c59a63f4696c007baf0b3085f8be8f90fc811fb815e17a034',1,'webframe::ORM::details']]],
+  ['bitset_6',['bitset',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a55cc43c8cdfbf3c1c59a63f4696c007ba4bac3f039daa0587fbd5265ce855a7cd',1,'webframe::ORM::details']]],
+  ['boolean_7',['boolean',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a55cc43c8cdfbf3c1c59a63f4696c007ba5d99e4df8f092e072dedd0f4eb059efd',1,'webframe::ORM::details']]]
 ];

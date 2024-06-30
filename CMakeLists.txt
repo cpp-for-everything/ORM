@@ -42,19 +42,17 @@ if(USE_MYSQL)
 endif()
 
 if(RUN_TESTS)
-    include(CTest)
-    enable_testing()
-    add_subdirectory("tests/")
+    add_subdirectory("tests")
 endif()
 
 # Generate example source code
-add_executable(Webframe_ORM_Example example/ORM.cpp)
-target_compile_definitions(Webframe_ORM_Example PUBLIC DB_USERNAME="root" DB_PASSWORD="test")
-target_link_libraries(Webframe_ORM_Example PUBLIC ${EXTRA_LIBS})
-target_include_directories(Webframe_ORM_Example PUBLIC
-                            ${EXTRA_INCLUDES}
-                            ${PROJECT_BINARY_DIR}
-                          )
-add_executable(Webframe::ORM::Example ALIAS Webframe_ORM_Example)
+# add_executable(Webframe_ORM_Example example/ORM.cpp)
+# target_compile_definitions(Webframe_ORM_Example PUBLIC DB_USERNAME="root" DB_PASSWORD="test")
+# target_link_libraries(Webframe_ORM_Example PUBLIC ${EXTRA_LIBS})
+# target_include_directories(Webframe_ORM_Example PUBLIC
+#                             ${EXTRA_INCLUDES}
+#                             ${PROJECT_BINARY_DIR}
+#                           )
+# add_executable(Webframe::ORM::Example ALIAS Webframe_ORM_Example)
 
 include(CPack)

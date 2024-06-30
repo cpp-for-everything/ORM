@@ -67,18 +67,439 @@ $(function() {
 </div>
 </div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Data Fields</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a>  </div>
   <div class="headertitle">
 <div class="title">webframe::ORM::Rule&lt; T1, op, T2 &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="../../d3/d5f/rule_8hpp_source.html">rule.hpp</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:ac17cd01afa21faf7ec42254256cbe01a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#ac17cd01afa21faf7ec42254256cbe01a">operand1_t</a> = T1</td></tr>
+<tr class="separator:ac17cd01afa21faf7ec42254256cbe01a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50421b1fa89d9bde0008254255ff1742"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a50421b1fa89d9bde0008254255ff1742">operand2_t</a> = T2</td></tr>
+<tr class="separator:a50421b1fa89d9bde0008254255ff1742"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a26b66e868332700e739ecbbf662c6253"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a26b66e868332700e739ecbbf662c6253">Rule</a> (T1 x, T2 y)</td></tr>
+<tr class="separator:a26b66e868332700e739ecbbf662c6253"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bf1dbd27b4cb577abaecee560c28a07"><td class="memTemplParams" colspan="2">template&lt;details::rule_operators op2&gt; </td></tr>
+<tr class="memitem:a7bf1dbd27b4cb577abaecee560c28a07"><td class="memTemplItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a7bf1dbd27b4cb577abaecee560c28a07">Rule</a> (<a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html">Rule</a>&lt; T1, op2, T2 &gt; x)</td></tr>
+<tr class="separator:a7bf1dbd27b4cb577abaecee560c28a07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf4018630ebe9a5d0c80dbf9a0ac811b"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#abf4018630ebe9a5d0c80dbf9a0ac811b">operator!</a> () const</td></tr>
+<tr class="separator:abf4018630ebe9a5d0c80dbf9a0ac811b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f27761eaf4095a8cc2029050035f73e"><td class="memTemplParams" colspan="2">template&lt;typename T3 , details::rule_operators op2, typename T4 &gt; </td></tr>
+<tr class="memitem:a5f27761eaf4095a8cc2029050035f73e"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a5f27761eaf4095a8cc2029050035f73e">operator&amp;&amp;</a> (<a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html">Rule</a>&lt; T3, op2, T4 &gt;) const</td></tr>
+<tr class="separator:a5f27761eaf4095a8cc2029050035f73e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad0171aa5da73f281d65f08c39c5932b"><td class="memTemplParams" colspan="2">template&lt;typename T3 , details::rule_operators op2, typename T4 &gt; </td></tr>
+<tr class="memitem:aad0171aa5da73f281d65f08c39c5932b"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#aad0171aa5da73f281d65f08c39c5932b">operator||</a> (<a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html">Rule</a>&lt; T3, op2, T4 &gt;) const</td></tr>
+<tr class="separator:aad0171aa5da73f281d65f08c39c5932b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51484bec0d3c6b8d5c3c5e38da68b39b"><td class="memTemplParams" colspan="2">template&lt;typename T3 , details::rule_operators op2, typename T4 &gt; </td></tr>
+<tr class="memitem:a51484bec0d3c6b8d5c3c5e38da68b39b"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a51484bec0d3c6b8d5c3c5e38da68b39b">operator^</a> (<a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html">Rule</a>&lt; T3, op2, T4 &gt;) const</td></tr>
+<tr class="separator:a51484bec0d3c6b8d5c3c5e38da68b39b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Data Fields</h2></td></tr>
+<tr class="memitem:a3b2dad0571750c36b1999523cc1118ed"><td class="memItemLeft" align="right" valign="top">T1&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a3b2dad0571750c36b1999523cc1118ed">a</a></td></tr>
+<tr class="separator:a3b2dad0571750c36b1999523cc1118ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2767bf2154fd9ce54684318632f08a8c"><td class="memItemLeft" align="right" valign="top">T2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a2767bf2154fd9ce54684318632f08a8c">b</a></td></tr>
+<tr class="separator:a2767bf2154fd9ce54684318632f08a8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:a1446a36fc19420992a34ad278f3bf55a"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873">details::rule_operators</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a1446a36fc19420992a34ad278f3bf55a">operation</a> = op</td></tr>
+<tr class="separator:a1446a36fc19420992a34ad278f3bf55a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename T1, details::string_literal op, typename T2&gt;<br />
+<div class="textblock"><h3>template&lt;typename T1, details::rule_operators op, typename T2&gt;<br />
 class webframe::ORM::Rule&lt; T1, op, T2 &gt;</h3>
 
 
-<p class="definition">Definition at line <a class="el" href="../../d8/d26/rules_8hpp_source.html#l00024">24</a> of file <a class="el" href="../../d8/d26/rules_8hpp_source.html">rules.hpp</a>.</p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
-<li>lib/include/ORM/<a class="el" href="../../d8/d26/rules_8hpp_source.html">rules.hpp</a></li>
+<p class="definition">Definition at line <a class="el" href="../../d3/d5f/rule_8hpp_source.html#l00010">10</a> of file <a class="el" href="../../d3/d5f/rule_8hpp_source.html">rule.hpp</a>.</p>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="ac17cd01afa21faf7ec42254256cbe01a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac17cd01afa21faf7ec42254256cbe01a">&#9670;&nbsp;</a></span>operand1_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T1 , details::rule_operators op, typename T2 &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html">webframe::ORM::Rule</a>&lt; T1, op, T2 &gt;::<a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#ac17cd01afa21faf7ec42254256cbe01a">operand1_t</a> =  T1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d3/d5f/rule_8hpp_source.html#l00016">16</a> of file <a class="el" href="../../d3/d5f/rule_8hpp_source.html">rule.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a50421b1fa89d9bde0008254255ff1742"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50421b1fa89d9bde0008254255ff1742">&#9670;&nbsp;</a></span>operand2_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T1 , details::rule_operators op, typename T2 &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html">webframe::ORM::Rule</a>&lt; T1, op, T2 &gt;::<a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a50421b1fa89d9bde0008254255ff1742">operand2_t</a> =  T2</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d3/d5f/rule_8hpp_source.html#l00018">18</a> of file <a class="el" href="../../d3/d5f/rule_8hpp_source.html">rule.hpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a26b66e868332700e739ecbbf662c6253"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26b66e868332700e739ecbbf662c6253">&#9670;&nbsp;</a></span>Rule() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T1 , details::rule_operators op, typename T2 &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html">webframe::ORM::Rule</a>&lt; T1, op, T2 &gt;::<a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html">Rule</a> </td>
+          <td>(</td>
+          <td class="paramtype">T1&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T2&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d3/d5f/rule_8hpp_source.html#l00020">20</a> of file <a class="el" href="../../d3/d5f/rule_8hpp_source.html">rule.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;: <a class="code" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a3b2dad0571750c36b1999523cc1118ed">a</a>(x), <a class="code" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a2767bf2154fd9ce54684318632f08a8c">b</a>(y) { }</div>
+<div class="ttc" id="aclasswebframe_1_1_o_r_m_1_1_rule_html_a2767bf2154fd9ce54684318632f08a8c"><div class="ttname"><a href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a2767bf2154fd9ce54684318632f08a8c">webframe::ORM::Rule::b</a></div><div class="ttdeci">T2 b</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d5f/rule_8hpp_source.html#l00014">rule.hpp:14</a></div></div>
+<div class="ttc" id="aclasswebframe_1_1_o_r_m_1_1_rule_html_a3b2dad0571750c36b1999523cc1118ed"><div class="ttname"><a href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a3b2dad0571750c36b1999523cc1118ed">webframe::ORM::Rule::a</a></div><div class="ttdeci">T1 a</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d5f/rule_8hpp_source.html#l00013">rule.hpp:13</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7bf1dbd27b4cb577abaecee560c28a07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bf1dbd27b4cb577abaecee560c28a07">&#9670;&nbsp;</a></span>Rule() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T1 , details::rule_operators op, typename T2 &gt; </div>
+<div class="memtemplate">
+template&lt;details::rule_operators op2&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html">webframe::ORM::Rule</a>&lt; T1, op, T2 &gt;::<a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html">Rule</a> </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html">Rule</a>&lt; T1, op2, T2 &gt;&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d3/d5f/rule_8hpp_source.html#l00023">23</a> of file <a class="el" href="../../d3/d5f/rule_8hpp_source.html">rule.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;: <a class="code" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a3b2dad0571750c36b1999523cc1118ed">a</a>(x.a), <a class="code" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a2767bf2154fd9ce54684318632f08a8c">b</a>(x.b) { }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="abf4018630ebe9a5d0c80dbf9a0ac811b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf4018630ebe9a5d0c80dbf9a0ac811b">&#9670;&nbsp;</a></span>operator!()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T1 , details::rule_operators op, typename T2 &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto <a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html">webframe::ORM::Rule</a>&lt; T1, op, T2 &gt;::operator!</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d7/dec/rule_8cpp_source.html#l00027">27</a> of file <a class="el" href="../../d7/dec/rule_8cpp_source.html">rule.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    {</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        <span class="keywordflow">if</span> constexpr (op == <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873a9a0660f4c781157416e871f93b72790b">details::Less</a>)</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        {</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;            <span class="keywordflow">return</span> Rule&lt;T1, details::Greater_or_equal, T2&gt;(*<span class="keyword">this</span>);</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        }</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <span class="keywordflow">if</span> constexpr (op == <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873aef888f5fa410fbec688e5682af6177c3">details::Greater</a>)</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        {</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;            <span class="keywordflow">return</span> Rule&lt;T1, details::Less_or_equal, T2&gt;(*<span class="keyword">this</span>);</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        }</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        <span class="keywordflow">if</span> constexpr (op == <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873a9e2be9c31ec17abad0e38bb22fc29a04">details::Equals</a>)</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        {</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;            <span class="keywordflow">return</span> Rule&lt;T1, details::Not_equal, T2&gt;(*<span class="keyword">this</span>);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        }</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        <span class="keywordflow">if</span> constexpr (op == <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873a0501d900fb717da8a48570de90cf70d9">details::Not_equal</a>)</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        {</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            <span class="keywordflow">return</span> Rule&lt;T1, details::Equals, T2&gt;(*<span class="keyword">this</span>);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        }</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <span class="keywordflow">if</span> constexpr (op == <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873af38f4faf826471afbd702ab5bb622b1c">details::Greater_or_equal</a>)</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        {</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            <span class="keywordflow">return</span> Rule&lt;T1, details::Less, T2&gt;(*<span class="keyword">this</span>);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        }</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        <span class="keywordflow">if</span> constexpr (op == <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873af410d99b0214cf65f777868f2d20c9f8">details::Less_or_equal</a>)</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            <span class="keywordflow">return</span> Rule&lt;T1, details::Greater, T2&gt;(*<span class="keyword">this</span>);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        }</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <span class="keywordflow">if</span> constexpr (op == <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873a572a7ec6498b57f32226ff938d80ad7c">details::And</a>)</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        {</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;            <span class="keyword">using</span> notT1 = decltype(!this-&gt;<a class="code" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a3b2dad0571750c36b1999523cc1118ed">a</a>);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;            <span class="keyword">using</span> notT2 = decltype(!this-&gt;<a class="code" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a2767bf2154fd9ce54684318632f08a8c">b</a>);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;            <span class="keywordflow">return</span> Rule&lt;notT1, details::Or, notT2&gt;(!this-&gt;<a class="code" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a3b2dad0571750c36b1999523cc1118ed">a</a>, !this-&gt;<a class="code" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a2767bf2154fd9ce54684318632f08a8c">b</a>);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        }</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        <span class="keywordflow">if</span> constexpr (op == <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873a9b44e0526c1c5e7316eb1dc84fcc3eb4">details::Or</a>)</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        {</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;            <span class="keyword">using</span> notT1 = decltype(!this-&gt;<a class="code" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a3b2dad0571750c36b1999523cc1118ed">a</a>);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;            <span class="keyword">using</span> notT2 = decltype(!this-&gt;<a class="code" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a2767bf2154fd9ce54684318632f08a8c">b</a>);</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;            <span class="keywordflow">return</span> Rule&lt;notT1, details::And, notT2&gt;(!this-&gt;<a class="code" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a3b2dad0571750c36b1999523cc1118ed">a</a>, !this-&gt;<a class="code" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a2767bf2154fd9ce54684318632f08a8c">b</a>);</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        }</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        </div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keywordflow">if</span> constexpr (op == <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873ab0baee668ee3ec770480a79923ddbd4a">details::Xor</a>)</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        {</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;            <span class="comment">// !(a ^ b) = ((a &amp;&amp; b) || (!a &amp;&amp; !b))</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;            <span class="keyword">using</span> notT1 = decltype(!this-&gt;<a class="code" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a3b2dad0571750c36b1999523cc1118ed">a</a>);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;            <span class="keyword">using</span> notT2 = decltype(!this-&gt;<a class="code" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a2767bf2154fd9ce54684318632f08a8c">b</a>);</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;            <span class="keywordflow">return</span> Rule&lt;Rule&lt;T1, details::And, T2&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873a9b44e0526c1c5e7316eb1dc84fcc3eb4">details::Or</a>, Rule&lt;notT1, details::And, notT2&gt;&gt;(</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;                (this-&gt;<a class="code" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a3b2dad0571750c36b1999523cc1118ed">a</a> &amp;&amp; this-&gt;<a class="code" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a2767bf2154fd9ce54684318632f08a8c">b</a>), (!this-&gt;<a class="code" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a3b2dad0571750c36b1999523cc1118ed">a</a> &amp;&amp; !this-&gt;<a class="code" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a2767bf2154fd9ce54684318632f08a8c">b</a>)</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;            );</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        }</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    }</div>
+<div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_a2b55c2149449a96a5bcfe8d751c4f873a0501d900fb717da8a48570de90cf70d9"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873a0501d900fb717da8a48570de90cf70d9">webframe::ORM::details::Not_equal</a></div><div class="ttdeci">@ Not_equal</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d5b/rule__operators_8hpp_source.html#l00010">rule_operators.hpp:10</a></div></div>
+<div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_a2b55c2149449a96a5bcfe8d751c4f873a572a7ec6498b57f32226ff938d80ad7c"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873a572a7ec6498b57f32226ff938d80ad7c">webframe::ORM::details::And</a></div><div class="ttdeci">@ And</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d5b/rule__operators_8hpp_source.html#l00013">rule_operators.hpp:13</a></div></div>
+<div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_a2b55c2149449a96a5bcfe8d751c4f873a9a0660f4c781157416e871f93b72790b"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873a9a0660f4c781157416e871f93b72790b">webframe::ORM::details::Less</a></div><div class="ttdeci">@ Less</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d5b/rule__operators_8hpp_source.html#l00007">rule_operators.hpp:7</a></div></div>
+<div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_a2b55c2149449a96a5bcfe8d751c4f873a9b44e0526c1c5e7316eb1dc84fcc3eb4"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873a9b44e0526c1c5e7316eb1dc84fcc3eb4">webframe::ORM::details::Or</a></div><div class="ttdeci">@ Or</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d5b/rule__operators_8hpp_source.html#l00014">rule_operators.hpp:14</a></div></div>
+<div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_a2b55c2149449a96a5bcfe8d751c4f873a9e2be9c31ec17abad0e38bb22fc29a04"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873a9e2be9c31ec17abad0e38bb22fc29a04">webframe::ORM::details::Equals</a></div><div class="ttdeci">@ Equals</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d5b/rule__operators_8hpp_source.html#l00009">rule_operators.hpp:9</a></div></div>
+<div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_a2b55c2149449a96a5bcfe8d751c4f873ab0baee668ee3ec770480a79923ddbd4a"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873ab0baee668ee3ec770480a79923ddbd4a">webframe::ORM::details::Xor</a></div><div class="ttdeci">@ Xor</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d5b/rule__operators_8hpp_source.html#l00015">rule_operators.hpp:15</a></div></div>
+<div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_a2b55c2149449a96a5bcfe8d751c4f873aef888f5fa410fbec688e5682af6177c3"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873aef888f5fa410fbec688e5682af6177c3">webframe::ORM::details::Greater</a></div><div class="ttdeci">@ Greater</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d5b/rule__operators_8hpp_source.html#l00008">rule_operators.hpp:8</a></div></div>
+<div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_a2b55c2149449a96a5bcfe8d751c4f873af38f4faf826471afbd702ab5bb622b1c"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873af38f4faf826471afbd702ab5bb622b1c">webframe::ORM::details::Greater_or_equal</a></div><div class="ttdeci">@ Greater_or_equal</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d5b/rule__operators_8hpp_source.html#l00011">rule_operators.hpp:11</a></div></div>
+<div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_a2b55c2149449a96a5bcfe8d751c4f873af410d99b0214cf65f777868f2d20c9f8"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873af410d99b0214cf65f777868f2d20c9f8">webframe::ORM::details::Less_or_equal</a></div><div class="ttdeci">@ Less_or_equal</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d5b/rule__operators_8hpp_source.html#l00012">rule_operators.hpp:12</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a5f27761eaf4095a8cc2029050035f73e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f27761eaf4095a8cc2029050035f73e">&#9670;&nbsp;</a></span>operator&amp;&amp;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T1 , details::rule_operators op, typename T2 &gt; </div>
+<div class="memtemplate">
+template&lt;typename T3 , details::rule_operators op2, typename T4 &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto <a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html">webframe::ORM::Rule</a>&lt; T1, op, T2 &gt;::operator&amp;&amp; </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html">Rule</a>&lt; T3, op2, T4 &gt;&#160;</td>
+          <td class="paramname"><em>rule2</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d7/dec/rule_8cpp_source.html#l00086">86</a> of file <a class="el" href="../../d7/dec/rule_8cpp_source.html">rule.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    {</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        <span class="keywordflow">return</span> Rule&lt;Rule&lt;T1, op, T2&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873a572a7ec6498b57f32226ff938d80ad7c">details::And</a>, Rule&lt;T3, op2, T4&gt;&gt;(*<span class="keyword">this</span>, rule2);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a51484bec0d3c6b8d5c3c5e38da68b39b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51484bec0d3c6b8d5c3c5e38da68b39b">&#9670;&nbsp;</a></span>operator^()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T1 , details::rule_operators op, typename T2 &gt; </div>
+<div class="memtemplate">
+template&lt;typename T3 , details::rule_operators op2, typename T4 &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto <a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html">webframe::ORM::Rule</a>&lt; T1, op, T2 &gt;::operator^ </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html">Rule</a>&lt; T3, op2, T4 &gt;&#160;</td>
+          <td class="paramname"><em>rule2</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d7/dec/rule_8cpp_source.html#l00100">100</a> of file <a class="el" href="../../d7/dec/rule_8cpp_source.html">rule.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    {</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;        <span class="keywordflow">return</span> Rule&lt;Rule&lt;T1, op, T2&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873ab0baee668ee3ec770480a79923ddbd4a">details::Xor</a>, Rule&lt;T3, op2, T4&gt;&gt;(*<span class="keyword">this</span>, rule2);</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aad0171aa5da73f281d65f08c39c5932b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad0171aa5da73f281d65f08c39c5932b">&#9670;&nbsp;</a></span>operator||()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T1 , details::rule_operators op, typename T2 &gt; </div>
+<div class="memtemplate">
+template&lt;typename T3 , details::rule_operators op2, typename T4 &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto <a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html">webframe::ORM::Rule</a>&lt; T1, op, T2 &gt;::operator|| </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html">Rule</a>&lt; T3, op2, T4 &gt;&#160;</td>
+          <td class="paramname"><em>rule2</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d7/dec/rule_8cpp_source.html#l00093">93</a> of file <a class="el" href="../../d7/dec/rule_8cpp_source.html">rule.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    {</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;        <span class="keywordflow">return</span> Rule&lt;Rule&lt;T1, op, T2&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873a9b44e0526c1c5e7316eb1dc84fcc3eb4">details::Or</a>, Rule&lt;T3, op2, T4&gt;&gt;(*<span class="keyword">this</span>, rule2);</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<h2 class="groupheader">Field Documentation</h2>
+<a id="a3b2dad0571750c36b1999523cc1118ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b2dad0571750c36b1999523cc1118ed">&#9670;&nbsp;</a></span>a</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T1 , details::rule_operators op, typename T2 &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T1 <a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html">webframe::ORM::Rule</a>&lt; T1, op, T2 &gt;::a</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d3/d5f/rule_8hpp_source.html#l00013">13</a> of file <a class="el" href="../../d3/d5f/rule_8hpp_source.html">rule.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a2767bf2154fd9ce54684318632f08a8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2767bf2154fd9ce54684318632f08a8c">&#9670;&nbsp;</a></span>b</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T1 , details::rule_operators op, typename T2 &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T2 <a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html">webframe::ORM::Rule</a>&lt; T1, op, T2 &gt;::b</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d3/d5f/rule_8hpp_source.html#l00014">14</a> of file <a class="el" href="../../d3/d5f/rule_8hpp_source.html">rule.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a1446a36fc19420992a34ad278f3bf55a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1446a36fc19420992a34ad278f3bf55a">&#9670;&nbsp;</a></span>operation</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T1 , details::rule_operators op, typename T2 &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873">details::rule_operators</a> <a class="el" href="../../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html">webframe::ORM::Rule</a>&lt; T1, op, T2 &gt;::operation = op</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d3/d5f/rule_8hpp_source.html#l00017">17</a> of file <a class="el" href="../../d3/d5f/rule_8hpp_source.html">rule.hpp</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>lib/include/ORM/<a class="el" href="../../df/d09/forward-decl_8hpp_source.html">forward-decl.hpp</a></li>
+<li>lib/include/ORM/tools/<a class="el" href="../../d3/d5f/rule_8hpp_source.html">rule.hpp</a></li>
+<li>lib/src/ORM/tools/<a class="el" href="../../d7/dec/rule_8cpp_source.html">rule.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

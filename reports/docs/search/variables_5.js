@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['elements_5fper_5fpage_1233',['elements_per_page',['../da/d3c/classwebframe_1_1_o_r_m_1_1_pagification.html#a306f072bc3768a03b1ac324236b9f9b5',1,'webframe::ORM::Pagification::elements_per_page()'],['../d7/da6/classwebframe_1_1_o_r_m_1_1_pagification_1_1_per__page.html#a6f1ba81c474aeabc591c8afb397cadf1',1,'webframe::ORM::Pagification::Per_page::elements_per_page()']]],
-  ['extension_5fmask_1234',['extension_mask',['../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html#a28838a9a9d602f06c768f68d4505146e',1,'pfr::detail::typeid_conversions']]]
+  ['p_160',['P',['../d4/d86/namespacewebframe_1_1_o_r_m.html#a50d3ffa4cef252aa3c0b8bf6c9beae8e',1,'webframe::ORM']]],
+  ['placeholder_161',['placeholder',['../d3/d98/structwebframe_1_1_o_r_m_1_1details_1_1_query_input.html#a90add02646b50d33b7a58a66fc4ccaac',1,'webframe::ORM::details::QueryInput']]],
+  ['placeholder_162',['Placeholder',['../d4/d86/namespacewebframe_1_1_o_r_m.html#ada5296390c41355ebb2b1d69e794fd9c',1,'webframe::ORM']]]
 ];
