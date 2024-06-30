@@ -9,5 +9,5 @@
 
 namespace webframe::ORM
 {
-    
+
 }

@@ -10,33 +10,39 @@
 #include <algorithm>
 #include <string_view>
 
-namespace webframe::ORM {
-    namespace details {
-        template<size_t N>
-        struct string_literal {
-            constexpr static size_t size = N;
+namespace webframe::ORM
+{
+	namespace details
+	{
+		template <size_t N> struct string_literal
+		{
+			constexpr static size_t size = N;
 
-            constexpr string_literal(const char(&str)[N]) {
-                std::copy_n(str, N, value);
-            }
+			constexpr string_literal(const char (&str)[N])
+			{
+				std::copy_n(str, N, value);
+			}
 
-            constexpr operator std::string_view() const {
-                return std::string_view(value);
-            }
+			constexpr operator std::string_view() const
+			{
+				return std::string_view(value);
+			}
 
-            constexpr std::string_view to_sv() const {
-                return std::string_view(value);
-            }
+			constexpr std::string_view to_sv() const
+			{
+				return std::string_view(value);
+			}
 
-            char value[N];
-        };
-    }
+			char value[N];
+		};
+	} // namespace details
 
-    namespace literals {
-        using namespace std::literals::string_view_literals;
-        template<webframe::ORM::details::string_literal Str>
-        constexpr decltype(Str) operator ""_sl() {
-            return Str;
-        }
-    }
-}
+	namespace literals
+	{
+		using namespace std::literals::string_view_literals;
+		template <webframe::ORM::details::string_literal Str> constexpr decltype(Str) operator""_sl()
+		{
+			return Str;
+		}
+	} // namespace literals
+} // namespace webframe::ORM

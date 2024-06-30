@@ -8,24 +8,35 @@
 using namespace std;
 using namespace webframe::ORM::literals;
 
-template<typename T, size_t i>
-constexpr void create_table_helper() {
-	if constexpr (i >= pfr::tuple_size<T>::value) return;
-	if constexpr (std::derived_from<decltype(pfr::get<i>(std::declval<T>())), webframe::ORM::details::property>) {
+template <typename T, size_t i> constexpr void create_table_helper()
+{
+	if constexpr (i >= pfr::tuple_size<T>::value)
+	{
+		return;
+	}
+	if constexpr (std::derived_from<decltype(pfr::get<i>(std::declval<T>())), webframe::ORM::details::property>)
+	{
 		constexpr std::string_view column_name = decltype(pfr::get<i>(std::declval<T>()))::_name();
 		using ColumnType = typename decltype(pfr::get<i>(std::declval<T>()))::var_t;
-		
+
 		std::cout << column_name << " " << typeid(ColumnType).name() << std::endl;
 	}
-	if constexpr (i+1 < pfr::tuple_size<T>::value) create_table_helper<T, i + 1>();
+	if constexpr (i + 1 < pfr::tuple_size<T>::value)
+	{
+		create_table_helper<T, i + 1>();
+	}
 }
 
-template<typename T>
-void create_table() {
+template <typename T> void create_table()
+{
 	create_table_helper<T, 0>();
 }
 
-#define my_assert(x) if (!(x)) { std::cout << "\"" << #x<< "\" failed." << std::endl; }
+#define my_assert(x)                                                                                                                                           \
+	if (!(x))                                                                                                                                                  \
+	{                                                                                                                                                          \
+		std::cout << "\"" << #x << "\" failed." << std::endl;                                                                                                  \
+	}
 
 int main()
 {
@@ -50,7 +61,7 @@ int main()
 	webframe::ORM::relationship<webframe::ORM::RelationshipTypes::one2one, &User::id> y;
 
 	std::cout << typeid(!(P<&UserPost::author> == P<&User::id> && P<&UserPost::post> == P<&Post::id>)).name() << std::endl;
-	std::cout << typeid(!((P<&UserPost::author> == P<&User::id>) ^ (P<&UserPost::post> == P<&Post::id>))).name() << std::endl;
+	std::cout << typeid(!((P<&UserPost::author> == P<&User::id>)^(P<&UserPost::post> == P<&Post::id>))).name() << std::endl;
 	MockDB::MockDB db;
 	std::cout << (db << Utils<User>::insert_new_user)("Name") << std::endl;
 	std::cout << (db << Utils<User>::insert_new_user_with_id_placeholder)(5, "Name") << std::endl;
