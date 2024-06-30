@@ -55,4 +55,4 @@ endif()
 #                           )
 # add_executable(Webframe::ORM::Example ALIAS Webframe_ORM_Example)
 
-#include(CPack)
+include(CPack)
