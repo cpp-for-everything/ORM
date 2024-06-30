@@ -1,9 +1,4 @@
 var searchData=
 [
-  ['data_1227',['data',['../d4/dff/structpfr_1_1detail_1_1size__array.html#a705ea6218b5224fcc8190f13f73bad51',1,'pfr::detail::size_array::data()'],['../d3/d65/structpfr_1_1detail_1_1size__array_3_010_01_4.html#a37edab4a0cf63a72a0d8d75b33442659',1,'pfr::detail::size_array&lt; 0 &gt;::data()']]],
-  ['db_5fpercision_1228',['db_percision',['../db/d6b/classwebframe_1_1_o_r_m_1_1_primitive.html#a997975b57c8b684c2df7bac2191f31c6',1,'webframe::ORM::Primitive']]],
-  ['db_5fsize_1229',['db_size',['../da/de7/classwebframe_1_1_o_r_m_1_1_b_i_t.html#aa0302a3cca1da2063b5ab5ed89c2c907',1,'webframe::ORM::BIT::db_size()'],['../d4/d38/classwebframe_1_1_o_r_m_1_1_b_i_n_a_r_y.html#a738a4848bde604a9f3373e765cba5863',1,'webframe::ORM::BINARY::db_size()'],['../de/d45/classwebframe_1_1_o_r_m_1_1_v_a_r_b_i_n_a_r_y.html#aba61440169280d9d1848865b0b2a623d',1,'webframe::ORM::VARBINARY::db_size()'],['../db/d6b/classwebframe_1_1_o_r_m_1_1_primitive.html#a60322b451d6fd09e3aa1a5fa9539a4f8',1,'webframe::ORM::Primitive::db_size()']]],
-  ['db_5ftype_1230',['db_type',['../da/de7/classwebframe_1_1_o_r_m_1_1_b_i_t.html#a3ccfe3698e6299dd1168213eca5fd1ac',1,'webframe::ORM::BIT::db_type()'],['../d4/d38/classwebframe_1_1_o_r_m_1_1_b_i_n_a_r_y.html#acb7a020fef09faf72b2481b0eee55546',1,'webframe::ORM::BINARY::db_type()'],['../de/d45/classwebframe_1_1_o_r_m_1_1_v_a_r_b_i_n_a_r_y.html#a67d7fca141d7543bace01ae3e99a47e7',1,'webframe::ORM::VARBINARY::db_type()'],['../da/d17/classwebframe_1_1_o_r_m_1_1_b_o_o_l.html#ad34757bd44f7be7f45f6af0da2bd2572',1,'webframe::ORM::BOOL::db_type()'],['../db/d6b/classwebframe_1_1_o_r_m_1_1_primitive.html#abd4fdba2f4e006ad16f8bb1a58a21e98',1,'webframe::ORM::Primitive::db_type()']]],
-  ['deleteq_1231',['deleteq',['../d4/d86/namespacewebframe_1_1_o_r_m.html#a0e02f8907e508f1554a75d07734c7555',1,'webframe::ORM']]],
-  ['delim_1232',['delim',['../dc/df8/classwebframe_1_1_o_r_m_1_1_mock_d_b_1_1_mock_d_b.html#a0b1f211e3f9806ed3f2a9b83fd210b0e',1,'webframe::ORM::MockDB::MockDB']]]
+  ['operation_159',['operation',['../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a1446a36fc19420992a34ad278f3bf55a',1,'webframe::ORM::Rule']]]
 ];

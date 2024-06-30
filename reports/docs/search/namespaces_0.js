@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['detail_906',['detail',['../d9/d07/namespacepfr_1_1detail.html',1,'pfr']]],
-  ['pfr_907',['pfr',['../d4/d26/namespacepfr.html',1,'']]],
-  ['sequence_5ftuple_908',['sequence_tuple',['../d6/da8/namespacepfr_1_1detail_1_1sequence__tuple.html',1,'pfr::detail']]],
-  ['typeid_5fconversions_909',['typeid_conversions',['../d6/d47/namespacepfr_1_1detail_1_1typeid__conversions.html',1,'pfr::detail']]]
+  ['details_113',['details',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html',1,'webframe::ORM']]],
+  ['literals_114',['literals',['../d7/d59/namespacewebframe_1_1_o_r_m_1_1literals.html',1,'webframe::ORM']]],
+  ['orm_115',['ORM',['../d4/d86/namespacewebframe_1_1_o_r_m.html',1,'webframe']]],
+  ['webframe_116',['webframe',['../d8/d8d/namespacewebframe.html',1,'']]]
 ];

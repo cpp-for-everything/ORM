@@ -1,16 +1,4 @@
 var searchData=
 [
-  ['fields_5fcount_1050',['fields_count',['../d9/d07/namespacepfr_1_1detail.html#a521adf9b00f9b3944649066dd955c8c7',1,'pfr::detail']]],
-  ['fields_5fcount_5fand_5ftype_5fids_5fwith_5fzeros_1051',['fields_count_and_type_ids_with_zeros',['../d9/d07/namespacepfr_1_1detail.html#a98e5cd665a8a6b5fe8b41597d8729f14',1,'pfr::detail']]],
-  ['flat_5farray_5fof_5ftype_5fids_1052',['flat_array_of_type_ids',['../d9/d07/namespacepfr_1_1detail.html#a4afe1dce3c279f48c7b3e55a17a0c3de',1,'pfr::detail']]],
-  ['flat_5ftype_5fto_5farray_5fof_5ftype_5fids_1053',['flat_type_to_array_of_type_ids',['../d9/d07/namespacepfr_1_1detail.html#a72d3515e7973f096a7be80c0a8624e6e',1,'pfr::detail']]],
-  ['for_5f_1054',['for_',['../dc/df8/classwebframe_1_1_o_r_m_1_1_mock_d_b_1_1_mock_d_b.html#a798b88d11d4679cb24aa16406adc9df7',1,'webframe::ORM::MockDB::MockDB']]],
-  ['for_5feach_5ffield_1055',['for_each_field',['../d4/d26/namespacepfr.html#ae22aa54f54e0c4294dbb685991530d4a',1,'pfr']]],
-  ['for_5feach_5ffield_5fdispatcher_1056',['for_each_field_dispatcher',['../d9/d07/namespacepfr_1_1detail.html#a47fc6565c89bad2c6952b0de06342f4b',1,'pfr::detail']]],
-  ['for_5feach_5ffield_5fdispatcher_5f1_1057',['for_each_field_dispatcher_1',['../d9/d07/namespacepfr_1_1detail.html#acc1ccddb246bfe3a2692452156200759',1,'pfr::detail::for_each_field_dispatcher_1(T &amp;t, F &amp;&amp;f, std::index_sequence&lt; I... &gt;, std::true_type)'],['../d9/d07/namespacepfr_1_1detail.html#ae07092cca37119590c65519e13d417f0',1,'pfr::detail::for_each_field_dispatcher_1(T &amp;t, F &amp;&amp;f, std::index_sequence&lt; I... &gt;, std::false_type)']]],
-  ['for_5feach_5ffield_5fimpl_1058',['for_each_field_impl',['../d9/d07/namespacepfr_1_1detail.html#ae1aaaccd64e87c9c8d92b0a97523a5ed',1,'pfr::detail::for_each_field_impl(T &amp;t, F &amp;&amp;f, std::index_sequence&lt; I... &gt;, std::false_type)'],['../d9/d07/namespacepfr_1_1detail.html#a76ab81a589e5a3b2acf02f83a6c36914',1,'pfr::detail::for_each_field_impl(T &amp;t, F &amp;&amp;f, std::index_sequence&lt; I... &gt;, std::true_type)']]],
-  ['for_5feach_5ffield_5fimpl_5fapply_1059',['for_each_field_impl_apply',['../d9/d07/namespacepfr_1_1detail.html#acf364e6a0f219f3e330385a44ff89133',1,'pfr::detail::for_each_field_impl_apply(T &amp;&amp;v, F &amp;&amp;f, I i, long)'],['../d9/d07/namespacepfr_1_1detail.html#af8e353bc4da7b2ed612425d65c8d969b',1,'pfr::detail::for_each_field_impl_apply(T &amp;&amp;v, F &amp;&amp;f, I, int)']]],
-  ['for_5feach_5ffield_5fin_5fdepth_1060',['for_each_field_in_depth',['../d9/d07/namespacepfr_1_1detail.html#a874e98f2fc43f85c9c573d609f7d4a4a',1,'pfr::detail::for_each_field_in_depth(T &amp;t, F &amp;&amp;f, std::index_sequence&lt;&gt;, identity&lt; Fields &gt;...)'],['../d9/d07/namespacepfr_1_1detail.html#afd8af97e47504ceeaf1513921491c8f2',1,'pfr::detail::for_each_field_in_depth(T &amp;t, F &amp;&amp;f, std::index_sequence&lt; I0, I... &gt;, identity&lt; Fields &gt;...)']]],
-  ['for_5fwith_1061',['for_with',['../dc/df8/classwebframe_1_1_o_r_m_1_1_mock_d_b_1_1_mock_d_b.html#a597629fec866173317bab4687cfad25e',1,'webframe::ORM::MockDB::MockDB']]],
-  ['fuck_5fthis_5fshit_1062',['fuck_this_shit',['../d0/d24/classwebframe_1_1_o_r_m_1_1details_1_1result__t.html#a6f9d674733d21f151c5dfd150f4001dc',1,'webframe::ORM::details::result_t']]]
+  ['string_5fliteral_147',['string_literal',['../da/d64/structwebframe_1_1_o_r_m_1_1details_1_1string__literal.html#aeed857d7c3169e961ce067dd1a87b543',1,'webframe::ORM::details::string_literal']]]
 ];
