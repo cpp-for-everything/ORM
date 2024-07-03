@@ -5,6 +5,7 @@
 #include <ORM/utils/mem_ptr_wrapper.hpp>
 #include <ORM/tools/property.hpp>
 #include <ORM/tools/rule.hpp>
+#include <ORM/tools/statement.hpp>
 #include <ORM/wrappers/db_types.hpp>
 
 namespace webframe::ORM

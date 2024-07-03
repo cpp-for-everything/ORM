@@ -3,3 +3,4 @@
 FieldsTests::init(it);
 // TableTests::init(it);
 RulesTests::init(it);
+StatementsTests::init(it);

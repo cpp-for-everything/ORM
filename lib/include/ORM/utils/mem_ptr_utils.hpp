@@ -6,5 +6,6 @@ namespace webframe::ORM::details
 	{
 		public:
 		using class_type = C;
+		using type = typename T::native_type;
 	};
 } // namespace webframe::ORM::details
