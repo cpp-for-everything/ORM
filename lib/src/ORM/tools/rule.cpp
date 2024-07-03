@@ -2,29 +2,6 @@
 
 namespace webframe::ORM
 {
-#define IMPLEMENT_OPERATOR(op, op_enum)                                                                                                                        \
-	template <typename T, typename C, T C::*ptr>                                                                                                               \
-	template <typename Y>                                                                                                                                      \
-		requires(std::is_convertible_v<Y, typename T::native_type>)                                                                                            \
-	constexpr auto details::mem_ptr_wrapper<ptr>::operator op(Y a) const                                                                                       \
-	{                                                                                                                                                          \
-		return Rule<details::mem_ptr_wrapper<ptr>, details::op_enum, Y>(*this, a);                                                                             \
-	}                                                                                                                                                          \
-	template <typename T, typename C, T C::*ptr>                                                                                                               \
-	constexpr auto details::mem_ptr_wrapper<ptr>::operator op(decltype(Placeholder<typename T::native_type>)) const                                            \
-	{                                                                                                                                                          \
-		return Rule<details::mem_ptr_wrapper<ptr>, details::op_enum, decltype(Placeholder<typename T::native_type>)>(                                          \
-			*this, Placeholder<typename T::native_type>);                                                                                                      \
-	}
-
-	IMPLEMENT_OPERATOR(<, Less)
-	IMPLEMENT_OPERATOR(>, Greater)
-	IMPLEMENT_OPERATOR(==, Equals)
-	IMPLEMENT_OPERATOR(!=, Not_equal)
-	IMPLEMENT_OPERATOR(<=, Less_or_equal)
-	IMPLEMENT_OPERATOR(>=, Greater_or_equal)
-#undef IMPLEMENT_OPERATOR
-
 	template <typename T1, details::rule_operators op, typename T2> constexpr auto Rule<T1, op, T2>::operator!() const
 	{
 		if constexpr (op == details::Less)
