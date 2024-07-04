@@ -93,7 +93,7 @@ namespace StatementsTests
 						must_be_equal(check, true, "Last operation ofUser::id + 6 * 5 is not plus");
 					});
 				});
-				
+
 				it.describe("User::id + 6 * 5", [](Moka::Context& it) {
 					constexpr auto stmt = P<&User::id> + Constant<int>(6) * Constant<int>(5);
 
@@ -114,7 +114,7 @@ namespace StatementsTests
 						static_assert(check, "Something went wrong with the compile-time value of the operation of the expression.");
 						must_be_equal(check, true, "Last operation of User::id + 6 * 5 is not plus");
 					});
-				});		
+				});
 
 				it.describe("6 * 5 + User::id", [](Moka::Context& it) {
 					constexpr auto stmt = Constant<int>(6) * Constant<int>(5) + P<&User::id>;
@@ -140,7 +140,7 @@ namespace StatementsTests
 			});
 			it.describe("Statement", [](Moka::Context& it) {
 				it.describe("User::id = 5 + 6", [](Moka::Context& it) {
-					constexpr auto stmt = (P<&User::id> = Constant<int>(5) + Constant<int>(6));
+					constexpr auto stmt = (P<& User::id> = Constant<int>(5) + Constant<int>(6));
 					it.should("assign value to User::id", [&]() {
 						constexpr bool check = stmt.a.equals<&User::id>();
 						static_assert(check, "Statement was unable to set the assignee to User::id.");
@@ -155,4 +155,4 @@ namespace StatementsTests
 			});
 		});
 	}
-} // namespace RulesTests
+} // namespace StatementsTests
