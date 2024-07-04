@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['db_5ftype_170',['db_type',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a55cc43c8cdfbf3c1c59a63f4696c007b',1,'webframe::ORM::details']]]
+  ['assignment_5foperators_226',['assignment_operators',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a352faca374f0b3ae7a80248f0f4d48ab',1,'webframe::ORM::details']]]
 ];

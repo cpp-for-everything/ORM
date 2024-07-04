@@ -114,7 +114,7 @@ Static Public Member Functions</h2></td></tr>
 class webframe::ORM::details::mem_ptr_wrapper&lt; ptr &gt;</h3>
 
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html#l00008">8</a> of file <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html">mem_ptr_wrapper.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html#l00009">9</a> of file <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html">mem_ptr_wrapper.hpp</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="af3b96d3fc4b0728ab34de926487a5161"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af3b96d3fc4b0728ab34de926487a5161">&#9670;&nbsp;</a></span>class_type</h2>
@@ -130,7 +130,7 @@ template&lt;typename T , typename C , T C::* ptr&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html#l00012">12</a> of file <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html">mem_ptr_wrapper.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html#l00013">13</a> of file <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html">mem_ptr_wrapper.hpp</a>.</p>
 
 </div>
 </div>
@@ -148,7 +148,7 @@ template&lt;typename T , typename C , T C::* ptr&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html#l00011">11</a> of file <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html">mem_ptr_wrapper.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html#l00012">12</a> of file <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html">mem_ptr_wrapper.hpp</a>.</p>
 
 </div>
 </div>
@@ -211,10 +211,14 @@ template&lt;auto ptr2&gt; </div>
 <p class="definition">Definition at line <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html#l00015">15</a> of file <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html">mem_ptr_wrapper.hpp</a>.</p>
 <div class="fragment"><div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;            {</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;                <span class="keywordflow">if</span> constexpr (!std::is_same_v&lt;decltype(ptr2), T C::*&gt;)</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;                    return false;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;                if constexpr (std::is_same_v&lt;decltype(ptr2), T C::*&gt;)</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;                    return ptr2 == ptr;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;            }</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;                {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;                    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;                }</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                <span class="keywordflow">if</span> constexpr (std::is_same_v&lt;decltype(ptr2), T C::*&gt;)</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;                {</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                    <span class="keywordflow">return</span> ptr2 == ptr;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                }</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;            }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -243,8 +247,10 @@ template&lt;typename T , typename C , T C::* ptr&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html#l00022">22</a> of file <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html">mem_ptr_wrapper.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;{ <span class="keywordflow">return</span> ptr; }</div>
+<p class="definition">Definition at line <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html#l00026">26</a> of file <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html">mem_ptr_wrapper.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;            {</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;                <span class="keywordflow">return</span> ptr;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;            }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -273,8 +279,10 @@ template&lt;typename T , typename C , T C::* ptr&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html#l00023">23</a> of file <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html">mem_ptr_wrapper.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;{ <span class="keywordflow">return</span> ptr; }</div>
+<p class="definition">Definition at line <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html#l00030">30</a> of file <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html">mem_ptr_wrapper.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;            {</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;                <span class="keywordflow">return</span> ptr;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;            }</div>
 </div><!-- fragment -->
 </div>
 </div>

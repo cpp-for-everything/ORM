@@ -75,17 +75,19 @@ $(function() {
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="keyword">namespace </span><a class="code" href="../../d4/d86/namespacewebframe_1_1_o_r_m.html">webframe::ORM</a></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;{</div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, details::<span class="keywordtype">string</span>_literal column_name&gt;</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;    <a class="code" href="../../d4/d86/namespacewebframe_1_1_o_r_m.html#a3c8a9b92ac1e52fb9c875a28e95e45c4">requires</a> (details::is_database_wrapped_class&lt;T&gt; &amp;&amp; !std::is_base_of_v&lt;details::IProperty, T&gt;)</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, details::<span class="keywordtype">string</span>_literal column_name&gt;</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;        <a class="code" href="../../d4/d86/namespacewebframe_1_1_o_r_m.html#a3c8a9b92ac1e52fb9c875a28e95e45c4">requires</a>(details::is_database_wrapped_class&lt;T&gt; &amp;&amp; !std::is_base_of_v&lt;details::IProperty, T&gt;)</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;    constexpr property&lt;T, column_name&gt;::property() : T()</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    { }</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, details::<span class="keywordtype">string</span>_literal column_name&gt;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    <a class="code" href="../../d4/d86/namespacewebframe_1_1_o_r_m.html#a3c8a9b92ac1e52fb9c875a28e95e45c4">requires</a> (details::is_database_wrapped_class&lt;T&gt; &amp;&amp; !std::is_base_of_v&lt;details::IProperty, T&gt;)</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Ts&gt;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    constexpr property&lt;T, column_name&gt;::property(Ts... args) : T(args...)</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    { }</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;}</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    {</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    }</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, details::<span class="keywordtype">string</span>_literal column_name&gt;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;        <a class="code" href="../../d4/d86/namespacewebframe_1_1_o_r_m.html#a3c8a9b92ac1e52fb9c875a28e95e45c4">requires</a>(details::is_database_wrapped_class&lt;T&gt; &amp;&amp; !std::is_base_of_v&lt;details::IProperty, T&gt;)</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span>... Ts&gt;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    constexpr property&lt;T, column_name&gt;::property(Ts... args) : T(args...)</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    {</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    }</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;} <span class="comment">// namespace webframe::ORM</span></div>
 <div class="ttc" id="anamespacewebframe_1_1_o_r_m_html"><div class="ttname"><a href="../../d4/d86/namespacewebframe_1_1_o_r_m.html">webframe::ORM</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/d09/forward-decl_8hpp_source.html#l00007">forward-decl.hpp:8</a></div></div>
 <div class="ttc" id="anamespacewebframe_1_1_o_r_m_html_a3c8a9b92ac1e52fb9c875a28e95e45c4"><div class="ttname"><a href="../../d4/d86/namespacewebframe_1_1_o_r_m.html#a3c8a9b92ac1e52fb9c875a28e95e45c4">webframe::ORM::requires</a></div><div class="ttdeci">requires(details::is_database_wrapped_class&lt; T &gt; &amp;&amp;!std::is_base_of_v&lt; details::IProperty, T &gt;) class property</div></div>
 <div class="ttc" id="aproperty_8hpp_html"><div class="ttname"><a href="../../df/d98/property_8hpp.html">property.hpp</a></div></div>
