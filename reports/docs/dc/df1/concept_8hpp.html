@@ -97,13 +97,13 @@ Namespaces</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:ab096feb49fce908c11c532b09586645c"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ab096feb49fce908c11c532b09586645c"><td class="memTemplItemLeft" align="right" valign="top">concept&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#ab096feb49fce908c11c532b09586645c">webframe::ORM::details::is_database_wrapped_class</a></td></tr>
+<tr class="memitem:ab096feb49fce908c11c532b09586645c"><td class="memTemplItemLeft" align="right" valign="top">concept&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#ab096feb49fce908c11c532b09586645c">webframe::ORM::details::is_database_wrapped_class</a> = requires { typename T::native_type; }</td></tr>
 <tr class="separator:ab096feb49fce908c11c532b09586645c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc8d7b3536b16f17a13882e17bad9f28"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:abc8d7b3536b16f17a13882e17bad9f28"><td class="memTemplItemLeft" align="right" valign="top">concept&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#abc8d7b3536b16f17a13882e17bad9f28">webframe::ORM::details::is_table</a></td></tr>
 <tr class="separator:abc8d7b3536b16f17a13882e17bad9f28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49c056856afbd6963c25a500791bb747"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a49c056856afbd6963c25a500791bb747"><td class="memTemplItemLeft" align="right" valign="top">concept&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a49c056856afbd6963c25a500791bb747">webframe::ORM::details::is_table_pointer_to_member_variable_t</a></td></tr>
+<tr class="memitem:a49c056856afbd6963c25a500791bb747"><td class="memTemplItemLeft" align="right" valign="top">concept&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a49c056856afbd6963c25a500791bb747">webframe::ORM::details::is_table_pointer_to_member_variable_t</a> = std::derived_from&lt;T, i_mem_ptr&gt; &amp;&amp; is_table&lt;typename T::class_type&gt;</td></tr>
 <tr class="separator:a49c056856afbd6963c25a500791bb747"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->

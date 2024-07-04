@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['fixed_5fstring_179',['fixed_string',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a55cc43c8cdfbf3c1c59a63f4696c007ba7a194069bb8553f21ac6d927da881871',1,'webframe::ORM::details']]],
-  ['floating_5fpoint_180',['floating_point',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a55cc43c8cdfbf3c1c59a63f4696c007bafd4f964d93d8fdf5e2110e5cb21737ec',1,'webframe::ORM::details']]]
+  ['eq_238',['Eq',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a352faca374f0b3ae7a80248f0f4d48abaf5f60caf5deb71a2d25263efa0d67f2c',1,'webframe::ORM::details']]],
+  ['equals_239',['Equals',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a2b55c2149449a96a5bcfe8d751c4f873a9e2be9c31ec17abad0e38bb22fc29a04',1,'webframe::ORM::details']]]
 ];

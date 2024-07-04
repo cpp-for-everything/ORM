@@ -212,7 +212,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc1/db__types_8hpp_source.html#l00080">80</a> of file <a class="el" href="../../de/dc1/db__types_8hpp_source.html">db_types.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc1/db__types_8hpp_source.html#l00102">102</a> of file <a class="el" href="../../de/dc1/db__types_8hpp_source.html">db_types.hpp</a>.</p>
 
 </div>
 </div>
@@ -259,18 +259,20 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    db_params __VA_ARGS__ \</div>
-<div class="line">    class db_type_name : <span class="keyword">public</span> details::PrimitiveWrapper&lt;cpp_equivalent&gt; \</div>
-<div class="line">    { \</div>
-<div class="line">    public: \</div>
-<div class="line">        using native_type = cpp_equivalent; \</div>
-<div class="line">        static constexpr <span class="keyword">auto</span> Type = details::db_type::db_enum_type; \</div>
-<div class="line">        constexpr db_type_name() : details::PrimitiveWrapper&lt;cpp_equivalent&gt;() {} \</div>
-<div class="line">        template&lt;<span class="keyword">typename</span>... Ts&gt; \</div>
-<div class="line">        constexpr db_type_name(Ts... args) : details::PrimitiveWrapper&lt;cpp_equivalent&gt;(args...) {} \</div>
+<b>Value:</b><div class="fragment"><div class="line">    db_params __VA_ARGS__ <span class="keyword">class </span>db_type_name : <span class="keyword">public</span> details::PrimitiveWrapper&lt;cpp_equivalent&gt;                                                                \</div>
+<div class="line">    {                                                                                                                                                          \</div>
+<div class="line">        public:                                                                                                                                                \</div>
+<div class="line">        using native_type = cpp_equivalent;                                                                                                                    \</div>
+<div class="line">        static constexpr <span class="keyword">auto</span> Type = details::db_type::db_enum_type;                                                                                           \</div>
+<div class="line">        constexpr db_type_name() : details::PrimitiveWrapper&lt;cpp_equivalent&gt;()                                                                                 \</div>
+<div class="line">        {                                                                                                                                                      \</div>
+<div class="line">        }                                                                                                                                                      \</div>
+<div class="line">        template &lt;<span class="keyword">typename</span>... Ts&gt; constexpr db_type_name(Ts... args) : details::PrimitiveWrapper&lt;cpp_equivalent&gt;(args...)                                      \</div>
+<div class="line">        {                                                                                                                                                      \</div>
+<div class="line">        }                                                                                                                                                      \</div>
 <div class="line">    };</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../de/dc1/db__types_8hpp_source.html#l00081">81</a> of file <a class="el" href="../../de/dc1/db__types_8hpp_source.html">db_types.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc1/db__types_8hpp_source.html#l00103">103</a> of file <a class="el" href="../../de/dc1/db__types_8hpp_source.html">db_types.hpp</a>.</p>
 
 </div>
 </div>
