@@ -227,7 +227,7 @@ namespace RulesTests
 	{
 		it.describe("Compile-time rule optimization", [](Moka::Context& it) {
 			it.describe("User::id > 5", [](Moka::Context& it) {
-				constexpr auto rule = (P<&User::id> > 5);
+				constexpr auto rule = (DB<&User::id> > 5);
 				it.should("should have left operand User::id", [rule]() {
 					constexpr bool left_operand_type = std::is_same_v<details::mem_ptr_wrapper<&User::id>, decltype(rule.a)>;
 					must_be_equal(left_operand_type, true, "Type of left operand doesn't match.");
@@ -248,7 +248,7 @@ namespace RulesTests
 				});
 			});
 			it.describe("!(User::id > 5)", [](Moka::Context& it) {
-				constexpr auto rule = !(P<&User::id> > 5);
+				constexpr auto rule = !(DB<&User::id> > 5);
 				it.describe("should be simplified to User::id <= 5", [rule](Moka::Context& it) {
 					it.should("should have left operand User::id", [rule]() {
 						constexpr bool left_operand_type = std::is_same_v<details::mem_ptr_wrapper<&User::id>, decltype(rule.a)>;
@@ -270,10 +270,10 @@ namespace RulesTests
 				});
 			});
 			it.describe("!(User::id > 5) && (User::id > 5)", [](Moka::Context& it) {
-				constexpr auto rule = !(P<&User::id> > 5) && (P<&User::id> > 5);
+				constexpr auto rule = !(DB<&User::id> > 5) && (DB<&User::id> > 5);
 				it.describe("should be simplified to User::id <= 5 && (User::id > 5)", [rule](Moka::Context& it) {
 					it.should("should have left operand User::id <= 5", [rule]() {
-						auto expected_operand = (P<&User::id> <= 5);
+						auto expected_operand = (DB<&User::id> <= 5);
 						constexpr bool match = are_same(rule.a, expected_operand);
 						must_be_equal(match, true, "Left operand doesn't match.");
 						must_be_equal(rule.a.a.to_mem_ptr(), expected_operand.a.to_mem_ptr(), "Left operand doesn't match.");
@@ -282,7 +282,7 @@ namespace RulesTests
 					});
 
 					it.should("should have right operand User::id > 5", [rule]() {
-						auto expected_operand = (P<&User::id> > 5);
+						auto expected_operand = (DB<&User::id> > 5);
 						constexpr bool match = are_same(rule.b, expected_operand);
 						must_be_equal(match, true, "Right operand doesn't match.");
 						must_be_equal(rule.b.a.to_mem_ptr(), expected_operand.a.to_mem_ptr(), "Right operand doesn't match.");
@@ -298,7 +298,7 @@ namespace RulesTests
 				});
 			});
 			it.describe("!(Post::id > 5) && (User::id < 5)", [](Moka::Context& it) {
-				constexpr auto rule = !(P<&Post::id> > 5) && (P<&User::id> < 5);
+				constexpr auto rule = !(DB<&Post::id> > 5) && (DB<&User::id> < 5);
 				it.should("be evaluated as false when User::id is 1", [rule]() {
 					constexpr bool eval = evaluate_rule(rule);
 					must_be_equal(eval, true, "For User::id=1 and Post:id=2, !(Post::id > 5) && (User::id < 5) is not true wrongly.");
@@ -308,15 +308,15 @@ namespace RulesTests
 				"!(((Post::author_id >= 1) && !(User::id > 5) && (Post::id < 5)) || ((Post::content == \"text\") ^ (User::name != \"user\")))",
 				[](Moka::Context& it) {
 					constexpr auto rule =
-						!(((P<&Post::author_id> >= 1) && !(P<&User::id> > 5) && (P<&Post::id> < 5)) ||
-						  ((P<&Post::content> == "text") ^ (P<&User::name> != "user")));
+						!(((DB<&Post::author_id> >= 1) && !(DB<&User::id> > 5) && (DB<&Post::id> < 5)) ||
+						  ((DB<&Post::content> == "text") ^ (DB<&User::name> != "user")));
 					it.should(
 						"get optimized to (((Post::author_id < 1) || (User::id > 5) || (Post::id >= 5)) && ((Post::content != \"text\")) == (User::name == "
 						"\"user\"))",
 						[rule]() {
-							auto expected_rule = ((P<&Post::author_id> < 1) || (P<&User::id> > 5) || (P<&Post::id> >= 5)) &&
-								(((P<&Post::content> == "text") && (P<&User::name> != "user")) ||
-								 ((P<&Post::content> != "text") && (P<&User::name> == "user")));
+							auto expected_rule = ((DB<&Post::author_id> < 1) || (DB<&User::id> > 5) || (DB<&Post::id> >= 5)) &&
+								(((DB<&Post::content> == "text") && (DB<&User::name> != "user")) ||
+								 ((DB<&Post::content> != "text") && (DB<&User::name> == "user")));
 							auto match = are_same(rule, expected_rule);
 							must_be_equal(match, true, "The rule was not optimized properly.");
 							must_be_equal(evaluate_rule(rule), evaluate_rule(expected_rule), "The rule was not optimized properly.");

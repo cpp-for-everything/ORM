@@ -7,6 +7,7 @@
 #include <ORM/tools/rule.hpp>
 #include <ORM/tools/statement.hpp>
 #include <ORM/wrappers/db_types.hpp>
+#include <ORM/query/insert.hpp>
 
 namespace webframe::ORM
 {
