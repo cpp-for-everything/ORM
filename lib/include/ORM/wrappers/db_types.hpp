@@ -22,9 +22,6 @@ namespace webframe::ORM
 			constexpr PrimitiveWrapper() : data()
 			{
 			}
-			constexpr PrimitiveWrapper(const PrimitiveWrapper<T>& x) : data(x.data)
-			{
-			}
 
 			template <typename Y>
 				requires(!std::is_same_v<Y, PrimitiveWrapper<T>>)

@@ -2,6 +2,24 @@
 
 namespace webframe::ORM
 {
+	namespace details
+	{
+		template<typename T>
+		struct to_constant;
+
+		template<typename T> requires (is_constant<T>)
+		struct to_constant<T>
+		{
+			using type = T;
+		};
+
+		template<typename T> requires (!is_constant<T>)
+		struct to_constant<T>
+		{
+			using type = Constant<T>;
+		};
+	}
+
 	template <typename T>
 	template <typename T3, details::expression_operators op2, typename T4>
 	constexpr auto Constant<T>::operator+(Expression<T3, op2, T4> e) const
@@ -37,29 +55,29 @@ namespace webframe::ORM
 		return Expression<Constant<T>, details::expression_operators::Mod, Expression<T3, op2, T4>>(*this, e);
 	}
 
-	template <typename T> template <typename Y> constexpr auto Constant<T>::operator+(Constant<Y> e) const
+	template <typename T> template <typename Y> requires requires (T a, Y b) { a + b; } constexpr auto Constant<T>::operator+(Y e) const
 	{
-		return Expression<Constant<T>, details::expression_operators::Plus, Constant<Y>>(*this, e);
+		return Expression<Constant<T>, details::expression_operators::Plus, typename details::to_constant<Y>::type>(*this, e);
 	}
 
-	template <typename T> template <typename Y> constexpr auto Constant<T>::operator-(Constant<Y> e) const
+	template <typename T> template <typename Y> requires requires (T a, Y b) { a - b; } constexpr auto Constant<T>::operator-(Y e) const
 	{
-		return Expression<Constant<T>, details::expression_operators::Minus, Constant<Y>>(*this, e);
+		return Expression<Constant<T>, details::expression_operators::Minus, typename details::to_constant<Y>::type>(*this, e);
 	}
 
-	template <typename T> template <typename Y> constexpr auto Constant<T>::operator*(Constant<Y> e) const
+	template <typename T> template <typename Y> requires requires (T a, Y b) { a * b; } constexpr auto Constant<T>::operator*(Y e) const
 	{
-		return Expression<Constant<T>, details::expression_operators::Mul, Constant<Y>>(*this, e);
+		return Expression<Constant<T>, details::expression_operators::Mul, typename details::to_constant<Y>::type>(*this, e);
 	}
 
-	template <typename T> template <typename Y> constexpr auto Constant<T>::operator/(Constant<Y> e) const
+	template <typename T> template <typename Y> requires requires (T a, Y b) { a / b; } constexpr auto Constant<T>::operator/(Y e) const
 	{
-		return Expression<Constant<T>, details::expression_operators::Div, Constant<Y>>(*this, e);
+		return Expression<Constant<T>, details::expression_operators::Div, typename details::to_constant<Y>::type>(*this, e);
 	}
 
-	template <typename T> template <typename Y> constexpr auto Constant<T>::operator%(Constant<Y> e) const
+	template <typename T> template <typename Y> requires requires (T a, Y b) { a % b; } constexpr auto Constant<T>::operator%(Y e) const
 	{
-		return Expression<Constant<T>, details::expression_operators::Mod, Constant<Y>>(*this, e);
+		return Expression<Constant<T>, details::expression_operators::Mod, typename details::to_constant<Y>::type>(*this, e);
 	}
 
 	template <typename T1, details::expression_operators op, typename T2>

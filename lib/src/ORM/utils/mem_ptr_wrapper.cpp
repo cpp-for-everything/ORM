@@ -33,9 +33,13 @@ namespace webframe::ORM
 namespace webframe::ORM::details
 {
 #define IMPLEMENT_OPERATOR(op, op_enum)                                                                                                                        \
-	template <typename T, typename C, T C::*ptr> template <is_expression Y> constexpr auto mem_ptr_wrapper<ptr>::operator op(Y a) const                        \
+	template <typename T, typename C, T C::*ptr> template <is_expression Y> constexpr auto mem_ptr_wrapper<ptr>::operator op(Y a) const                   \
 	{                                                                                                                                                          \
 		return Statement<mem_ptr_wrapper<ptr>, op_enum, Y>(*this, a);                                                                                          \
+	}                                                                                                                        \
+	template <typename T, typename C, T C::*ptr> template <typename Y> constexpr auto mem_ptr_wrapper<ptr>::operator op(Y a) const                   \
+	{                                                                                                                                                          \
+		return Statement<mem_ptr_wrapper<ptr>, op_enum, Constant<Y>>(*this, a);                                                                                          \
 	}
 
 	IMPLEMENT_OPERATOR(=, assignment_operators::Eq)

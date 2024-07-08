@@ -46,7 +46,8 @@ namespace webframe::ORM
 			DEFINE_OPERATOR(>=)
 #undef DEFINE_OPERATOR
 
-#define DEFINE_OPERATOR(op) template <details::is_expression Y> constexpr auto operator op(Y a) const;
+#define DEFINE_OPERATOR(op) template <details::is_expression Y> constexpr auto operator op(Y a) const; \
+							template <typename Y> constexpr auto operator op(Y a) const;
 
 			DEFINE_OPERATOR(=)
 			DEFINE_OPERATOR(+=)
@@ -59,11 +60,14 @@ namespace webframe::ORM
 #define DEFINE_OPERATOR(op, op_enum)                                                                                                                           \
 	template <typename X> constexpr auto operator op(X a) const                                                                                                \
 	{                                                                                                                                                          \
-		return Expression<mem_ptr_wrapper<ptr>, op_enum, X>(*this, a);                                                                                         \
+		if constexpr (details::is_expression<X>) \
+			return Expression<mem_ptr_wrapper<ptr>, op_enum, X>(*this, a);                                                                                         \
+		if constexpr (!details::is_expression<X>) \
+			return Expression<mem_ptr_wrapper<ptr>, op_enum, typename details::to_constant<X>::type>(*this, a);                                                                                         \
 	}                                                                                                                                                          \
-	template <typename X> friend constexpr auto operator op(Constant<X> a, mem_ptr_wrapper<ptr> b)                                                             \
+	template <typename X> friend constexpr auto operator op(X a, mem_ptr_wrapper<ptr> b)                                                             \
 	{                                                                                                                                                          \
-		return Expression<Constant<X>, op_enum, mem_ptr_wrapper<ptr>>(a, b);                                                                                   \
+		return Expression<typename details::to_constant<X>::type, op_enum, mem_ptr_wrapper<ptr>>(a, b);                                                                                   \
 	}                                                                                                                                                          \
 	template <typename X, details::expression_operators op2, typename Y> friend constexpr auto operator op(Expression<X, op2, Y> a, mem_ptr_wrapper<ptr> b)    \
 	{                                                                                                                                                          \
@@ -79,7 +83,7 @@ namespace webframe::ORM
 		};
 	} // namespace details
 
-	template <auto ptr> constexpr auto P = details::mem_ptr_wrapper<ptr>();
+	template <auto ptr> constexpr auto DB = details::mem_ptr_wrapper<ptr>();
 
 } // namespace webframe::ORM
 
