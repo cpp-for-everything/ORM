@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>WebFrame++ ORM: lib/include/ORM/CRUD/insert.hpp File Reference</title>
+<title>WebFrame++ ORM: lib/include/ORM/query/insert.hpp File Reference</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -63,30 +63,37 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_97aefd0d527b934f1d99a682da8fe6a9.html">lib</a></li><li class="navelem"><a class="el" href="../../dir_5a30104352ef4255dc24354b02eb2d20.html">include</a></li><li class="navelem"><a class="el" href="../../dir_5cfbc25a2a26fe117ba1c87374e14247.html">ORM</a></li><li class="navelem"><a class="el" href="../../dir_720233cc6617450ee27c2bef4f41d57e.html">CRUD</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_97aefd0d527b934f1d99a682da8fe6a9.html">lib</a></li><li class="navelem"><a class="el" href="../../dir_5a30104352ef4255dc24354b02eb2d20.html">include</a></li><li class="navelem"><a class="el" href="../../dir_5cfbc25a2a26fe117ba1c87374e14247.html">ORM</a></li><li class="navelem"><a class="el" href="../../dir_afb5ea303914ecc64ca980540ea3dab4.html">query</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">insert.hpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;utility&gt;</code><br />
-<code>#include &lt;tuple&gt;</code><br />
-<code>#include &lt;concepts&gt;</code><br />
-<code>#include &quot;<a class="el" href="../../dd/dbe/result__type_8hpp_source.html">../details/result_type.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="../../d5/d40/insert_8cpp_source.html">../../../src/ORM/CRUD/insert.cpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html">ORM/utils/mem_ptr_wrapper.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="../../dd/def/query_8hpp_source.html">ORM/query/utils/query.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="../../d2/d7b/statement_8hpp_source.html">ORM/tools/statement.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="../../d2/d47/placeholder__lister_8hpp_source.html">ORM/query/utils/placeholder_lister.hpp</a>&gt;</code><br />
 </div>
 <p><a href="../../da/d46/insert_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/db5/classwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1insert__query.html">webframe::ORM::CRUD::insert_query&lt; Properties &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d54/classwebframe_1_1_o_r_m_1_1details_1_1_i_insert.html">webframe::ORM::details::IInsert</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/de0/classwebframe_1_1_o_r_m_1_1details_1_1_i_insert_select.html">webframe::ORM::details::IInsertSelect</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/da9/classwebframe_1_1_o_r_m_1_1details_1_1_insert_query.html">webframe::ORM::details::InsertQuery&lt; IntoTable, InsertedColumns, InsertedValues, OnDuplicateKeyUpdateAssignments &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert query class.  <a href="../../d2/da9/classwebframe_1_1_o_r_m_1_1details_1_1_insert_query.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d08/classwebframe_1_1_o_r_m_1_1details_1_1_insert_into_select_query.html">webframe::ORM::details::InsertIntoSelectQuery&lt; IntoTable, InsertedColumns, SelectQuery, OnDuplicateKeyUpdateAssignments &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert into select query class.  <a href="../../d1/d08/classwebframe_1_1_o_r_m_1_1details_1_1_insert_into_select_query.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -95,13 +102,19 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:d4/d86/namespacewebframe_1_1_o_r_m"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d86/namespacewebframe_1_1_o_r_m.html">webframe::ORM</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:de/d9e/namespacewebframe_1_1_o_r_m_1_1_c_r_u_d"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d9e/namespacewebframe_1_1_o_r_m_1_1_c_r_u_d.html">webframe::ORM::CRUD</a></td></tr>
+<tr class="memitem:d8/da4/namespacewebframe_1_1_o_r_m_1_1details"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html">webframe::ORM::details</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a1733f683502e9905b97d0b9b4604049d"><td class="memTemplParams" colspan="2">template&lt;auto... mem_ptrs&gt; </td></tr>
+<tr class="memitem:a1733f683502e9905b97d0b9b4604049d"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a1733f683502e9905b97d0b9b4604049d">webframe::ORM::details::requires</a> (std::is_member_object_pointer_v&lt; decltype(mem_ptrs)&gt; &amp;&amp;...) class GenericInsertQuery</td></tr>
+<tr class="separator:a1733f683502e9905b97d0b9b4604049d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a75b7263acec9c1a846ca700facb253f5"><td class="memTemplParams" colspan="2">template&lt;auto... Ts&gt; </td></tr>
-<tr class="memitem:a75b7263acec9c1a846ca700facb253f5"><td class="memTemplItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d4/d86/namespacewebframe_1_1_o_r_m.html#a75b7263acec9c1a846ca700facb253f5">webframe::ORM::insert</a> = <a class="el" href="../../d3/db5/classwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1insert__query.html">webframe::ORM::CRUD::insert_query</a>&lt;Ts...&gt;()</td></tr>
+<tr class="memitem:a75b7263acec9c1a846ca700facb253f5"><td class="memTemplParams" colspan="2">template&lt;auto... mem_ptrs&gt; </td></tr>
+<tr class="memitem:a75b7263acec9c1a846ca700facb253f5"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d4/d86/namespacewebframe_1_1_o_r_m.html#a75b7263acec9c1a846ca700facb253f5">webframe::ORM::insert</a> = details::GenericInsertQuery&lt;mem_ptrs...&gt;()</td></tr>
 <tr class="separator:a75b7263acec9c1a846ca700facb253f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->

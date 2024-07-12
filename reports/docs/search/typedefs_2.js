@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['operand1_5ft_222',['operand1_t',['../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#ac17cd01afa21faf7ec42254256cbe01a',1,'webframe::ORM::Rule::operand1_t()'],['../db/db7/classwebframe_1_1_o_r_m_1_1_statement.html#ac6a8ec12433ec7985b4d43a2dd348db6',1,'webframe::ORM::Statement::operand1_t()'],['../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a7c4041809ddc50db972dff1d1f5379ea',1,'webframe::ORM::Constant::operand1_t()'],['../d7/dc4/classwebframe_1_1_o_r_m_1_1_expression.html#a497eaf16e42e6c53b21c12faeb4c5e89',1,'webframe::ORM::Expression::operand1_t()']]],
-  ['operand2_5ft_223',['operand2_t',['../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a50421b1fa89d9bde0008254255ff1742',1,'webframe::ORM::Rule::operand2_t()'],['../db/db7/classwebframe_1_1_o_r_m_1_1_statement.html#abfc3af050ddd27d62f37273723087885',1,'webframe::ORM::Statement::operand2_t()'],['../d7/dc4/classwebframe_1_1_o_r_m_1_1_expression.html#acde312f686d29ba3bfbf248394547b67',1,'webframe::ORM::Expression::operand2_t()']]]
+  ['member_5fptr_347',['member_ptr',['../d2/d28/structwebframe_1_1_o_r_m_1_1details_1_1_order_wrapper.html#a0c51741d740f04a51345e031b23febc5',1,'webframe::ORM::details::OrderWrapper']]]
 ];

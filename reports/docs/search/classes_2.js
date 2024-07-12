@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['expression_135',['Expression',['../d7/dc4/classwebframe_1_1_o_r_m_1_1_expression.html',1,'webframe::ORM']]]
+  ['db_5ftype_5fplaceholder_203',['db_type_placeholder',['../d7/d1b/classwebframe_1_1_o_r_m_1_1details_1_1db__type__placeholder.html',1,'webframe::ORM::details']]]
 ];

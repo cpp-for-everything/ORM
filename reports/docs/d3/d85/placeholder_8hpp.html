@@ -70,6 +70,7 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
+<a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
@@ -79,12 +80,17 @@ $(function() {
 <div class="textblock"><code>#include &lt;concepts&gt;</code><br />
 <code>#include &lt;<a class="el" href="../../dc/df1/concept_8hpp_source.html">ORM/utils/concept.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="../../d9/d35/mem__ptr__utils_8hpp_source.html">ORM/utils/mem_ptr_utils.hpp</a>&gt;</code><br />
+<code>#include &lt;functional&gt;</code><br />
 </div>
 <p><a href="../../d3/d85/placeholder_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d06/classwebframe_1_1_o_r_m_1_1details_1_1_i_placeholder.html">webframe::ORM::details::IPlaceholder</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d94/structwebframe_1_1_o_r_m_1_1placeholder.html">webframe::ORM::placeholder&lt; I, T &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d50/structstd_1_1is__placeholder_3_01webframe_1_1_o_r_m_1_1placeholder_3_01_i_00_01_t_01_4_01_4.html">std::is_placeholder&lt; webframe::ORM::placeholder&lt; I, T &gt; &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -95,25 +101,89 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:d8/da4/namespacewebframe_1_1_o_r_m_1_1details"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html">webframe::ORM::details</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html">webframe::ORM::placeholders</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:d8/dcc/namespacestd"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/dcc/namespacestd.html">std</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:adb08b225e9751b26909aec45daf24d1d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d85/placeholder_8hpp.html#adb08b225e9751b26909aec45daf24d1d">create_placeholder</a>(N)&#160;&#160;&#160;template&lt;typename T&gt; constexpr auto _##N = Placeholder&lt;N, T&gt;;</td></tr>
+<tr class="separator:adb08b225e9751b26909aec45daf24d1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:afdc6aab91f26299e6ea33511e330c3bf"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:afdc6aab91f26299e6ea33511e330c3bf"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#afdc6aab91f26299e6ea33511e330c3bf">webframe::ORM::details::check_for_placeholder</a> ()</td></tr>
-<tr class="separator:afdc6aab91f26299e6ea33511e330c3bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e8caa40184e3d3ed46adf317634a87a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html#a6e8caa40184e3d3ed46adf317634a87a">webframe::ORM::placeholders::create_placeholder</a> (1)</td></tr>
+<tr class="separator:a6e8caa40184e3d3ed46adf317634a87a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c2e6084b1ce2c58daf9ce6a0b9facb1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html#a2c2e6084b1ce2c58daf9ce6a0b9facb1">webframe::ORM::placeholders::create_placeholder</a> (2)</td></tr>
+<tr class="separator:a2c2e6084b1ce2c58daf9ce6a0b9facb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ef61d5800273d15b1d216d150fc7b34"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html#a3ef61d5800273d15b1d216d150fc7b34">webframe::ORM::placeholders::create_placeholder</a> (3)</td></tr>
+<tr class="separator:a3ef61d5800273d15b1d216d150fc7b34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ade32dc53e4e760861851e66dc10d2a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html#a7ade32dc53e4e760861851e66dc10d2a">webframe::ORM::placeholders::create_placeholder</a> (4)</td></tr>
+<tr class="separator:a7ade32dc53e4e760861851e66dc10d2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ba7d7e3c3fcb0a2f928edac26436fac"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html#a0ba7d7e3c3fcb0a2f928edac26436fac">webframe::ORM::placeholders::create_placeholder</a> (5)</td></tr>
+<tr class="separator:a0ba7d7e3c3fcb0a2f928edac26436fac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90ed5b7826767db6e89896a2f07f2ec0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html#a90ed5b7826767db6e89896a2f07f2ec0">webframe::ORM::placeholders::create_placeholder</a> (6)</td></tr>
+<tr class="separator:a90ed5b7826767db6e89896a2f07f2ec0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0818e36c771014134a628eb9fdabcf9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html#af0818e36c771014134a628eb9fdabcf9">webframe::ORM::placeholders::create_placeholder</a> (7)</td></tr>
+<tr class="separator:af0818e36c771014134a628eb9fdabcf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9754720808853baf796ed6084afbd6e6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html#a9754720808853baf796ed6084afbd6e6">webframe::ORM::placeholders::create_placeholder</a> (8)</td></tr>
+<tr class="separator:a9754720808853baf796ed6084afbd6e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14050f5eb96b9def92ea7bd5e61e5dca"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html#a14050f5eb96b9def92ea7bd5e61e5dca">webframe::ORM::placeholders::create_placeholder</a> (9)</td></tr>
+<tr class="separator:a14050f5eb96b9def92ea7bd5e61e5dca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba969abe7ea8204d2c3d24df93178f55"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html#aba969abe7ea8204d2c3d24df93178f55">webframe::ORM::placeholders::create_placeholder</a> (10)</td></tr>
+<tr class="separator:aba969abe7ea8204d2c3d24df93178f55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3325d808139df6c673c949a2d7f12457"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html#a3325d808139df6c673c949a2d7f12457">webframe::ORM::placeholders::create_placeholder</a> (11)</td></tr>
+<tr class="separator:a3325d808139df6c673c949a2d7f12457"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3db00bb11dc96a28cf071b2e7c1fc72d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html#a3db00bb11dc96a28cf071b2e7c1fc72d">webframe::ORM::placeholders::create_placeholder</a> (12)</td></tr>
+<tr class="separator:a3db00bb11dc96a28cf071b2e7c1fc72d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa772e99e08a9b4250a51d81dd4fe377"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html#aaa772e99e08a9b4250a51d81dd4fe377">webframe::ORM::placeholders::create_placeholder</a> (13)</td></tr>
+<tr class="separator:aaa772e99e08a9b4250a51d81dd4fe377"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cc248b78e9aaabf4465c43dab39f0c3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html#a8cc248b78e9aaabf4465c43dab39f0c3">webframe::ORM::placeholders::create_placeholder</a> (14)</td></tr>
+<tr class="separator:a8cc248b78e9aaabf4465c43dab39f0c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a548a355a7940bae94d5ebdacd6352f2e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html#a548a355a7940bae94d5ebdacd6352f2e">webframe::ORM::placeholders::create_placeholder</a> (15)</td></tr>
+<tr class="separator:a548a355a7940bae94d5ebdacd6352f2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac212e8d5b9686df3c9d21ed9e6d425a6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html#ac212e8d5b9686df3c9d21ed9e6d425a6">webframe::ORM::placeholders::create_placeholder</a> (16)</td></tr>
+<tr class="separator:ac212e8d5b9686df3c9d21ed9e6d425a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bc3ed861ec1c6f6128e679ea2e712e5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html#a7bc3ed861ec1c6f6128e679ea2e712e5">webframe::ORM::placeholders::create_placeholder</a> (17)</td></tr>
+<tr class="separator:a7bc3ed861ec1c6f6128e679ea2e712e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71a4beadea9abbae666beab959a69192"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html#a71a4beadea9abbae666beab959a69192">webframe::ORM::placeholders::create_placeholder</a> (18)</td></tr>
+<tr class="separator:a71a4beadea9abbae666beab959a69192"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5e5145181144322ce3097c202d8c479"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html#af5e5145181144322ce3097c202d8c479">webframe::ORM::placeholders::create_placeholder</a> (19)</td></tr>
+<tr class="separator:af5e5145181144322ce3097c202d8c479"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4d138f23b6621517a42c485b9b5af35"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html#aa4d138f23b6621517a42c485b9b5af35">webframe::ORM::placeholders::create_placeholder</a> (20)</td></tr>
+<tr class="separator:aa4d138f23b6621517a42c485b9b5af35"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a4f86ac3d37a854f24d5ba1b317eae3e8"><td class="memTemplParams" colspan="2">template&lt;typename ptr_t &gt; </td></tr>
-<tr class="memitem:a4f86ac3d37a854f24d5ba1b317eae3e8"><td class="memTemplItemLeft" align="right" valign="top">concept&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a4f86ac3d37a854f24d5ba1b317eae3e8">webframe::ORM::details::is_placeholder_t</a> = check_for_placeholder&lt;ptr_t&gt;()</td></tr>
-<tr class="separator:a4f86ac3d37a854f24d5ba1b317eae3e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af8267f5c0eafda62ff60bbddc724989b"><td class="memTemplParams" colspan="2">template&lt;auto ptr&gt; </td></tr>
-<tr class="memitem:af8267f5c0eafda62ff60bbddc724989b"><td class="memTemplItemLeft" align="right" valign="top">concept&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#af8267f5c0eafda62ff60bbddc724989b">webframe::ORM::details::is_placeholder</a> = check_for_placeholder&lt;decltype(ptr)&gt;()</td></tr>
-<tr class="separator:af8267f5c0eafda62ff60bbddc724989b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a29de7812f884ffb80818b78e45054179"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a29de7812f884ffb80818b78e45054179"><td class="memTemplItemLeft" align="right" valign="top">concept&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a29de7812f884ffb80818b78e45054179">webframe::ORM::details::is_table_pointer_to_member_variable_or_placeholder_t</a> = is_table_pointer_to_member_variable_t&lt;T&gt; || is_placeholder_t&lt;T&gt;</td></tr>
-<tr class="separator:a29de7812f884ffb80818b78e45054179"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacc13a3733d4b64e6bf0c98ee4f3d993"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:aacc13a3733d4b64e6bf0c98ee4f3d993"><td class="memTemplItemLeft" align="right" valign="top">concept&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aacc13a3733d4b64e6bf0c98ee4f3d993">webframe::ORM::details::is_orm_placeholder</a> = std::is_base_of_v&lt;IPlaceholder, T&gt;</td></tr>
+<tr class="separator:aacc13a3733d4b64e6bf0c98ee4f3d993"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3dc0caff4e2663da9666e3c1a6feea29"><td class="memTemplParams" colspan="2">template&lt;int I, typename T &gt; </td></tr>
+<tr class="memitem:a3dc0caff4e2663da9666e3c1a6feea29"><td class="memTemplItemLeft" align="right" valign="top">constexpr placeholder&lt; I, T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d4/d86/namespacewebframe_1_1_o_r_m.html#a3dc0caff4e2663da9666e3c1a6feea29">webframe::ORM::Placeholder</a> = placeholder&lt;I, T&gt;()</td></tr>
+<tr class="separator:a3dc0caff4e2663da9666e3c1a6feea29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="adb08b225e9751b26909aec45daf24d1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb08b225e9751b26909aec45daf24d1d">&#9670;&nbsp;</a></span>create_placeholder</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define create_placeholder</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">N</td><td>)</td>
+          <td>&#160;&#160;&#160;template&lt;typename T&gt; constexpr auto _##N = Placeholder&lt;N, T&gt;;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d3/d85/placeholder_8hpp_source.html#l00028">28</a> of file <a class="el" href="../../d3/d85/placeholder_8hpp_source.html">placeholder.hpp</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
