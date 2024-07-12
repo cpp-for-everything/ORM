@@ -41,7 +41,10 @@ namespace webframe::ORM
 		{
 		}
 
-		constexpr operator T& () { return a; }
+		constexpr operator T&()
+		{
+			return a;
+		}
 
 		template <typename T3, details::expression_operators op2, typename T4> constexpr auto operator+(Expression<T3, op2, T4>) const;
 
@@ -53,24 +56,55 @@ namespace webframe::ORM
 
 		template <typename T3, details::expression_operators op2, typename T4> constexpr auto operator%(Expression<T3, op2, T4>) const;
 
-		template <typename Y> requires requires (T a, Y b) { a + b; } constexpr auto operator+(Y) const;
+		template <typename Y>
+			requires requires(T a, Y b) { a + b; }
+		constexpr auto operator+(Y) const;
 
-		template <typename Y> requires requires (T a, Y b) { a - b; } constexpr auto operator-(Y) const;
+		template <typename Y>
+			requires requires(T a, Y b) { a - b; }
+		constexpr auto operator-(Y) const;
 
-		template <typename Y> requires requires (T a, Y b) { a * b; } constexpr auto operator*(Y) const;
+		template <typename Y>
+			requires requires(T a, Y b) { a* b; }
+		constexpr auto operator*(Y) const;
 
-		template <typename Y> requires requires (T a, Y b) { a / b; } constexpr auto operator/(Y) const;
+		template <typename Y>
+			requires requires(T a, Y b) { a / b; }
+		constexpr auto operator/(Y) const;
 
-		template <typename Y> requires requires (T a, Y b) { a % b; } constexpr auto operator%(Y) const;
+		template <typename Y>
+			requires requires(T a, Y b) { a % b; }
+		constexpr auto operator%(Y) const;
 	};
 
-	constexpr Constant<unsigned long long> operator"" _c (unsigned long long x) { return x; }
-	constexpr Constant<long double> operator"" _c (long double x) { return x; }
-	constexpr Constant<char> operator"" _c (char x) { return x; }
-	constexpr Constant<wchar_t> operator"" _c (wchar_t x) { return x; }
-	constexpr Constant<char16_t> operator"" _c (char16_t x) { return x; }
-	constexpr Constant<char32_t> operator"" _c (char32_t x) { return x; }
-	constexpr Constant<std::string_view> operator"" _c (const char * x) { return std::string_view(x); }
+	constexpr Constant<unsigned long long> operator"" _c(unsigned long long x)
+	{
+		return x;
+	}
+	constexpr Constant<long double> operator"" _c(long double x)
+	{
+		return x;
+	}
+	constexpr Constant<char> operator"" _c(char x)
+	{
+		return x;
+	}
+	constexpr Constant<wchar_t> operator"" _c(wchar_t x)
+	{
+		return x;
+	}
+	constexpr Constant<char16_t> operator"" _c(char16_t x)
+	{
+		return x;
+	}
+	constexpr Constant<char32_t> operator"" _c(char32_t x)
+	{
+		return x;
+	}
+	constexpr Constant<std::string_view> operator"" _c(const char* x)
+	{
+		return std::string_view(x);
+	}
 
 	template <typename T1, details::expression_operators op, typename T2> class Expression : public details::IExpression
 	{
@@ -90,8 +124,7 @@ namespace webframe::ORM
 		{
 		}
 
-		template<details::string_literal name>
-		static constexpr auto as = alias<Expression<T1, op, T2>, name>();
+		template <details::string_literal name> static constexpr auto as = alias<Expression<T1, op, T2>, name>();
 
 		template <typename T3, details::expression_operators op2, typename T4> constexpr auto operator+(Expression<T3, op2, T4>) const;
 
