@@ -49,6 +49,8 @@ namespace webframe::ORM
 	}
 } // namespace webframe::ORM
 
+#include <functional>
+
 namespace std
 {
     template<int I, typename T>
