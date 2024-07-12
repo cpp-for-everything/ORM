@@ -3,6 +3,7 @@
 #include <ORM/utils/mem_ptr_wrapper.hpp>
 #include <ORM/query/utils/query.hpp>
 #include <ORM/tools/statement.hpp>
+#include <ORM/query/utils/placeholder_lister.hpp>
 
 namespace webframe::ORM
 {
@@ -30,13 +31,13 @@ namespace webframe::ORM
             typename InsertedColumns::tuple_equivalent cols;
             typename InsertedValues::tuple_equivalent vals;
             typename OnDuplicateKeyUpdateAssignments::tuple_equivalent update_statements;
-        protected:
+        public:
             constexpr auto get_columns() const { return cols; }
             constexpr auto get_update_statements() const { return update_statements; }
             constexpr auto get_values() const { return vals; }
         public:
             static constexpr bool allow_repeats = true;
-            using parameters_type = InsertedColumns;
+            using parameters_type = typename details::tuple_of_the_placeholders<typename InsertedValues::tuple_equivalent>::type;
             using result_type = IntoTable;
 
             constexpr InsertQuery(typename InsertedColumns::tuple_equivalent _cols, 
@@ -69,12 +70,14 @@ namespace webframe::ORM
             typename InsertedColumns::tuple_equivalent cols;
             SelectQuery selecting_query;
             typename OnDuplicateKeyUpdateAssignments::tuple_equivalent update_statements;
-        protected:
+        public:
             constexpr auto get_columns() const { return cols; }
             constexpr auto get_update_statements() const { return update_statements; }
             constexpr auto get_select_query() const { return selecting_query; }
         public:
             static constexpr bool allow_repeats = false;
+            using parameters_type = typename SelectQuery::parameters_type;
+            using result_type = IntoTable;
 
             constexpr InsertIntoSelectQuery(typename InsertedColumns::tuple_equivalent _cols, 
                                     SelectQuery query,

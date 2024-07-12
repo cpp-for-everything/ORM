@@ -1,5 +1,5 @@
 #pragma once
-#include <ORM/utils/query_input_data.hpp>
+#include <ORM/utils/placeholder.hpp>
 #include <ORM/tools/statement.hpp>
 
 namespace webframe::ORM
@@ -36,7 +36,8 @@ namespace webframe::ORM
 	template <typename Y>                                                                                                                                      \
 		requires(std::is_convertible_v<Y, typename T::native_type>)                                                                                            \
 	constexpr auto operator op(Y a) const;                                                                                                                     \
-	constexpr auto operator op(decltype(Placeholder<typename T::native_type>) a) const;
+	template <int N, typename Y> requires (std::is_convertible_v<Y, typename T::native_type>)                                                                                                               \
+	constexpr auto operator op(placeholder<N, Y> x) const;
 
 			DEFINE_OPERATOR(<)
 			DEFINE_OPERATOR(>)

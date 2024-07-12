@@ -32,5 +32,11 @@ namespace webframe::ORM
             template<size_t ind>
             using type_at = decltype(std::get<ind>(std::declval<tuple_equivalent>()));
         };
+
+        template<typename... Ts, typename... Us>
+        constexpr type_constainer<Ts..., Us...> concat(type_constainer<Ts...>, Us...)
+        {
+            return type_constainer<Ts..., Us...>{};
+        }
     } // namespace details
 } // namespace webframe::ORM

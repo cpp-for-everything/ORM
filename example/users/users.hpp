@@ -3,7 +3,7 @@
 #include <string>
 
 using namespace webframe::ORM;
-using namespace webframe::ORM::literals;
+using namespace webframe::ORM::placeholders;
 
 struct User
 {
@@ -12,11 +12,15 @@ struct User
 	property<TEXT<>, "name"> name;
 	
 	static constexpr auto insert_new_user_with_name = webframe::ORM::insert<&User::name>
-		.values(std::placeholders::_1)
-		.on_duplicate_key_update(DB<&User::name> += "_copy")
-	;
-	static constexpr auto insert_into_select_tesst = webframe::ORM::insert<&User::name>
-		.into(5)
-		.on_duplicate_key_update(DB<&User::name> += "_copy")
-	;
+		.values(_1<std::string>)
+		.on_duplicate_key_update(DB<&User::name> += "_copy");
+
+	static constexpr auto insert_into_select_test = webframe::ORM::insert<&User::name>
+		.into(insert_new_user_with_name)
+		.on_duplicate_key_update(DB<&User::name> += "_copy");
+
+	static constexpr auto update_test = webframe::ORM::update<User>
+		.where(DB<&User::name> == "_copy")
+		.order_by<&User::name, ASC>()
+		.order_by<&User::id>();
 };

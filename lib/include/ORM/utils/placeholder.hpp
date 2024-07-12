@@ -8,33 +8,49 @@ namespace webframe::ORM
 {
 	namespace details
 	{
-		class IPlaceholder
-		{
-		};
+		class IPlaceholder {};
+		
+		template<typename T>
+		concept is_orm_placeholder = std::is_base_of_v<IPlaceholder, T>;
+	}
 
-		template <typename T> constexpr bool check_for_placeholder()
-		{
-			if constexpr (std::is_base_of_v<i_mem_ptr, T>)
-			{
-				return std::is_base_of_v<IPlaceholder, typename T::class_type>;
-			}
-			else if constexpr (std::is_member_object_pointer_v<T>)
-			{
-				return std::is_base_of_v<IPlaceholder, typename mem_ptr_utils<T>::class_type>;
-			}
-			else
-			{
-				return false;
-			}
-		}
+    template<int I, typename T> struct placeholder : public details::IPlaceholder
+    {
+        using type = T;
+		constexpr placeholder() {}
+    };
 
-		template <typename ptr_t>
-		concept is_placeholder_t = check_for_placeholder<ptr_t>();
+	template<int I, typename T>
+	constexpr placeholder<I, T> Placeholder = placeholder<I, T>();
 
-		template <auto ptr>
-		concept is_placeholder = check_for_placeholder<decltype(ptr)>();
-
-		template <typename T>
-		concept is_table_pointer_to_member_variable_or_placeholder_t = is_table_pointer_to_member_variable_t<T> || is_placeholder_t<T>;
-	} // namespace details
+	namespace placeholders
+	{
+		#define create_placeholder(N) template<typename T> constexpr auto _##N = Placeholder<N, T>;
+		create_placeholder(1);
+		create_placeholder(2);
+		create_placeholder(3);
+		create_placeholder(4);
+		create_placeholder(5);
+		create_placeholder(6);
+		create_placeholder(7);
+		create_placeholder(8);
+		create_placeholder(9);
+		create_placeholder(10);
+		create_placeholder(11);
+		create_placeholder(12);
+		create_placeholder(13);
+		create_placeholder(14);
+		create_placeholder(15);
+		create_placeholder(16);
+		create_placeholder(17);
+		create_placeholder(18);
+		create_placeholder(19);
+		create_placeholder(20);
+	}
 } // namespace webframe::ORM
+
+namespace std
+{
+    template<int I, typename T>
+    struct is_placeholder<webframe::ORM::placeholder<I, T>> : std::integral_constant<int, I> {};
+} // namespace std

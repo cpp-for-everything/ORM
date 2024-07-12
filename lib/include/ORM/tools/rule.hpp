@@ -2,7 +2,6 @@
 
 #include <ORM/forward-decl.hpp>
 #include <ORM/utils/placeholder.hpp>
-#include <ORM/utils/query_input_data.hpp>
 
 namespace webframe::ORM
 {

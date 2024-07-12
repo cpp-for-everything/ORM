@@ -13,7 +13,7 @@ namespace webframe::ORM
 	} // namespace details
 
 	template <typename T, details::string_literal column_name>
-		requires(details::is_database_wrapped_class<T> && !std::is_base_of_v<details::IProperty, T>)
+		requires(details::is_database_wrapped_class<T>)
 	class property : public T, public details::IProperty
 	{
 		public:
