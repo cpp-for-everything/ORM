@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['joins_1260',['joins',['../d0/d9e/classwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1select__query.html#ab6da8c8fb7ef8d3f370da1177301691d',1,'webframe::ORM::CRUD::select_query']]]
+  ['update_338',['update',['../d4/d86/namespacewebframe_1_1_o_r_m.html#a32679d5fc2082bf9ce6972ce87100029',1,'webframe::ORM']]],
+  ['update_5fstatements_339',['update_statements',['../d2/da9/classwebframe_1_1_o_r_m_1_1details_1_1_insert_query.html#acd028115464c18e3f9cae8fad5c9b440',1,'webframe::ORM::details::InsertQuery::update_statements()'],['../d1/d08/classwebframe_1_1_o_r_m_1_1details_1_1_insert_into_select_query.html#ad999ddad4ebb3e1679cdbdeb2f1a6d66',1,'webframe::ORM::details::InsertIntoSelectQuery::update_statements()']]]
 ];

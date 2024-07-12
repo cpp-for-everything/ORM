@@ -130,13 +130,14 @@ Macros</h2></td></tr>
 <div class="line">        return Rule&lt;details::mem_ptr_wrapper&lt;ptr&gt;, details::op_enum, Y&gt;(*<span class="keyword">this</span>, a);                                                                             \</div>
 <div class="line">    }                                                                                                                                                          \</div>
 <div class="line">    template &lt;typename T, typename C, T C::*ptr&gt;                                                                                                               \</div>
-<div class="line">    constexpr <span class="keyword">auto</span> details::mem_ptr_wrapper&lt;ptr&gt;::operator op(decltype(Placeholder&lt;typename T::native_type&gt;)) <span class="keyword">const</span>                                            \</div>
+<div class="line">    template &lt;int N, typename Y&gt;                                                                                                                               \</div>
+<div class="line">        requires(std::is_convertible_v&lt;Y, typename T::native_type&gt;)                                                                                            \</div>
+<div class="line">    constexpr <span class="keyword">auto</span> details::mem_ptr_wrapper&lt;ptr&gt;::operator op(placeholder&lt;N, Y&gt; x) <span class="keyword">const</span>                                                                       \</div>
 <div class="line">    {                                                                                                                                                          \</div>
-<div class="line">        return Rule&lt;details::mem_ptr_wrapper&lt;ptr&gt;, details::op_enum, decltype(Placeholder&lt;typename T::native_type&gt;)&gt;(                                          \</div>
-<div class="line">            *<span class="keyword">this</span>, Placeholder&lt;typename T::native_type&gt;);                                                                                                      \</div>
+<div class="line">        return Rule&lt;details::mem_ptr_wrapper&lt;ptr&gt;, details::op_enum, placeholder&lt;N, Y&gt;&gt;(*<span class="keyword">this</span>, x);                                                             \</div>
 <div class="line">    }</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../dc/dd4/mem__ptr__wrapper_8cpp_source.html#l00035">35</a> of file <a class="el" href="../../dc/dd4/mem__ptr__wrapper_8cpp_source.html">mem_ptr_wrapper.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dc/dd4/mem__ptr__wrapper_8cpp_source.html#l00036">36</a> of file <a class="el" href="../../dc/dd4/mem__ptr__wrapper_8cpp_source.html">mem_ptr_wrapper.cpp</a>.</p>
 
 </div>
 </div>
@@ -165,14 +166,16 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> C, T C::*ptr&gt;                                                                                                                                 \</div>
-<div class="line">    template &lt;is_expression Y&gt; \</div>
-<div class="line">    constexpr <span class="keyword">auto</span> mem_ptr_wrapper&lt;ptr&gt;::operator op(Y a) <span class="keyword">const</span> \</div>
-<div class="line">    {\</div>
-<div class="line">        return Statement&lt;mem_ptr_wrapper&lt;ptr&gt;, op_enum, Y&gt;(*<span class="keyword">this</span>, a); \</div>
+<b>Value:</b><div class="fragment"><div class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> C, T C::*ptr&gt; <span class="keyword">template</span> &lt;is_expression Y&gt; constexpr <span class="keyword">auto</span> mem_ptr_wrapper&lt;ptr&gt;::operator op(Y a) <span class="keyword">const</span>                        \</div>
+<div class="line">    {                                                                                                                                                          \</div>
+<div class="line">        return Statement&lt;mem_ptr_wrapper&lt;ptr&gt;, op_enum, Y&gt;(*<span class="keyword">this</span>, a);                                                                                          \</div>
+<div class="line">    }                                                                                                                                                          \</div>
+<div class="line">    template &lt;typename T, typename C, T C::*ptr&gt; <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Y&gt; constexpr <span class="keyword">auto</span> mem_ptr_wrapper&lt;ptr&gt;::operator op(Y a) <span class="keyword">const</span>                             \</div>
+<div class="line">    {                                                                                                                                                          \</div>
+<div class="line">        return Statement&lt;mem_ptr_wrapper&lt;ptr&gt;, op_enum, Constant&lt;Y&gt;&gt;(*<span class="keyword">this</span>, a);                                                                                \</div>
 <div class="line">    }</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../dc/dd4/mem__ptr__wrapper_8cpp_source.html#l00035">35</a> of file <a class="el" href="../../dc/dd4/mem__ptr__wrapper_8cpp_source.html">mem_ptr_wrapper.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dc/dd4/mem__ptr__wrapper_8cpp_source.html#l00036">36</a> of file <a class="el" href="../../dc/dd4/mem__ptr__wrapper_8cpp_source.html">mem_ptr_wrapper.cpp</a>.</p>
 
 </div>
 </div>

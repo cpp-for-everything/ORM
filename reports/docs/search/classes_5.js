@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['primitivewrapper_145',['PrimitiveWrapper',['../d0/d4b/classwebframe_1_1_o_r_m_1_1details_1_1_primitive_wrapper.html',1,'webframe::ORM::details']]],
-  ['primitivewrapper_3c_20cpp_5fequivalent_20_3e_146',['PrimitiveWrapper&lt; cpp_equivalent &gt;',['../d0/d4b/classwebframe_1_1_o_r_m_1_1details_1_1_primitive_wrapper.html',1,'webframe::ORM::details']]]
+  ['mem_5fptr_5futils_219',['mem_ptr_utils',['../d3/dc6/classwebframe_1_1_o_r_m_1_1details_1_1mem__ptr__utils.html',1,'webframe::ORM::details']]],
+  ['mem_5fptr_5futils_3c_20t_20c_3a_3a_2a_20_3e_220',['mem_ptr_utils&lt; T C::* &gt;',['../de/dba/classwebframe_1_1_o_r_m_1_1details_1_1mem__ptr__utils_3_01_t_01_c_1_1_5_01_4.html',1,'webframe::ORM::details']]],
+  ['mem_5fptr_5fwrapper_221',['mem_ptr_wrapper',['../d3/d44/classwebframe_1_1_o_r_m_1_1details_1_1mem__ptr__wrapper.html',1,'webframe::ORM::details']]],
+  ['mem_5fptr_5fwrapper_3c_20ptr_20_3e_222',['mem_ptr_wrapper&lt; ptr &gt;',['../db/d03/classwebframe_1_1_o_r_m_1_1details_1_1mem__ptr__wrapper_3_01ptr_01_4.html',1,'webframe::ORM::details']]]
 ];

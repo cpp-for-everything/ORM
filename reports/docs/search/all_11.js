@@ -1,6 +1,8 @@
 var searchData=
 [
-  ['value_123',['value',['../da/d64/structwebframe_1_1_o_r_m_1_1details_1_1string__literal.html#a70653374c3882b9400c31e4dc527ffe7',1,'webframe::ORM::details::string_literal']]],
-  ['variable_5ftype_124',['variable_type',['../db/d03/classwebframe_1_1_o_r_m_1_1details_1_1mem__ptr__wrapper_3_01ptr_01_4.html#a33b91301a911143d41c6803ab05c1a21',1,'webframe::ORM::details::mem_ptr_wrapper&lt; ptr &gt;']]],
-  ['variadic_5fstring_125',['variadic_string',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a55cc43c8cdfbf3c1c59a63f4696c007baf60709373a01693ff6864d6e7fe0d348',1,'webframe::ORM::details']]]
+  ['update_181',['update',['../d4/d86/namespacewebframe_1_1_o_r_m.html#a32679d5fc2082bf9ce6972ce87100029',1,'webframe::ORM']]],
+  ['update_2ehpp_182',['update.hpp',['../d8/dad/update_8hpp.html',1,'']]],
+  ['update_5fstatements_183',['update_statements',['../d2/da9/classwebframe_1_1_o_r_m_1_1details_1_1_insert_query.html#acd028115464c18e3f9cae8fad5c9b440',1,'webframe::ORM::details::InsertQuery::update_statements()'],['../d1/d08/classwebframe_1_1_o_r_m_1_1details_1_1_insert_into_select_query.html#ad999ddad4ebb3e1679cdbdeb2f1a6d66',1,'webframe::ORM::details::InsertIntoSelectQuery::update_statements()']]],
+  ['updatedtable_184',['UpdatedTable',['../df/d21/classwebframe_1_1_o_r_m_1_1details_1_1_update_query.html#a84e2df54a5c254ccb74ca7b84295c703',1,'webframe::ORM::details::UpdateQuery']]],
+  ['updatequery_185',['UpdateQuery',['../df/d21/classwebframe_1_1_o_r_m_1_1details_1_1_update_query.html#a3486e00af2b22d8aaa77d7ab079f90c2',1,'webframe::ORM::details::UpdateQuery::UpdateQuery()'],['../df/d21/classwebframe_1_1_o_r_m_1_1details_1_1_update_query.html',1,'webframe::ORM::details::UpdateQuery&lt; Table, WhereClauses, Orders &gt;']]]
 ];

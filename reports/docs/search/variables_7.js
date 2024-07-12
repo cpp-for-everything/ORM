@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['value_219',['value',['../da/d64/structwebframe_1_1_o_r_m_1_1details_1_1string__literal.html#a70653374c3882b9400c31e4dc527ffe7',1,'webframe::ORM::details::string_literal']]]
+  ['rules_335',['rules',['../df/d21/classwebframe_1_1_o_r_m_1_1details_1_1_update_query.html#a14b02559b06cfbac8c6b34b08013e297',1,'webframe::ORM::details::UpdateQuery']]]
 ];
