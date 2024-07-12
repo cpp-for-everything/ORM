@@ -2,6 +2,7 @@
 
 #include <ORM/forward-decl.hpp>
 #include <ORM/utils/expression_operators.hpp>
+#include <ORM/tools/alias.hpp>
 
 namespace webframe::ORM
 {
@@ -88,6 +89,9 @@ namespace webframe::ORM
 		template <details::expression_operators op2> constexpr Expression(Expression<T1, op2, T2> x) : a(x.a), b(x.b)
 		{
 		}
+
+		template<details::string_literal name>
+		static constexpr auto as = alias<Expression<T1, op, T2>, name>();
 
 		template <typename T3, details::expression_operators op2, typename T4> constexpr auto operator+(Expression<T3, op2, T4>) const;
 
