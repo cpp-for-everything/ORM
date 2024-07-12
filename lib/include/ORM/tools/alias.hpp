@@ -12,12 +12,13 @@ namespace webframe::ORM
 		};
 	} // namespace details
 
-	template <typename T, details::string_literal column_name>
-	class alias : public T, public details::IAlias
+	template <typename T, details::string_literal column_name> class alias : public T, public details::IAlias
 	{
 		public:
 		T val;
-		constexpr alias(T _val) : val(_val) { }
+		constexpr alias(T _val) : val(_val)
+		{
+		}
 
 		static inline constexpr std::string_view name()
 		{

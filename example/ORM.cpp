@@ -17,16 +17,16 @@ int main()
 	test.id += 10;
 	std::cout << test.id << std::endl;
 
-	std::apply([](auto&&... args) {((std::cout << typeid(args).name() << std::endl), ...);}, decltype(User::insert_new_user_with_name)::parameters_type());
-	std::apply([](auto&&... args) {((std::cout << typeid(args).name() << std::endl), ...);}, User::insert_new_user_with_name.get_columns());
-	std::apply([](auto&&... args) {((std::cout << typeid(args).name() << std::endl), ...);}, User::insert_new_user_with_name.get_values());
-	std::apply([](auto&&... args) {((std::cout << typeid(args).name() << std::endl), ...);}, User::insert_new_user_with_name.get_update_statements());
+	std::apply([](auto&&... args) { ((std::cout << typeid(args).name() << std::endl), ...); }, decltype(User::insert_new_user_with_name)::parameters_type());
+	std::apply([](auto&&... args) { ((std::cout << typeid(args).name() << std::endl), ...); }, User::insert_new_user_with_name.get_columns());
+	std::apply([](auto&&... args) { ((std::cout << typeid(args).name() << std::endl), ...); }, User::insert_new_user_with_name.get_values());
+	std::apply([](auto&&... args) { ((std::cout << typeid(args).name() << std::endl), ...); }, User::insert_new_user_with_name.get_update_statements());
 	std::cout << std::endl;
-	std::apply([](auto&&... args) {((std::cout << typeid(args).name() << std::endl), ...);}, decltype(User::insert_into_select_test)::parameters_type());
-	std::apply([](auto&&... args) {((std::cout << typeid(args).name() << std::endl), ...);}, User::insert_into_select_test.get_columns());
-	std::apply([](auto&&... args) {((std::cout << typeid(args).name() << std::endl), ...);}, User::insert_into_select_test.get_update_statements());
+	std::apply([](auto&&... args) { ((std::cout << typeid(args).name() << std::endl), ...); }, decltype(User::insert_into_select_test)::parameters_type());
+	std::apply([](auto&&... args) { ((std::cout << typeid(args).name() << std::endl), ...); }, User::insert_into_select_test.get_columns());
+	std::apply([](auto&&... args) { ((std::cout << typeid(args).name() << std::endl), ...); }, User::insert_into_select_test.get_update_statements());
 	std::cout << std::endl;
-	std::apply([](auto&&... args) {((std::cout << typeid(args).name() << std::endl), ...);}, User::update_test.get_orders());
-	
+	std::apply([](auto&&... args) { ((std::cout << typeid(args).name() << std::endl), ...); }, User::update_test.get_orders());
+
 	return 0;
 }
