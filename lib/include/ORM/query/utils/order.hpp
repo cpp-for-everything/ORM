@@ -17,13 +17,15 @@ namespace webframe::ORM
 			using member_ptr = mem_ptr;
 			static constexpr OrderEnum order = _order;
 		};
-        
+
 		template <auto _rows, auto _offset>
-        requires ((std::is_convertible_v<decltype(_rows), size_t> || is_orm_placeholder<decltype(_rows)>) && (std::is_convertible_v<decltype(_offset), size_t>  || is_orm_placeholder<decltype(_offset)>))
-        struct LimitWrapper
+			requires(
+				(std::is_convertible_v<decltype(_rows), size_t> || is_orm_placeholder<decltype(_rows)>) &&
+				(std::is_convertible_v<decltype(_offset), size_t> || is_orm_placeholder<decltype(_offset)>))
+		struct LimitWrapper
 		{
 			static constexpr auto rows = _rows;
 			static constexpr auto offset = _offset;
 		};
-    }
-}
+	} // namespace details
+} // namespace webframe::ORM
