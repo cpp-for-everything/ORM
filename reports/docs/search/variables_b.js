@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['mode_1263',['mode',['../d0/d9e/classwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1select__query.html#a450f23ee12699d89c0791ee95375e37c',1,'webframe::ORM::CRUD::select_query::mode()'],['../de/dca/classwebframe_1_1_o_r_m_1_1_join_rule.html#a4c8408cc7a48512cc65eb67a2a168d46',1,'webframe::ORM::JoinRule::mode()']]],
-  ['multiplicationwrapper_1264',['MultiplicationWrapper',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a78b0be1970e5cf06af77287f77a96da5',1,'webframe::ORM::details']]]
+  ['update_374',['update',['../d4/d86/namespacewebframe_1_1_o_r_m.html#a32679d5fc2082bf9ce6972ce87100029',1,'webframe::ORM']]],
+  ['update_5fstatements_375',['update_statements',['../d2/da9/classwebframe_1_1_o_r_m_1_1details_1_1_insert_query.html#acd028115464c18e3f9cae8fad5c9b440',1,'webframe::ORM::details::InsertQuery::update_statements()'],['../d1/d08/classwebframe_1_1_o_r_m_1_1details_1_1_insert_into_select_query.html#ad999ddad4ebb3e1679cdbdeb2f1a6d66',1,'webframe::ORM::details::InsertIntoSelectQuery::update_statements()']]]
 ];

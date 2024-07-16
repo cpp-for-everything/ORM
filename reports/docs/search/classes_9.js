@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['statement_228',['Statement',['../db/db7/classwebframe_1_1_o_r_m_1_1_statement.html',1,'webframe::ORM']]],
-  ['string_5fliteral_229',['string_literal',['../da/d64/structwebframe_1_1_o_r_m_1_1details_1_1string__literal.html',1,'webframe::ORM::details']]]
+  ['rule_249',['Rule',['../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html',1,'webframe::ORM']]]
 ];

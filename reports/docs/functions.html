@@ -78,7 +78,6 @@ $(function() {
 <li>allow_repeats
 : <a class="el" href="d1/d08/classwebframe_1_1_o_r_m_1_1details_1_1_insert_into_select_query.html#ae74441ec76b646aabc5bbcac4079ff69">webframe::ORM::details::InsertIntoSelectQuery&lt; IntoTable, InsertedColumns, SelectQuery, OnDuplicateKeyUpdateAssignments &gt;</a>
 , <a class="el" href="d2/da9/classwebframe_1_1_o_r_m_1_1details_1_1_insert_query.html#ae83a4872eb67b92831c52077bffb8af4">webframe::ORM::details::InsertQuery&lt; IntoTable, InsertedColumns, InsertedValues, OnDuplicateKeyUpdateAssignments &gt;</a>
-, <a class="el" href="df/d21/classwebframe_1_1_o_r_m_1_1details_1_1_update_query.html#a31df1e652f3ff06396d376a42d80ef2a">webframe::ORM::details::UpdateQuery&lt; Table, WhereClauses, Orders &gt;</a>
 </li>
 <li>as
 : <a class="el" href="d7/dc4/classwebframe_1_1_o_r_m_1_1_expression.html#a085152928d9f4475fb4ae74d6818df9c">webframe::ORM::Expression&lt; T1, op, T2 &gt;</a>
@@ -132,15 +131,27 @@ $(function() {
 
 
 <h3><a id="index_g"></a>- g -</h3><ul>
+<li>GenericDeleteQuery()
+: <a class="el" href="de/dd6/classwebframe_1_1_o_r_m_1_1details_1_1_generic_delete_query.html#a55aa19660020d3ebc32681c75e074966">webframe::ORM::details::GenericDeleteQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+</li>
+<li>GenericUpdateQuery()
+: <a class="el" href="d8/d1c/classwebframe_1_1_o_r_m_1_1details_1_1_generic_update_query.html#a0a15b97b86248311abd62ccd50d3a1ff">webframe::ORM::details::GenericUpdateQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+</li>
 <li>get_columns()
 : <a class="el" href="d1/d08/classwebframe_1_1_o_r_m_1_1details_1_1_insert_into_select_query.html#aa97d04062265c6ca3dc44e6d2bbc821e">webframe::ORM::details::InsertIntoSelectQuery&lt; IntoTable, InsertedColumns, SelectQuery, OnDuplicateKeyUpdateAssignments &gt;</a>
 , <a class="el" href="d2/da9/classwebframe_1_1_o_r_m_1_1details_1_1_insert_query.html#ab8a0a0df89ca6df8ccfe4a55ce083115">webframe::ORM::details::InsertQuery&lt; IntoTable, InsertedColumns, InsertedValues, OnDuplicateKeyUpdateAssignments &gt;</a>
 </li>
+<li>get_limits()
+: <a class="el" href="de/dd6/classwebframe_1_1_o_r_m_1_1details_1_1_generic_delete_query.html#a6120b5c15ded443664b0812e6422b67e">webframe::ORM::details::GenericDeleteQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+, <a class="el" href="d8/d1c/classwebframe_1_1_o_r_m_1_1details_1_1_generic_update_query.html#af031c0645cbeabaf7406605ff910acd3">webframe::ORM::details::GenericUpdateQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+</li>
 <li>get_orders()
-: <a class="el" href="df/d21/classwebframe_1_1_o_r_m_1_1details_1_1_update_query.html#a60e80abfd38c7006a86d4b9fca5ed953">webframe::ORM::details::UpdateQuery&lt; Table, WhereClauses, Orders &gt;</a>
+: <a class="el" href="de/dd6/classwebframe_1_1_o_r_m_1_1details_1_1_generic_delete_query.html#a16f2a873b5a0c934936725d839e821c6">webframe::ORM::details::GenericDeleteQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+, <a class="el" href="d8/d1c/classwebframe_1_1_o_r_m_1_1details_1_1_generic_update_query.html#adf3554eb712c9956a2f29431e22af478">webframe::ORM::details::GenericUpdateQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
 </li>
 <li>get_rules()
-: <a class="el" href="df/d21/classwebframe_1_1_o_r_m_1_1details_1_1_update_query.html#a49313502b9559e3f097f7dcda0087b85">webframe::ORM::details::UpdateQuery&lt; Table, WhereClauses, Orders &gt;</a>
+: <a class="el" href="de/dd6/classwebframe_1_1_o_r_m_1_1details_1_1_generic_delete_query.html#a6e488478f8c5147299c9355650eafbec">webframe::ORM::details::GenericDeleteQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+, <a class="el" href="d8/d1c/classwebframe_1_1_o_r_m_1_1details_1_1_generic_update_query.html#a529bcca5553c8ee92beaeee35fa93046">webframe::ORM::details::GenericUpdateQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
 </li>
 <li>get_select_query()
 : <a class="el" href="d1/d08/classwebframe_1_1_o_r_m_1_1details_1_1_insert_into_select_query.html#ac6ba51f1d93d0fe37cb286dde4f6785a">webframe::ORM::details::InsertIntoSelectQuery&lt; IntoTable, InsertedColumns, SelectQuery, OnDuplicateKeyUpdateAssignments &gt;</a>
@@ -168,6 +179,22 @@ $(function() {
 <li>into_table
 : <a class="el" href="d1/d08/classwebframe_1_1_o_r_m_1_1details_1_1_insert_into_select_query.html#a30ad0c8e8ae6e23bb10496e9c5eee3c3">webframe::ORM::details::InsertIntoSelectQuery&lt; IntoTable, InsertedColumns, SelectQuery, OnDuplicateKeyUpdateAssignments &gt;</a>
 , <a class="el" href="d2/da9/classwebframe_1_1_o_r_m_1_1details_1_1_insert_query.html#a2e5247b797c67e6efd3f307fcb061540">webframe::ORM::details::InsertQuery&lt; IntoTable, InsertedColumns, InsertedValues, OnDuplicateKeyUpdateAssignments &gt;</a>
+</li>
+</ul>
+
+
+<h3><a id="index_l"></a>- l -</h3><ul>
+<li>limit()
+: <a class="el" href="de/dd6/classwebframe_1_1_o_r_m_1_1details_1_1_generic_delete_query.html#a6b0c1b55831e0fca1a20be24aadbb6ab">webframe::ORM::details::GenericDeleteQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+, <a class="el" href="d8/d1c/classwebframe_1_1_o_r_m_1_1details_1_1_generic_update_query.html#a830b9575a8240cbb8efc176713ee9e09">webframe::ORM::details::GenericUpdateQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+</li>
+<li>LimitRule
+: <a class="el" href="de/dd6/classwebframe_1_1_o_r_m_1_1details_1_1_generic_delete_query.html#a64e4b52b8d4474ebf1bb78ee4182efd9">webframe::ORM::details::GenericDeleteQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+, <a class="el" href="d8/d1c/classwebframe_1_1_o_r_m_1_1details_1_1_generic_update_query.html#aebdb4a0f43b7a6a8289cb19dd78dc0f7">webframe::ORM::details::GenericUpdateQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+</li>
+<li>limits
+: <a class="el" href="de/dd6/classwebframe_1_1_o_r_m_1_1details_1_1_generic_delete_query.html#a63974f995adabddfc323a711a0929a1e">webframe::ORM::details::GenericDeleteQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+, <a class="el" href="d8/d1c/classwebframe_1_1_o_r_m_1_1details_1_1_generic_update_query.html#a7a35369a240dba2b87ede9e7dacfebca">webframe::ORM::details::GenericUpdateQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
 </li>
 </ul>
 
@@ -246,10 +273,10 @@ $(function() {
 </li>
 <li>operator-()
 : <a class="el" href="d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a977de5f1477583815f6de66fa9113c23">webframe::ORM::Constant&lt; T &gt;</a>
-, <a class="el" href="d7/dc4/classwebframe_1_1_o_r_m_1_1_expression.html#a90fd13d257bda4d1a406f7145998407c">webframe::ORM::Expression&lt; T1, op, T2 &gt;</a>
+, <a class="el" href="d7/dc4/classwebframe_1_1_o_r_m_1_1_expression.html#aed1b12f3057f3e6f80255ee182e93b87">webframe::ORM::Expression&lt; T1, op, T2 &gt;</a>
 </li>
 <li>operator/()
-: <a class="el" href="d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a2d2deb6720288961a927024cf7fb83e1">webframe::ORM::Constant&lt; T &gt;</a>
+: <a class="el" href="d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a671e7ea1d5c18fcdd129bddeb720afc9">webframe::ORM::Constant&lt; T &gt;</a>
 , <a class="el" href="d7/dc4/classwebframe_1_1_o_r_m_1_1_expression.html#ac22b6b4d62fea97183170382fe6d3a28">webframe::ORM::Expression&lt; T1, op, T2 &gt;</a>
 </li>
 <li>operator^()
@@ -262,25 +289,26 @@ $(function() {
 : <a class="el" href="d2/d28/structwebframe_1_1_o_r_m_1_1details_1_1_order_wrapper.html#a13bac375d1c5e1597843f8d364cb24c9">webframe::ORM::details::OrderWrapper&lt; mem_ptr, _order &gt;</a>
 </li>
 <li>order_by()
-: <a class="el" href="df/d21/classwebframe_1_1_o_r_m_1_1details_1_1_update_query.html#a51d0bf08cbb8a95ee7236677c9d453f9">webframe::ORM::details::UpdateQuery&lt; Table, WhereClauses, Orders &gt;</a>
+: <a class="el" href="de/dd6/classwebframe_1_1_o_r_m_1_1details_1_1_generic_delete_query.html#a9e477a08513ad6b754e935e796ca1df0">webframe::ORM::details::GenericDeleteQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+, <a class="el" href="d8/d1c/classwebframe_1_1_o_r_m_1_1details_1_1_generic_update_query.html#ae791ff0adbfdf752d7053561986e1776">webframe::ORM::details::GenericUpdateQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
 </li>
 <li>OrderingRules
-: <a class="el" href="df/d21/classwebframe_1_1_o_r_m_1_1details_1_1_update_query.html#a445192bfb12e41b83f62867f55fe2026">webframe::ORM::details::UpdateQuery&lt; Table, WhereClauses, Orders &gt;</a>
+: <a class="el" href="de/dd6/classwebframe_1_1_o_r_m_1_1details_1_1_generic_delete_query.html#af0276b0186aa4a369c28709f726f2dc4">webframe::ORM::details::GenericDeleteQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+, <a class="el" href="d8/d1c/classwebframe_1_1_o_r_m_1_1details_1_1_generic_update_query.html#a7a11516f0594b185265d1f87ee1b43cb">webframe::ORM::details::GenericUpdateQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
 </li>
 <li>orders
-: <a class="el" href="df/d21/classwebframe_1_1_o_r_m_1_1details_1_1_update_query.html#a76adc29863b743b8114f3f21f4b11347">webframe::ORM::details::UpdateQuery&lt; Table, WhereClauses, Orders &gt;</a>
+: <a class="el" href="de/dd6/classwebframe_1_1_o_r_m_1_1details_1_1_generic_delete_query.html#a7329e9f0fafd5bc3dae966839b1f891f">webframe::ORM::details::GenericDeleteQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+, <a class="el" href="d8/d1c/classwebframe_1_1_o_r_m_1_1details_1_1_generic_update_query.html#a53ae5d5be1fc76b1c9f26a60b227bb07">webframe::ORM::details::GenericUpdateQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
 </li>
 </ul>
 
 
 <h3><a id="index_p"></a>- p -</h3><ul>
 <li>parameters_type
-: <a class="el" href="d1/d08/classwebframe_1_1_o_r_m_1_1details_1_1_insert_into_select_query.html#a2329473da4e44c651c57951e40206560">webframe::ORM::details::InsertIntoSelectQuery&lt; IntoTable, InsertedColumns, SelectQuery, OnDuplicateKeyUpdateAssignments &gt;</a>
+: <a class="el" href="de/dd6/classwebframe_1_1_o_r_m_1_1details_1_1_generic_delete_query.html#a9d851a52fbc88e186dd20b4b1ff17e06">webframe::ORM::details::GenericDeleteQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+, <a class="el" href="d8/d1c/classwebframe_1_1_o_r_m_1_1details_1_1_generic_update_query.html#a617342c5a02d260d48da4188c6807732">webframe::ORM::details::GenericUpdateQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+, <a class="el" href="d1/d08/classwebframe_1_1_o_r_m_1_1details_1_1_insert_into_select_query.html#a2329473da4e44c651c57951e40206560">webframe::ORM::details::InsertIntoSelectQuery&lt; IntoTable, InsertedColumns, SelectQuery, OnDuplicateKeyUpdateAssignments &gt;</a>
 , <a class="el" href="d2/da9/classwebframe_1_1_o_r_m_1_1details_1_1_insert_query.html#a9abc42a75f1414983afe600e71fd9516">webframe::ORM::details::InsertQuery&lt; IntoTable, InsertedColumns, InsertedValues, OnDuplicateKeyUpdateAssignments &gt;</a>
-, <a class="el" href="df/d21/classwebframe_1_1_o_r_m_1_1details_1_1_update_query.html#a56987c6ffb244caba9657585f66464bf">webframe::ORM::details::UpdateQuery&lt; Table, WhereClauses, Orders &gt;</a>
-</li>
-<li>placeholder()
-: <a class="el" href="d5/d94/structwebframe_1_1_o_r_m_1_1placeholder.html#a1d69e6b081c60dd1b62219c8987fcea0">webframe::ORM::placeholder&lt; I, T &gt;</a>
 </li>
 </ul>
 
@@ -290,15 +318,17 @@ $(function() {
 : <a class="el" href="d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a2a40a5e253df8415d61d432ec5b64935">webframe::ORM::Constant&lt; T &gt;</a>
 </li>
 <li>result_type
-: <a class="el" href="d1/d08/classwebframe_1_1_o_r_m_1_1details_1_1_insert_into_select_query.html#aed0e72b05136e8375643f749ae6c3587">webframe::ORM::details::InsertIntoSelectQuery&lt; IntoTable, InsertedColumns, SelectQuery, OnDuplicateKeyUpdateAssignments &gt;</a>
+: <a class="el" href="de/dd6/classwebframe_1_1_o_r_m_1_1details_1_1_generic_delete_query.html#a7183d2b53686d579b6613ab32fdf0ab5">webframe::ORM::details::GenericDeleteQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+, <a class="el" href="d8/d1c/classwebframe_1_1_o_r_m_1_1details_1_1_generic_update_query.html#a07bde859b1bea3ebb7b84db79413d4f4">webframe::ORM::details::GenericUpdateQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+, <a class="el" href="d1/d08/classwebframe_1_1_o_r_m_1_1details_1_1_insert_into_select_query.html#aed0e72b05136e8375643f749ae6c3587">webframe::ORM::details::InsertIntoSelectQuery&lt; IntoTable, InsertedColumns, SelectQuery, OnDuplicateKeyUpdateAssignments &gt;</a>
 , <a class="el" href="d2/da9/classwebframe_1_1_o_r_m_1_1details_1_1_insert_query.html#adb212abb6ea2fb81200e0ed895065a18">webframe::ORM::details::InsertQuery&lt; IntoTable, InsertedColumns, InsertedValues, OnDuplicateKeyUpdateAssignments &gt;</a>
-, <a class="el" href="df/d21/classwebframe_1_1_o_r_m_1_1details_1_1_update_query.html#a73a475b8c9ed16e5a4eed2477b2f7c54">webframe::ORM::details::UpdateQuery&lt; Table, WhereClauses, Orders &gt;</a>
 </li>
 <li>Rule()
 : <a class="el" href="d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a26b66e868332700e739ecbbf662c6253">webframe::ORM::Rule&lt; T1, op, T2 &gt;</a>
 </li>
 <li>rules
-: <a class="el" href="df/d21/classwebframe_1_1_o_r_m_1_1details_1_1_update_query.html#a14b02559b06cfbac8c6b34b08013e297">webframe::ORM::details::UpdateQuery&lt; Table, WhereClauses, Orders &gt;</a>
+: <a class="el" href="de/dd6/classwebframe_1_1_o_r_m_1_1details_1_1_generic_delete_query.html#a9b0a3e5724fb4822964c5ba56ca8f0d4">webframe::ORM::details::GenericDeleteQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+, <a class="el" href="d8/d1c/classwebframe_1_1_o_r_m_1_1details_1_1_generic_update_query.html#abcf884f558b2bae8891b6e73d68e1512">webframe::ORM::details::GenericUpdateQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
 </li>
 </ul>
 
@@ -336,9 +366,9 @@ $(function() {
 <li>type
 : <a class="el" href="de/dba/classwebframe_1_1_o_r_m_1_1details_1_1mem__ptr__utils_3_01_t_01_c_1_1_5_01_4.html#aa8d5941f15e247c8a7d65812b467df5b">webframe::ORM::details::mem_ptr_utils&lt; T C::* &gt;</a>
 , <a class="el" href="d5/df6/structwebframe_1_1_o_r_m_1_1details_1_1tuple__of__the__placeholders.html#af9b033a3633e2b0e1bae552060a05991">webframe::ORM::details::tuple_of_the_placeholders&lt; T &gt;</a>
-, <a class="el" href="de/d8c/structwebframe_1_1_o_r_m_1_1details_1_1tuple__of__the__placeholders_3_01_expression_3_01_t1_00_01op_00_01_t2_01_4_01_4.html#a1e2a003a3f19701fc66fe668638c1abd">webframe::ORM::details::tuple_of_the_placeholders&lt; Expression&lt; T1, op, T2 &gt; &gt;</a>
-, <a class="el" href="d8/d43/structwebframe_1_1_o_r_m_1_1details_1_1tuple__of__the__placeholders_3_01_rule_3_01_t1_00_01op_00_01_t2_01_4_01_4.html#a704a68c9d507d1940725dd0b5c832525">webframe::ORM::details::tuple_of_the_placeholders&lt; Rule&lt; T1, op, T2 &gt; &gt;</a>
-, <a class="el" href="d6/d2c/structwebframe_1_1_o_r_m_1_1details_1_1tuple__of__the__placeholders_3_01_statement_3_01_t1_00_01op_00_01_t2_01_4_01_4.html#a1886ccfe6ce9fd45f8cd0e22b4f7411e">webframe::ORM::details::tuple_of_the_placeholders&lt; Statement&lt; T1, op, T2 &gt; &gt;</a>
+, <a class="el" href="de/d8c/structwebframe_1_1_o_r_m_1_1details_1_1tuple__of__the__placeholders_3_01_expression_3_01_t1_00_01op_00_01_t2_01_4_01_4.html#a5eb67a5de969c2a43b268b6241065e05">webframe::ORM::details::tuple_of_the_placeholders&lt; Expression&lt; T1, op, T2 &gt; &gt;</a>
+, <a class="el" href="d8/d43/structwebframe_1_1_o_r_m_1_1details_1_1tuple__of__the__placeholders_3_01_rule_3_01_t1_00_01op_00_01_t2_01_4_01_4.html#ab370861ff91c1404dea9147f715e3349">webframe::ORM::details::tuple_of_the_placeholders&lt; Rule&lt; T1, op, T2 &gt; &gt;</a>
+, <a class="el" href="d6/d2c/structwebframe_1_1_o_r_m_1_1details_1_1tuple__of__the__placeholders_3_01_statement_3_01_t1_00_01op_00_01_t2_01_4_01_4.html#acc33d618e0cbfcee48f610c7f067f60a">webframe::ORM::details::tuple_of_the_placeholders&lt; Statement&lt; T1, op, T2 &gt; &gt;</a>
 , <a class="el" href="dc/dc7/structwebframe_1_1_o_r_m_1_1details_1_1tuple__of__the__placeholders_3_01std_1_1tuple_3_01_ts_8_8_8_01_4_01_4.html#a3236aed9218f2685a52a0acb82b1857b">webframe::ORM::details::tuple_of_the_placeholders&lt; std::tuple&lt; Ts... &gt; &gt;</a>
 , <a class="el" href="d1/dd5/structwebframe_1_1_o_r_m_1_1details_1_1tuple__of__the__placeholders_3_01_t_01_4.html#af06739f3586a5bb0b435abed96f84643">webframe::ORM::details::tuple_of_the_placeholders&lt; T &gt;</a>
 , <a class="el" href="d5/d94/structwebframe_1_1_o_r_m_1_1placeholder.html#a17dca4ce82eb8e5900500f28a76b7ade">webframe::ORM::placeholder&lt; I, T &gt;</a>
@@ -355,10 +385,8 @@ $(function() {
 , <a class="el" href="d2/da9/classwebframe_1_1_o_r_m_1_1details_1_1_insert_query.html#acd028115464c18e3f9cae8fad5c9b440">webframe::ORM::details::InsertQuery&lt; IntoTable, InsertedColumns, InsertedValues, OnDuplicateKeyUpdateAssignments &gt;</a>
 </li>
 <li>UpdatedTable
-: <a class="el" href="df/d21/classwebframe_1_1_o_r_m_1_1details_1_1_update_query.html#a84e2df54a5c254ccb74ca7b84295c703">webframe::ORM::details::UpdateQuery&lt; Table, WhereClauses, Orders &gt;</a>
-</li>
-<li>UpdateQuery()
-: <a class="el" href="df/d21/classwebframe_1_1_o_r_m_1_1details_1_1_update_query.html#a3486e00af2b22d8aaa77d7ab079f90c2">webframe::ORM::details::UpdateQuery&lt; Table, WhereClauses, Orders &gt;</a>
+: <a class="el" href="de/dd6/classwebframe_1_1_o_r_m_1_1details_1_1_generic_delete_query.html#ae323c045db6f02a868a1cc43dde90e50">webframe::ORM::details::GenericDeleteQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+, <a class="el" href="d8/d1c/classwebframe_1_1_o_r_m_1_1details_1_1_generic_update_query.html#a5fad62892ec1823a302d9195059924eb">webframe::ORM::details::GenericUpdateQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
 </li>
 </ul>
 
@@ -381,10 +409,12 @@ $(function() {
 
 <h3><a id="index_w"></a>- w -</h3><ul>
 <li>where()
-: <a class="el" href="df/d21/classwebframe_1_1_o_r_m_1_1details_1_1_update_query.html#a30dcaec153e99705cd9b5ae5b08431fc">webframe::ORM::details::UpdateQuery&lt; Table, WhereClauses, Orders &gt;</a>
+: <a class="el" href="de/dd6/classwebframe_1_1_o_r_m_1_1details_1_1_generic_delete_query.html#ad7f5cfde9066ad247b3ce591b87ebc59">webframe::ORM::details::GenericDeleteQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+, <a class="el" href="d8/d1c/classwebframe_1_1_o_r_m_1_1details_1_1_generic_update_query.html#a4054fdc1a3604446f9f5a23a15ce47ea">webframe::ORM::details::GenericUpdateQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
 </li>
 <li>WhereRules
-: <a class="el" href="df/d21/classwebframe_1_1_o_r_m_1_1details_1_1_update_query.html#ae6f13bf091f1be24ef2a15d150e08d7a">webframe::ORM::details::UpdateQuery&lt; Table, WhereClauses, Orders &gt;</a>
+: <a class="el" href="de/dd6/classwebframe_1_1_o_r_m_1_1details_1_1_generic_delete_query.html#a176647c82e4d281ae93d4d03c3ee92e2">webframe::ORM::details::GenericDeleteQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
+, <a class="el" href="d8/d1c/classwebframe_1_1_o_r_m_1_1details_1_1_generic_update_query.html#a2efc112fe28e4d5f3a174236ea165b2f">webframe::ORM::details::GenericUpdateQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a>
 </li>
 </ul>
 </div><!-- contents -->

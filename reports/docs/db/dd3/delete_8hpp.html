@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>WebFrame++ ORM: lib/include/ORM/CRUD/delete.hpp File Reference</title>
+<title>WebFrame++ ORM: lib/include/ORM/query/delete.hpp File Reference</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -63,27 +63,32 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_97aefd0d527b934f1d99a682da8fe6a9.html">lib</a></li><li class="navelem"><a class="el" href="../../dir_5a30104352ef4255dc24354b02eb2d20.html">include</a></li><li class="navelem"><a class="el" href="../../dir_5cfbc25a2a26fe117ba1c87374e14247.html">ORM</a></li><li class="navelem"><a class="el" href="../../dir_720233cc6617450ee27c2bef4f41d57e.html">CRUD</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_97aefd0d527b934f1d99a682da8fe6a9.html">lib</a></li><li class="navelem"><a class="el" href="../../dir_5a30104352ef4255dc24354b02eb2d20.html">include</a></li><li class="navelem"><a class="el" href="../../dir_5cfbc25a2a26fe117ba1c87374e14247.html">ORM</a></li><li class="navelem"><a class="el" href="../../dir_afb5ea303914ecc64ca980540ea3dab4.html">query</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">delete.hpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="../../d3/d68/orm__tuple_8hpp_source.html">../details/orm_tuple.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="../../d2/d95/member__pointer_8hpp_source.html">../details/member_pointer.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="../../df/d93/utils_8hpp_source.html">utils.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html">ORM/utils/mem_ptr_wrapper.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="../../dd/def/query_8hpp_source.html">ORM/query/utils/query.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="../../d2/d7b/statement_8hpp_source.html">ORM/tools/statement.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="../../d2/d47/placeholder__lister_8hpp_source.html">ORM/query/utils/placeholder_lister.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="../../d6/d6f/order_8hpp_source.html">ORM/query/utils/order.hpp</a>&gt;</code><br />
 </div>
 <p><a href="../../db/dd3/delete_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d95/classwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1delete__query.html">webframe::ORM::CRUD::delete_query&lt; Table, Filters, Ordering, Limits &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d4e/classwebframe_1_1_o_r_m_1_1details_1_1_i_delete.html">webframe::ORM::details::IDelete</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dd6/classwebframe_1_1_o_r_m_1_1details_1_1_generic_delete_query.html">webframe::ORM::details::GenericDeleteQuery&lt; Table, WhereClauses, Orders, Limit &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -92,14 +97,51 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:d4/d86/namespacewebframe_1_1_o_r_m"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d86/namespacewebframe_1_1_o_r_m.html">webframe::ORM</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:de/d9e/namespacewebframe_1_1_o_r_m_1_1_c_r_u_d"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d9e/namespacewebframe_1_1_o_r_m_1_1_c_r_u_d.html">webframe::ORM::CRUD</a></td></tr>
+<tr class="memitem:d8/da4/namespacewebframe_1_1_o_r_m_1_1details"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html">webframe::ORM::details</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a9625018fd195533d799f5ac927d6fd2d"><td class="memTemplParams" colspan="2">template&lt;typename Table , typename WhereClauses , typename Orders , typename Limit &gt; </td></tr>
+<tr class="memitem:a9625018fd195533d799f5ac927d6fd2d"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a9625018fd195533d799f5ac927d6fd2d">webframe::ORM::details::requires</a> (WhereClauses::size==0 &amp;&amp;Orders::size==0 &amp;&amp;Limit::size==0) class DeleteQuery&lt; Table</td></tr>
+<tr class="separator:a9625018fd195533d799f5ac927d6fd2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee9ab05a36dc6575ca01095629750dce"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aee9ab05a36dc6575ca01095629750dce">webframe::ORM::details::DeleteQuery</a> (typename WhereRules::tuple_equivalent _rules, typename Orders::tuple_equivalent _orders, typename Limit::tuple_equivalent _limit)</td></tr>
+<tr class="separator:aee9ab05a36dc6575ca01095629750dce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18da569721d4483644df9827c975f1f4"><td class="memTemplParams" colspan="2">template&lt;typename... Ts&gt; </td></tr>
+<tr class="memitem:a18da569721d4483644df9827c975f1f4"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a18da569721d4483644df9827c975f1f4">webframe::ORM::details::where</a> (Ts... rules) const</td></tr>
+<tr class="separator:a18da569721d4483644df9827c975f1f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0850f1d952522050fe0235b9121f43a7"><td class="memTemplParams" colspan="2">template&lt;typename Table , typename WhereClauses , typename Orders , typename Limit &gt; </td></tr>
+<tr class="memitem:a0850f1d952522050fe0235b9121f43a7"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a0850f1d952522050fe0235b9121f43a7">webframe::ORM::details::requires</a> (WhereClauses::size &gt; 0 &amp;&amp;Orders::size==0 &amp;&amp;Limit::size==0) class DeleteQuery&lt; Table</td></tr>
+<tr class="separator:a0850f1d952522050fe0235b9121f43a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09eadc360a8bf93b70a83c9fafd768ff"><td class="memTemplParams" colspan="2">template&lt;auto ptr, OrderEnum column_order = Default&gt; </td></tr>
+<tr class="memitem:a09eadc360a8bf93b70a83c9fafd768ff"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a09eadc360a8bf93b70a83c9fafd768ff">webframe::ORM::details::order_by</a> () const</td></tr>
+<tr class="separator:a09eadc360a8bf93b70a83c9fafd768ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41a01034a45309f9937fe882f303f1a2"><td class="memTemplParams" colspan="2">template&lt;typename Table , typename WhereClauses , typename Orders , typename Limit &gt; </td></tr>
+<tr class="memitem:a41a01034a45309f9937fe882f303f1a2"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a41a01034a45309f9937fe882f303f1a2">webframe::ORM::details::requires</a> (WhereClauses::size &gt; 0 &amp;&amp;Orders::size &gt; 0 &amp;&amp;Limit::size==0) class DeleteQuery&lt; Table</td></tr>
+<tr class="separator:a41a01034a45309f9937fe882f303f1a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38ed6abe0f448f118da767ff6ff96dcc"><td class="memTemplParams" colspan="2">template&lt;auto rows, auto offset = 0&gt; </td></tr>
+<tr class="memitem:a38ed6abe0f448f118da767ff6ff96dcc"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a38ed6abe0f448f118da767ff6ff96dcc">webframe::ORM::details::limit</a> () const</td></tr>
+<tr class="separator:a38ed6abe0f448f118da767ff6ff96dcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a0e02f8907e508f1554a75d07734c7555"><td class="memTemplParams" colspan="2">template&lt;typename Table &gt; </td></tr>
-<tr class="memitem:a0e02f8907e508f1554a75d07734c7555"><td class="memTemplItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d4/d86/namespacewebframe_1_1_o_r_m.html#a0e02f8907e508f1554a75d07734c7555">webframe::ORM::deleteq</a></td></tr>
-<tr class="separator:a0e02f8907e508f1554a75d07734c7555"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0dce8ad3622681eff5f32d457221cf8e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a0dce8ad3622681eff5f32d457221cf8e">webframe::ORM::details::WhereClauses</a></td></tr>
+<tr class="separator:a0dce8ad3622681eff5f32d457221cf8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a490368b58a1493a37e4057c93673e942"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a490368b58a1493a37e4057c93673e942">webframe::ORM::details::Orders</a></td></tr>
+<tr class="separator:a490368b58a1493a37e4057c93673e942"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97c7dce1a76330cd375690b5658b523a"><td class="memItemLeft" align="right" valign="top">Limit&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a97c7dce1a76330cd375690b5658b523a">webframe::ORM::details::__pad0__</a></td></tr>
+<tr class="separator:a97c7dce1a76330cd375690b5658b523a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ea85502ac219c62ebdebd5761af98bf"><td class="memItemLeft" align="right" valign="top">Limit&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a6ea85502ac219c62ebdebd5761af98bf">webframe::ORM::details::Limit</a></td></tr>
+<tr class="separator:a6ea85502ac219c62ebdebd5761af98bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa98307501092965b6d2acbb715b2873f"><td class="memItemLeft" align="right" valign="top">Limit&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aa98307501092965b6d2acbb715b2873f">webframe::ORM::details::__pad1__</a></td></tr>
+<tr class="separator:aa98307501092965b6d2acbb715b2873f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30c80005e2e512f000b8564b11653ef7"><td class="memItemLeft" align="right" valign="top">Limit&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a30c80005e2e512f000b8564b11653ef7">webframe::ORM::details::__pad2__</a></td></tr>
+<tr class="separator:a30c80005e2e512f000b8564b11653ef7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a268682c79fcc5bb5714147082234fe96"><td class="memItemLeft" align="right" valign="top">Limit&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a268682c79fcc5bb5714147082234fe96">webframe::ORM::details::__pad3__</a></td></tr>
+<tr class="separator:a268682c79fcc5bb5714147082234fe96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa34e365730418f25104b21ed1bcf227d"><td class="memTemplParams" colspan="2">template&lt;details::is_table Table&gt; </td></tr>
+<tr class="memitem:aa34e365730418f25104b21ed1bcf227d"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d4/d86/namespacewebframe_1_1_o_r_m.html#aa34e365730418f25104b21ed1bcf227d">webframe::ORM::delete_from</a> = details::DeleteQuery&lt;Table, details::type_constainer&lt;&gt;, details::type_constainer&lt;&gt;, details::type_constainer&lt;&gt;&gt;({}, {}, {})</td></tr>
+<tr class="separator:aa34e365730418f25104b21ed1bcf227d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

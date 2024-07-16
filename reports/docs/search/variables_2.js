@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['cols_319',['cols',['../d2/da9/classwebframe_1_1_o_r_m_1_1details_1_1_insert_query.html#a74816f6d4dc12db4b995fad5e09d4186',1,'webframe::ORM::details::InsertQuery::cols()'],['../d1/d08/classwebframe_1_1_o_r_m_1_1details_1_1_insert_into_select_query.html#ab43e69eddcc7c99240cc0e593507c58d',1,'webframe::ORM::details::InsertIntoSelectQuery::cols()']]]
+  ['b_350',['b',['../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a2767bf2154fd9ce54684318632f08a8c',1,'webframe::ORM::Rule::b()'],['../db/db7/classwebframe_1_1_o_r_m_1_1_statement.html#ae35fd12548f34edb09e6898b5ea1b938',1,'webframe::ORM::Statement::b()'],['../d7/dc4/classwebframe_1_1_o_r_m_1_1_expression.html#a01ee213cd794034e0ebff403b89d7796',1,'webframe::ORM::Expression::b()']]]
 ];
