@@ -27,6 +27,13 @@ int main()
 	std::apply([](auto&&... args) { ((std::cout << typeid(args).name() << std::endl), ...); }, User::insert_into_select_test.get_update_statements());
 	std::cout << std::endl;
 	std::apply([](auto&&... args) { ((std::cout << typeid(args).name() << std::endl), ...); }, User::update_test.get_orders());
+	std::apply([](auto&&... args) { ((std::cout << typeid(args).name() << std::endl), ...); }, User::update_test.get_limits());
+	std::cout << std::endl;
+	std::apply([](auto&&... args) { ((std::cout << typeid(args).name() << std::endl), ...); }, User::update_test2.get_orders());
+	std::apply([](auto&&... args) { ((std::cout << typeid(args).name() << std::endl), ...); }, User::update_test2.get_limits());
+	std::cout << std::endl;
+	std::apply([](auto&&... args) { ((std::cout << typeid(args).name() << std::endl), ...); }, User::delete_all.get_orders());
+	std::apply([](auto&&... args) { ((std::cout << typeid(args).name() << std::endl), ...); }, User::update_test.get_limits());
 
 	return 0;
 }

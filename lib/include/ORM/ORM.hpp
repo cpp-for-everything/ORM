@@ -9,6 +9,7 @@
 #include <ORM/wrappers/db_types.hpp>
 #include <ORM/query/insert.hpp>
 #include <ORM/query/update.hpp>
+#include <ORM/query/delete.hpp>
 
 namespace webframe::ORM
 {
