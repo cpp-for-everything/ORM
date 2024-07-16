@@ -17,7 +17,9 @@ struct User
 	static constexpr auto insert_into_select_test =
 		webframe::ORM::insert<&User::name>.into(insert_new_user_with_name).on_duplicate_key_update(DB<& User::name> += "_copy");
 
-	static constexpr auto update_test = webframe::ORM::update<User>.where(DB<&User::name> == "_copy").order_by<&User::name, ASC>().order_by<&User::id>().limit<4>();
-	static constexpr auto update_test2 = webframe::ORM::update<User>.where(DB<&User::name> == "_copy").order_by<&User::name, ASC>().order_by<&User::id>().limit<_1<size_t>>();
+	static constexpr auto update_test =
+		webframe::ORM::update<User>.where(DB<&User::name> == "_copy").order_by<&User::name, ASC>().order_by<&User::id>().limit<4>();
+	static constexpr auto update_test2 =
+		webframe::ORM::update<User>.where(DB<&User::name> == "_copy").order_by<&User::name, ASC>().order_by<&User::id>().limit<_1<size_t>>();
 	static constexpr auto delete_all = webframe::ORM::delete_from<User>.where(DB<&User::name> != "").order_by<&User::name, ASC>().order_by<&User::id>();
 };
