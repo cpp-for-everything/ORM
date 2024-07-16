@@ -19,12 +19,9 @@ namespace webframe::ORM
 	template <int I, typename T> struct placeholder : public details::IPlaceholder
 	{
 		using type = T;
-		constexpr placeholder()
-		{
-		}
 	};
 
-	template <int I, typename T> constexpr placeholder<I, T> Placeholder = placeholder<I, T>();
+	template <int I, typename T> constexpr placeholder<I, T> Placeholder = placeholder<I, T>{};
 
 	namespace placeholders
 	{
