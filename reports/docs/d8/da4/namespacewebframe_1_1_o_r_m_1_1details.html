@@ -670,10 +670,10 @@ template&lt;typename... Ts, typename... Us&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00088">88</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                                                                                                                                                              : GenericDeleteQuery&lt;Table, WhereClauses, Orders, Limit&gt;(_rules, _orders, _limit)</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;            {</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;            }</div>
+<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00096">96</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;                : GenericDeleteQuery&lt;Table, WhereClauses, Orders, Limit&gt;(_rules, _orders, _limit)</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;            {</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;            }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -702,10 +702,10 @@ template&lt;auto rows, auto offset = 0&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00149">149</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;            {</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;                <span class="keywordflow">return</span> GenericDeleteQuery&lt;Table, WhereClauses, Orders, Limit&gt;::template limit&lt;DeleteQuery, rows, offset&gt;();</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;            }</div>
+<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00163">163</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;            {</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;                <span class="keywordflow">return</span> GenericDeleteQuery&lt;Table, WhereClauses, Orders, Limit&gt;::template limit&lt;DeleteQuery, rows, offset&gt;();</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;            }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -734,10 +734,10 @@ template&lt;auto ptr, OrderEnum column_order = Default&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00121">121</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;            {</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;                <span class="keywordflow">return</span> GenericDeleteQuery&lt;Table, WhereClauses, Orders, Limit&gt;::template order_by&lt;DeleteQuery, ptr, column_order&gt;();</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;            }</div>
+<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00133">133</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;            {</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;                <span class="keywordflow">return</span> GenericDeleteQuery&lt;Table, WhereClauses, Orders, Limit&gt;::template order_by&lt;DeleteQuery, ptr, column_order&gt;();</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;            }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -785,10 +785,10 @@ template&lt;auto _rows, auto _offset&gt; </div>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="../../d6/d6f/order_8hpp_source.html#l00022">22</a> of file <a class="el" href="../../d6/d6f/order_8hpp_source.html">order.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        {</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;            <span class="keyword">static</span> constexpr <span class="keyword">auto</span> rows = _rows;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;            <span class="keyword">static</span> constexpr <span class="keyword">auto</span> offset = _offset;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        };</div>
+<div class="fragment"><div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        {</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;            <span class="keyword">static</span> constexpr <span class="keyword">auto</span> rows = _rows;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;            <span class="keyword">static</span> constexpr <span class="keyword">auto</span> offset = _offset;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1037,10 +1037,10 @@ template&lt;typename Table , typename WhereClauses , typename Orders , typename 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d8/dad/update_8hpp_source.html#l00088">88</a> of file <a class="el" href="../../d8/dad/update_8hpp_source.html">update.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                                                                                                                                                              : GenericUpdateQuery&lt;Table, WhereClauses, Orders, Limit&gt;(_rules, _orders, _limit)</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;            {</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;            }</div>
+<p class="definition">Definition at line <a class="el" href="../../d8/dad/update_8hpp_source.html#l00096">96</a> of file <a class="el" href="../../d8/dad/update_8hpp_source.html">update.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;                : GenericUpdateQuery&lt;Table, WhereClauses, Orders, Limit&gt;(_rules, _orders, _limit)</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;            {</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;            }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1070,10 +1070,10 @@ template&lt;typename... Ts&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00092">92</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;            {</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;                <span class="keywordflow">return</span> GenericDeleteQuery&lt;Table, WhereClauses, Orders, Limit&gt;::template where&lt;DeleteQuery&gt;(rules...);</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;            }</div>
+<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00102">102</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;            {</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;                <span class="keywordflow">return</span> GenericDeleteQuery&lt;Table, WhereClauses, Orders, Limit&gt;::template where&lt;DeleteQuery&gt;(rules...);</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;            }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1090,7 +1090,7 @@ template&lt;typename... Ts&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00076">76</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00084">84</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
 
 </div>
 </div>
@@ -1106,7 +1106,7 @@ template&lt;typename... Ts&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00100">100</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00110">110</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
 
 </div>
 </div>
@@ -1122,7 +1122,7 @@ template&lt;typename... Ts&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00129">129</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00141">141</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
 
 </div>
 </div>
@@ -1138,7 +1138,7 @@ template&lt;typename... Ts&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00157">157</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00171">171</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
 
 </div>
 </div>
@@ -1330,10 +1330,10 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">{</div>
-<div class="line">        <span class="keyword">public</span>:</div>
+<div class="line">            <span class="keyword">public</span>:</div>
 <div class="line">            <span class="keyword">static</span> constexpr <span class="keywordtype">bool</span> allow_repeats = <span class="keyword">false</span></div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00076">76</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00084">84</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
 
 </div>
 </div>
@@ -1349,7 +1349,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00076">76</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00084">84</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
 
 </div>
 </div>
@@ -1365,7 +1365,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00076">76</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/dd3/delete_8hpp_source.html#l00084">84</a> of file <a class="el" href="../../db/dd3/delete_8hpp_source.html">delete.hpp</a>.</p>
 
 </div>
 </div>
