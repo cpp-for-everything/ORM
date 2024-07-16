@@ -130,11 +130,11 @@ Variables</h2></td></tr>
 <b>Value:</b><div class="fragment"><div class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Y&gt;                                                                                                                                      \</div>
 <div class="line">        requires(std::is_convertible_v&lt;Y, typename T::native_type&gt;)                                                                                            \</div>
 <div class="line">    constexpr <span class="keyword">auto</span> <span class="keyword">operator</span> op(Y a) <span class="keyword">const</span>;                                                                                                                     \</div>
-<div class="line">    template &lt;int N, typename Y&gt; <a class="code" href="../../d4/d86/namespacewebframe_1_1_o_r_m.html#a3d0c61ef78a8494dcda5a2ed8c9ddd18">requires</a> (std::is_convertible_v&lt;Y, typename T::native_type&gt;)                                                                                                               \</div>
+<div class="line">    template &lt;int N, typename Y&gt;                                                                                                                               \</div>
+<div class="line">        requires(std::is_convertible_v&lt;Y, typename T::native_type&gt;)                                                                                            \</div>
 <div class="line">    constexpr <span class="keyword">auto</span> <span class="keyword">operator</span> op(placeholder&lt;N, Y&gt; x) <span class="keyword">const</span>;</div>
-<div class="ttc" id="anamespacewebframe_1_1_o_r_m_html_a3d0c61ef78a8494dcda5a2ed8c9ddd18"><div class="ttname"><a href="../../d4/d86/namespacewebframe_1_1_o_r_m.html#a3d0c61ef78a8494dcda5a2ed8c9ddd18">webframe::ORM::requires</a></div><div class="ttdeci">requires(details::is_database_wrapped_class&lt; T &gt;) class property</div></div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html#l00061">61</a> of file <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html">mem_ptr_wrapper.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html#l00063">63</a> of file <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html">mem_ptr_wrapper.hpp</a>.</p>
 
 </div>
 </div>
@@ -153,10 +153,10 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">                            <span class="keyword">template</span> &lt;details::is_expression Y&gt; constexpr <span class="keyword">auto</span> <span class="keyword">operator</span> op(Y a) <span class="keyword">const</span>; \</div>
-<div class="line">                            template &lt;typename Y&gt; constexpr <span class="keyword">auto</span> <span class="keyword">operator</span> op(Y a) <span class="keyword">const</span>;</div>
+<b>Value:</b><div class="fragment"><div class="line">    <span class="keyword">template</span> &lt;details::is_expression Y&gt; constexpr <span class="keyword">auto</span> <span class="keyword">operator</span> op(Y a) <span class="keyword">const</span>;                                                                                 \</div>
+<div class="line">    template &lt;typename Y&gt; constexpr <span class="keyword">auto</span> <span class="keyword">operator</span> op(Y a) <span class="keyword">const</span>;</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html#l00061">61</a> of file <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html">mem_ptr_wrapper.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html#l00063">63</a> of file <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html">mem_ptr_wrapper.hpp</a>.</p>
 
 </div>
 </div>
@@ -187,21 +187,21 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> X&gt; constexpr <span class="keyword">auto</span> <span class="keyword">operator</span> op(X a) <span class="keyword">const</span>                                                                                                \</div>
 <div class="line">    {                                                                                                                                                          \</div>
-<div class="line">        if constexpr (details::is_expression&lt;X&gt;) \</div>
-<div class="line">            return Expression&lt;mem_ptr_wrapper&lt;ptr&gt;, op_enum, X&gt;(*<span class="keyword">this</span>, a);                                                                                         \</div>
-<div class="line">        if constexpr (!details::is_expression&lt;X&gt;) \</div>
-<div class="line">            return Expression&lt;mem_ptr_wrapper&lt;ptr&gt;, op_enum, <span class="keyword">typename</span> details::to_constant&lt;X&gt;::type&gt;(*<span class="keyword">this</span>, a);                                                                                         \</div>
+<div class="line">        if constexpr (details::is_expression&lt;X&gt;)                                                                                                               \</div>
+<div class="line">            return Expression&lt;mem_ptr_wrapper&lt;ptr&gt;, op_enum, X&gt;(*<span class="keyword">this</span>, a);                                                                                     \</div>
+<div class="line">        if constexpr (!details::is_expression&lt;X&gt;)                                                                                                              \</div>
+<div class="line">            return Expression&lt;mem_ptr_wrapper&lt;ptr&gt;, op_enum, <span class="keyword">typename</span> details::to_constant&lt;X&gt;::type&gt;(*<span class="keyword">this</span>, a);                                                \</div>
 <div class="line">    }                                                                                                                                                          \</div>
-<div class="line">    template &lt;typename X&gt; <span class="keyword">friend</span> constexpr <span class="keyword">auto</span> <span class="keyword">operator</span> op(X a, mem_ptr_wrapper&lt;ptr&gt; b)                                                             \</div>
+<div class="line">    template &lt;typename X&gt; <span class="keyword">friend</span> constexpr <span class="keyword">auto</span> <span class="keyword">operator</span> op(X a, mem_ptr_wrapper&lt;ptr&gt; b)                                                                       \</div>
 <div class="line">    {                                                                                                                                                          \</div>
-<div class="line">        return Expression&lt;typename details::to_constant&lt;X&gt;::type, op_enum, mem_ptr_wrapper&lt;ptr&gt;&gt;(a, b);                                                                                   \</div>
+<div class="line">        return Expression&lt;typename details::to_constant&lt;X&gt;::type, op_enum, mem_ptr_wrapper&lt;ptr&gt;&gt;(a, b);                                                        \</div>
 <div class="line">    }                                                                                                                                                          \</div>
 <div class="line">    template &lt;typename X, details::expression_operators op2, typename Y&gt; <span class="keyword">friend</span> constexpr <span class="keyword">auto</span> <span class="keyword">operator</span> op(Expression&lt;X, op2, Y&gt; a, mem_ptr_wrapper&lt;ptr&gt; b)    \</div>
 <div class="line">    {                                                                                                                                                          \</div>
 <div class="line">        return Expression&lt;Expression&lt;X, op2, Y&gt;, op_enum, mem_ptr_wrapper&lt;ptr&gt;&gt;(a, b);                                                                         \</div>
 <div class="line">    }</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html#l00061">61</a> of file <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html">mem_ptr_wrapper.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html#l00063">63</a> of file <a class="el" href="../../df/dbb/mem__ptr__wrapper_8hpp_source.html">mem_ptr_wrapper.hpp</a>.</p>
 
 </div>
 </div>

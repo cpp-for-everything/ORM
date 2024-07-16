@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['native_5ftype_348',['native_type',['../d7/d1b/classwebframe_1_1_o_r_m_1_1details_1_1db__type__placeholder.html#addf5972ea91048ee4afefc99d098c100',1,'webframe::ORM::details::db_type_placeholder']]]
+  ['member_5fptr_385',['member_ptr',['../d2/d28/structwebframe_1_1_o_r_m_1_1details_1_1_order_wrapper.html#a0c51741d740f04a51345e031b23febc5',1,'webframe::ORM::details::OrderWrapper']]]
 ];

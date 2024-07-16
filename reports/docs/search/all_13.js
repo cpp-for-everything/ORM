@@ -1,12 +1,8 @@
 var searchData=
 [
-  ['details_191',['details',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html',1,'webframe::ORM']]],
-  ['literals_192',['literals',['../d7/d59/namespacewebframe_1_1_o_r_m_1_1literals.html',1,'webframe::ORM']]],
-  ['orm_193',['ORM',['../d4/d86/namespacewebframe_1_1_o_r_m.html',1,'webframe']]],
-  ['placeholders_194',['placeholders',['../da/d8a/namespacewebframe_1_1_o_r_m_1_1placeholders.html',1,'webframe::ORM']]],
-  ['webframe_195',['webframe',['../d8/d8d/namespacewebframe.html',1,'']]],
-  ['webframe_5fversion_5fmajor_196',['WebFrame_VERSION_MAJOR',['../d4/d03/_o_r_m-version_8hpp.html#aadd7bf7a3c6b245f6c0712f12fd1a998',1,'ORM-version.hpp']]],
-  ['webframe_5fversion_5fminor_197',['WebFrame_VERSION_MINOR',['../d4/d03/_o_r_m-version_8hpp.html#a8c26e98d628275ad871cd241138bb939',1,'ORM-version.hpp']]],
-  ['where_198',['where',['../df/d21/classwebframe_1_1_o_r_m_1_1details_1_1_update_query.html#a30dcaec153e99705cd9b5ae5b08431fc',1,'webframe::ORM::details::UpdateQuery']]],
-  ['whererules_199',['WhereRules',['../df/d21/classwebframe_1_1_o_r_m_1_1details_1_1_update_query.html#ae6f13bf091f1be24ef2a15d150e08d7a',1,'webframe::ORM::details::UpdateQuery']]]
+  ['val_203',['val',['../da/da2/classwebframe_1_1_o_r_m_1_1alias.html#aa70f156d64b67e9f90e7680f888288d3',1,'webframe::ORM::alias']]],
+  ['vals_204',['vals',['../d2/da9/classwebframe_1_1_o_r_m_1_1details_1_1_insert_query.html#a3b1d2daea43e05a7f52e6d5b04d82fc7',1,'webframe::ORM::details::InsertQuery']]],
+  ['value_205',['value',['../da/d64/structwebframe_1_1_o_r_m_1_1details_1_1string__literal.html#a70653374c3882b9400c31e4dc527ffe7',1,'webframe::ORM::details::string_literal']]],
+  ['variable_5ftype_206',['variable_type',['../db/d03/classwebframe_1_1_o_r_m_1_1details_1_1mem__ptr__wrapper_3_01ptr_01_4.html#a33b91301a911143d41c6803ab05c1a21',1,'webframe::ORM::details::mem_ptr_wrapper&lt; ptr &gt;']]],
+  ['variadic_5fstring_207',['variadic_string',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a55cc43c8cdfbf3c1c59a63f4696c007baf60709373a01693ff6864d6e7fe0d348',1,'webframe::ORM::details']]]
 ];

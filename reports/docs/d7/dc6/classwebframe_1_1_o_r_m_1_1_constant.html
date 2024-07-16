@@ -270,7 +270,9 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="../../df/df6/statement__expression_8hpp_source.html#l00044">44</a> of file <a class="el" href="../../df/df6/statement__expression_8hpp_source.html">statement_expression.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;{ <span class="keywordflow">return</span> <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a11f6b1259d7b5b4fc0124403d07703c4">a</a>; }</div>
+<div class="fragment"><div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        {</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            <span class="keywordflow">return</span> <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a11f6b1259d7b5b4fc0124403d07703c4">a</a>;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -302,10 +304,10 @@ template&lt;typename T3 , details::expression_operators op2, typename T4 &gt; </
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html#l00053">53</a> of file <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html">statement_expression.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    {</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keywordflow">return</span> Expression&lt;Constant&lt;T&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7ca07ad6ac9d740b2786233d5ef5c6cb5a2">details::expression_operators::Mod</a>, Expression&lt;T3, op2, T4&gt;&gt;(*<span class="keyword">this</span>, e);</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    }</div>
+<p class="definition">Definition at line <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html#l00054">54</a> of file <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html">statement_expression.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="keywordflow">return</span> Expression&lt;Constant&lt;T&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7ca07ad6ac9d740b2786233d5ef5c6cb5a2">details::expression_operators::Mod</a>, Expression&lt;T3, op2, T4&gt;&gt;(*<span class="keyword">this</span>, e);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    }</div>
 <div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_aef35be1160d90aba17d968d260ffde7ca07ad6ac9d740b2786233d5ef5c6cb5a2"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7ca07ad6ac9d740b2786233d5ef5c6cb5a2">webframe::ORM::details::Mod</a></div><div class="ttdeci">@ Mod</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/da3/expression__operators_8hpp_source.html#l00011">expression_operators.hpp:11</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -336,12 +338,10 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html#l00078">78</a> of file <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html">statement_expression.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                                                                             { <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a11f6b1259d7b5b4fc0124403d07703c4">a</a> % b; } constexpr <span class="keyword">auto</span> <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a6d5e73b4f011b610a63d050dad4aa457">Constant&lt;T&gt;::operator%</a>(Y e)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        <span class="keywordflow">return</span> Expression&lt;Constant&lt;T&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7ca07ad6ac9d740b2786233d5ef5c6cb5a2">details::expression_operators::Mod</a>, <span class="keyword">typename</span> details::to_constant&lt;Y&gt;::type&gt;(*<span class="keyword">this</span>, e);</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    }</div>
-<div class="ttc" id="aclasswebframe_1_1_o_r_m_1_1_constant_html_a6d5e73b4f011b610a63d050dad4aa457"><div class="ttname"><a href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a6d5e73b4f011b610a63d050dad4aa457">webframe::ORM::Constant::operator%</a></div><div class="ttdeci">constexpr auto operator%(Expression&lt; T3, op2, T4 &gt;) const</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d35/statement__expression_8cpp_source.html#l00053">statement_expression.cpp:53</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html#l00094">94</a> of file <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html">statement_expression.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    {</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        <span class="keywordflow">return</span> Expression&lt;Constant&lt;T&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7ca07ad6ac9d740b2786233d5ef5c6cb5a2">details::expression_operators::Mod</a>, <span class="keyword">typename</span> details::to_constant&lt;Y&gt;::type&gt;(*<span class="keyword">this</span>, e);</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -373,10 +373,10 @@ template&lt;typename T3 , details::expression_operators op2, typename T4 &gt; </
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html#l00039">39</a> of file <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html">statement_expression.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    {</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        <span class="keywordflow">return</span> Expression&lt;Constant&lt;T&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7ca058bd174cdbb0e6cd35e0afaccde47c5">details::expression_operators::Mul</a>, Expression&lt;T3, op2, T4&gt;&gt;(*<span class="keyword">this</span>, e);</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    }</div>
+<p class="definition">Definition at line <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html#l00040">40</a> of file <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html">statement_expression.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    {</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        <span class="keywordflow">return</span> Expression&lt;Constant&lt;T&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7ca058bd174cdbb0e6cd35e0afaccde47c5">details::expression_operators::Mul</a>, Expression&lt;T3, op2, T4&gt;&gt;(*<span class="keyword">this</span>, e);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    }</div>
 <div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_aef35be1160d90aba17d968d260ffde7ca058bd174cdbb0e6cd35e0afaccde47c5"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7ca058bd174cdbb0e6cd35e0afaccde47c5">webframe::ORM::details::Mul</a></div><div class="ttdeci">@ Mul</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/da3/expression__operators_8hpp_source.html#l00009">expression_operators.hpp:9</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -407,12 +407,10 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html#l00068">68</a> of file <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html">statement_expression.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                                                                             { <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a11f6b1259d7b5b4fc0124403d07703c4">a</a> * b; } constexpr <span class="keyword">auto</span> <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#aed056fe2823696ec1e34d0d419863eb7">Constant&lt;T&gt;::operator*</a>(Y e)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        <span class="keywordflow">return</span> Expression&lt;Constant&lt;T&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7ca058bd174cdbb0e6cd35e0afaccde47c5">details::expression_operators::Mul</a>, <span class="keyword">typename</span> details::to_constant&lt;Y&gt;::type&gt;(*<span class="keyword">this</span>, e);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    }</div>
-<div class="ttc" id="aclasswebframe_1_1_o_r_m_1_1_constant_html_aed056fe2823696ec1e34d0d419863eb7"><div class="ttname"><a href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#aed056fe2823696ec1e34d0d419863eb7">webframe::ORM::Constant::operator*</a></div><div class="ttdeci">constexpr auto operator*(Expression&lt; T3, op2, T4 &gt;) const</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d35/statement__expression_8cpp_source.html#l00039">statement_expression.cpp:39</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html#l00078">78</a> of file <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html">statement_expression.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    {</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        <span class="keywordflow">return</span> Expression&lt;Constant&lt;T&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7ca058bd174cdbb0e6cd35e0afaccde47c5">details::expression_operators::Mul</a>, <span class="keyword">typename</span> details::to_constant&lt;Y&gt;::type&gt;(*<span class="keyword">this</span>, e);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -444,10 +442,10 @@ template&lt;typename T3 , details::expression_operators op2, typename T4 &gt; </
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html#l00025">25</a> of file <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html">statement_expression.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    {</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        <span class="keywordflow">return</span> Expression&lt;Constant&lt;T&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7ca03255ba3f3fedffdfb22e9f45b26d2c6">details::expression_operators::Plus</a>, Expression&lt;T3, op2, T4&gt;&gt;(*<span class="keyword">this</span>, e);</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    }</div>
+<p class="definition">Definition at line <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html#l00026">26</a> of file <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html">statement_expression.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    {</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        <span class="keywordflow">return</span> Expression&lt;Constant&lt;T&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7ca03255ba3f3fedffdfb22e9f45b26d2c6">details::expression_operators::Plus</a>, Expression&lt;T3, op2, T4&gt;&gt;(*<span class="keyword">this</span>, e);</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    }</div>
 <div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_aef35be1160d90aba17d968d260ffde7ca03255ba3f3fedffdfb22e9f45b26d2c6"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7ca03255ba3f3fedffdfb22e9f45b26d2c6">webframe::ORM::details::Plus</a></div><div class="ttdeci">@ Plus</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/da3/expression__operators_8hpp_source.html#l00007">expression_operators.hpp:7</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -478,12 +476,10 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html#l00058">58</a> of file <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html">statement_expression.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                                                                             { <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a11f6b1259d7b5b4fc0124403d07703c4">a</a> + b; } constexpr <span class="keyword">auto</span> <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a83efd71c7b63327e20bb2402459f9e29">Constant&lt;T&gt;::operator+</a>(Y e)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        <span class="keywordflow">return</span> Expression&lt;Constant&lt;T&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7ca03255ba3f3fedffdfb22e9f45b26d2c6">details::expression_operators::Plus</a>, <span class="keyword">typename</span> details::to_constant&lt;Y&gt;::type&gt;(*<span class="keyword">this</span>, e);</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    }</div>
-<div class="ttc" id="aclasswebframe_1_1_o_r_m_1_1_constant_html_a83efd71c7b63327e20bb2402459f9e29"><div class="ttname"><a href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a83efd71c7b63327e20bb2402459f9e29">webframe::ORM::Constant::operator+</a></div><div class="ttdeci">constexpr auto operator+(Expression&lt; T3, op2, T4 &gt;) const</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d35/statement__expression_8cpp_source.html#l00025">statement_expression.cpp:25</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html#l00062">62</a> of file <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html">statement_expression.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    {</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        <span class="keywordflow">return</span> Expression&lt;Constant&lt;T&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7ca03255ba3f3fedffdfb22e9f45b26d2c6">details::expression_operators::Plus</a>, <span class="keyword">typename</span> details::to_constant&lt;Y&gt;::type&gt;(*<span class="keyword">this</span>, e);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -515,10 +511,10 @@ template&lt;typename T3 , details::expression_operators op2, typename T4 &gt; </
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html#l00032">32</a> of file <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html">statement_expression.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    {</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <span class="keywordflow">return</span> Expression&lt;Constant&lt;T&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7ca2b1831f1a0213ca9978add45f4c180ae">details::expression_operators::Minus</a>, Expression&lt;T3, op2, T4&gt;&gt;(*<span class="keyword">this</span>, e);</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    }</div>
+<p class="definition">Definition at line <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html#l00033">33</a> of file <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html">statement_expression.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    {</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        <span class="keywordflow">return</span> Expression&lt;Constant&lt;T&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7ca2b1831f1a0213ca9978add45f4c180ae">details::expression_operators::Minus</a>, Expression&lt;T3, op2, T4&gt;&gt;(*<span class="keyword">this</span>, e);</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    }</div>
 <div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_aef35be1160d90aba17d968d260ffde7ca2b1831f1a0213ca9978add45f4c180ae"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7ca2b1831f1a0213ca9978add45f4c180ae">webframe::ORM::details::Minus</a></div><div class="ttdeci">@ Minus</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/da3/expression__operators_8hpp_source.html#l00008">expression_operators.hpp:8</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -549,12 +545,10 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html#l00063">63</a> of file <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html">statement_expression.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                                                                             { <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a11f6b1259d7b5b4fc0124403d07703c4">a</a> - b; } constexpr <span class="keyword">auto</span> <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a977de5f1477583815f6de66fa9113c23">Constant&lt;T&gt;::operator-</a>(Y e)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="keywordflow">return</span> Expression&lt;Constant&lt;T&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7ca2b1831f1a0213ca9978add45f4c180ae">details::expression_operators::Minus</a>, <span class="keyword">typename</span> details::to_constant&lt;Y&gt;::type&gt;(*<span class="keyword">this</span>, e);</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    }</div>
-<div class="ttc" id="aclasswebframe_1_1_o_r_m_1_1_constant_html_a977de5f1477583815f6de66fa9113c23"><div class="ttname"><a href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a977de5f1477583815f6de66fa9113c23">webframe::ORM::Constant::operator-</a></div><div class="ttdeci">constexpr auto operator-(Expression&lt; T3, op2, T4 &gt;) const</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d35/statement__expression_8cpp_source.html#l00032">statement_expression.cpp:32</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html#l00070">70</a> of file <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html">statement_expression.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    {</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <span class="keywordflow">return</span> Expression&lt;Constant&lt;T&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7ca2b1831f1a0213ca9978add45f4c180ae">details::expression_operators::Minus</a>, <span class="keyword">typename</span> details::to_constant&lt;Y&gt;::type&gt;(*<span class="keyword">this</span>, e);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -586,10 +580,10 @@ template&lt;typename T3 , details::expression_operators op2, typename T4 &gt; </
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html#l00046">46</a> of file <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html">statement_expression.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    {</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <span class="keywordflow">return</span> Expression&lt;Constant&lt;T&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7cad212dd7e5cdc7b3d576c1934d745a372">details::expression_operators::Div</a>, Expression&lt;T3, op2, T4&gt;&gt;(*<span class="keyword">this</span>, e);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    }</div>
+<p class="definition">Definition at line <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html#l00047">47</a> of file <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html">statement_expression.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    {</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <span class="keywordflow">return</span> Expression&lt;Constant&lt;T&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7cad212dd7e5cdc7b3d576c1934d745a372">details::expression_operators::Div</a>, Expression&lt;T3, op2, T4&gt;&gt;(*<span class="keyword">this</span>, e);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    }</div>
 <div class="ttc" id="anamespacewebframe_1_1_o_r_m_1_1details_html_aef35be1160d90aba17d968d260ffde7cad212dd7e5cdc7b3d576c1934d745a372"><div class="ttname"><a href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7cad212dd7e5cdc7b3d576c1934d745a372">webframe::ORM::details::Div</a></div><div class="ttdeci">@ Div</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/da3/expression__operators_8hpp_source.html#l00010">expression_operators.hpp:10</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -620,12 +614,10 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html#l00073">73</a> of file <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html">statement_expression.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                                                                             { <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a11f6b1259d7b5b4fc0124403d07703c4">a</a> / b; } constexpr <span class="keyword">auto</span> <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a2d2deb6720288961a927024cf7fb83e1">Constant&lt;T&gt;::operator/</a>(Y e)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="keywordflow">return</span> Expression&lt;Constant&lt;T&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7cad212dd7e5cdc7b3d576c1934d745a372">details::expression_operators::Div</a>, <span class="keyword">typename</span> details::to_constant&lt;Y&gt;::type&gt;(*<span class="keyword">this</span>, e);</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    }</div>
-<div class="ttc" id="aclasswebframe_1_1_o_r_m_1_1_constant_html_a2d2deb6720288961a927024cf7fb83e1"><div class="ttname"><a href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a2d2deb6720288961a927024cf7fb83e1">webframe::ORM::Constant::operator/</a></div><div class="ttdeci">constexpr auto operator/(Expression&lt; T3, op2, T4 &gt;) const</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d35/statement__expression_8cpp_source.html#l00046">statement_expression.cpp:46</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html#l00086">86</a> of file <a class="el" href="../../d7/d35/statement__expression_8cpp_source.html">statement_expression.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    {</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        <span class="keywordflow">return</span> Expression&lt;Constant&lt;T&gt;, <a class="code" href="../../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7cad212dd7e5cdc7b3d576c1934d745a372">details::expression_operators::Div</a>, <span class="keyword">typename</span> details::to_constant&lt;Y&gt;::type&gt;(*<span class="keyword">this</span>, e);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -667,8 +659,8 @@ template&lt;typename Y &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/df6/statement__expression_8hpp_source.html#l00056">56</a> of file <a class="el" href="../../df/df6/statement__expression_8hpp_source.html">statement_expression.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;{ <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a11f6b1259d7b5b4fc0124403d07703c4">a</a> + b; } constexpr <span class="keyword">auto</span> <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a83efd71c7b63327e20bb2402459f9e29">operator+</a>(Y) <span class="keyword">const</span>;</div>
+<p class="definition">Definition at line <a class="el" href="../../df/df6/statement__expression_8hpp_source.html#l00060">60</a> of file <a class="el" href="../../df/df6/statement__expression_8hpp_source.html">statement_expression.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;{ <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a11f6b1259d7b5b4fc0124403d07703c4">a</a> + b; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -710,8 +702,8 @@ template&lt;typename Y &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/df6/statement__expression_8hpp_source.html#l00058">58</a> of file <a class="el" href="../../df/df6/statement__expression_8hpp_source.html">statement_expression.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;{ <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a11f6b1259d7b5b4fc0124403d07703c4">a</a> - b; } constexpr <span class="keyword">auto</span> <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a977de5f1477583815f6de66fa9113c23">operator-</a>(Y) <span class="keyword">const</span>;</div>
+<p class="definition">Definition at line <a class="el" href="../../df/df6/statement__expression_8hpp_source.html#l00064">64</a> of file <a class="el" href="../../df/df6/statement__expression_8hpp_source.html">statement_expression.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;{ <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a11f6b1259d7b5b4fc0124403d07703c4">a</a> - b; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -753,8 +745,8 @@ template&lt;typename Y &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/df6/statement__expression_8hpp_source.html#l00060">60</a> of file <a class="el" href="../../df/df6/statement__expression_8hpp_source.html">statement_expression.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;{ <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a11f6b1259d7b5b4fc0124403d07703c4">a</a> * b; } constexpr <span class="keyword">auto</span> <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#aed056fe2823696ec1e34d0d419863eb7">operator*</a>(Y) <span class="keyword">const</span>;</div>
+<p class="definition">Definition at line <a class="el" href="../../df/df6/statement__expression_8hpp_source.html#l00068">68</a> of file <a class="el" href="../../df/df6/statement__expression_8hpp_source.html">statement_expression.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;{ <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a11f6b1259d7b5b4fc0124403d07703c4">a</a>* b; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -796,8 +788,8 @@ template&lt;typename Y &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/df6/statement__expression_8hpp_source.html#l00062">62</a> of file <a class="el" href="../../df/df6/statement__expression_8hpp_source.html">statement_expression.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;{ <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a11f6b1259d7b5b4fc0124403d07703c4">a</a> / b; } constexpr <span class="keyword">auto</span> <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a2d2deb6720288961a927024cf7fb83e1">operator/</a>(Y) <span class="keyword">const</span>;</div>
+<p class="definition">Definition at line <a class="el" href="../../df/df6/statement__expression_8hpp_source.html#l00072">72</a> of file <a class="el" href="../../df/df6/statement__expression_8hpp_source.html">statement_expression.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;{ <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a11f6b1259d7b5b4fc0124403d07703c4">a</a> / b; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -839,8 +831,8 @@ template&lt;typename Y &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../df/df6/statement__expression_8hpp_source.html#l00064">64</a> of file <a class="el" href="../../df/df6/statement__expression_8hpp_source.html">statement_expression.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;{ <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a11f6b1259d7b5b4fc0124403d07703c4">a</a> % b; } constexpr <span class="keyword">auto</span> <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a6d5e73b4f011b610a63d050dad4aa457">operator%</a>(Y) <span class="keyword">const</span>;</div>
+<p class="definition">Definition at line <a class="el" href="../../df/df6/statement__expression_8hpp_source.html#l00076">76</a> of file <a class="el" href="../../df/df6/statement__expression_8hpp_source.html">statement_expression.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;{ <a class="code" href="../../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a11f6b1259d7b5b4fc0124403d07703c4">a</a> % b; }</div>
 </div><!-- fragment -->
 </div>
 </div>
