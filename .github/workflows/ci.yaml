@@ -167,7 +167,7 @@ jobs:
       - name: Archive test results
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
+          name: test-results-${{matrix.os}}-${{matrix.compiler}}-${{matrix.generator}}-${{matrix.build_type}}-${{matrix.developer_mode}}
           path: test-result.txt
 
       - name: CPack
