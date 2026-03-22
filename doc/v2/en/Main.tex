@@ -1,0 +1,385 @@
+\documentclass[12pt]{article}
+
+\usepackage{cmap}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+% --- Typography ---
+\usepackage{tempora}
+\usepackage[top=2.5cm, bottom=2.5cm, left=3.0cm, right=2.0cm, a4paper]{geometry}
+\usepackage{setspace}
+\setstretch{1.5}
+\usepackage[none]{hyphenat}
+\usepackage[expansion=false]{microtype}
+\emergencystretch=1.5em
+\sloppy
+\usepackage{makecell}
+\usepackage{indentfirst}
+\setlength{\parindent}{1.25cm}
+\setlength{\parskip}{0pt}
+
+% --- Page Numbering (Bottom Right) ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[R]{\thepage}
+
+% --- Footnotes ---
+\usepackage[hang,flushmargin]{footmisc}
+\usepackage{ragged2e}
+\renewcommand{\footnotelayout}{\fontsize{10}{12}\selectfont\setstretch{1.0}\justifying}
+
+% --- Section Formatting ---
+\usepackage{titlesec}
+\newcommand{\sectionbreak}{\clearpage}
+
+\renewcommand{\thesection}{\Roman{section}}
+\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
+\renewcommand{\thesubsubsection}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}}
+
+\titleformat{\section}[block]
+  {\fontsize{14}{16.8}\bfseries\centering}
+  {\thesection. }
+  {0pt}
+  {\MakeUppercase}
+
+\titleformat{\subsection}[block]
+  {\fontsize{14}{16.8}\bfseries}
+  {\thesubsection. }
+  {0pt}
+  {}
+\titlespacing*{\subsection}{1.25cm}{*3}{*2}
+
+\titleformat{\subsubsection}[block]
+  {\fontsize{13}{15.6}\bfseries}
+  {\thesubsubsection. }
+  {0pt}
+  {}
+\titlespacing*{\subsubsection}{2.0cm}{*2}{*1}
+
+\titleformat{\paragraph}[block]
+  {\fontsize{12}{14.4}\bfseries}
+  {}
+  {0pt}
+  {}
+\titlespacing*{\paragraph}{2.25cm}{*0.5}{*0.5}
+
+% --- TOC ---
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\l@section}{#1}{\MakeUppercase{#1}}{}{}
+\makeatother
+\usepackage[titles]{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsubsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsubsubsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsecfont}{\fontsize{12}{14}\bfseries}
+\renewcommand{\cftsecpagefont}{\fontsize{12}{14}\bfseries}
+\renewcommand{\cftsecaftersnum}{.\enspace}
+\settowidth{\cftsecnumwidth}{VIII.\enspace}
+\renewcommand{\cftsubsecaftersnum}{.}
+\renewcommand{\cftsubsubsecaftersnum}{.}
+
+% --- Captions ---
+\usepackage{caption}
+\usepackage{subcaption}
+\DeclareCaptionLabelFormat{tablelabel}{Table #2}
+\captionsetup[table]{
+    labelformat=tablelabel,
+    labelsep=period,
+    font={bf,small},
+    justification=centering,
+    singlelinecheck=true
+}
+\DeclareCaptionLabelFormat{figurelabel}{Figure #2}
+\captionsetup[figure]{
+    labelformat=figurelabel,
+    labelsep=period,
+    font={bf,small},
+    justification=centering,
+    singlelinecheck=true
+}
+
+% --- Math ---
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsthm}
+
+% --- Graphics ---
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,arrows.meta,positioning,shapes.geometric,fit,calc}
+\usepackage{adjustbox}
+
+% --- Tables ---
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{tabularx}
+
+% --- Bibliography ---
+\usepackage{hyperref}
+\usepackage{caption}
+
+% --- Utilities ---
+\usepackage{xcolor}
+\usepackage{xurl}
+\usepackage{soul}
+\usepackage{enumerate}
+\usepackage{enumitem}
+\usepackage{textcomp}
+\usepackage{gensymb}
+\usepackage{fancyvrb}
+\usepackage{eurosym}
+\usepackage{ragged2e}
+\usepackage{siunitx}
+\usepackage{listings}
+\usepackage{seqsplit}
+\usepackage{collcell}
+
+\captionsetup{font=small,labelfont=bf}
+\urlstyle{same}
+\newcommand{\ORMName}{Compile-time Object-Relational Mapping}
+\pdfstringdefDisableCommands{\def\code#1{#1}\def\texttt#1{#1}\def\ORMName{Compile-time Object-Relational Mapping}}
+\ExplSyntaxOn
+\tl_new:N \l__orm_code_text_tl
+\cs_new_protected:Npn \orm_code:n #1
+  {
+    \group_begin:
+      \tl_set:Nx \l__orm_code_text_tl { \tl_to_str:n {#1} }
+      \regex_replace_all:nnN { \\([_&]) } { \1 } \l__orm_code_text_tl
+      \ttfamily
+      \exp_args:NV \seqsplit \l__orm_code_text_tl
+    \group_end:
+  }
+\DeclareRobustCommand{\code}[1]{\orm_code:n {#1}}
+\cs_new_protected:Npn \orm_inline_text:n #1
+  {
+    \regex_match:nnTF { \A C\+\+(?:\d+)? \Z } {#1}
+      {#1}
+      {
+        \regex_match:nnTF { [<_:\\.] } {#1}
+          {\code{#1}}
+          {
+            \regex_match:nnTF { \A [-A-Z0-9/+_]+(?:\s+[-A-Z0-9/+_]+)+ \Z } {#1}
+              {\code{#1}}
+              {
+                \tl_if_in:nnTF {#1} { }
+                  {#1}
+                  {\code{#1}}
+              }
+          }
+      }
+  }
+\DeclareRobustCommand{\texttt}[1]{\orm_inline_text:n {#1}}
+\ExplSyntaxOff
+\setlength{\emergencystretch}{3em}
+\newcommand{\ORMTableCellStyle}{\RaggedRight\hspace{0pt}\relax}
+\ExplSyntaxOn
+\cs_new_protected:Npn \orm_insert_slash_breaks:n #1
+  {
+    \tl_set:Nn \l_tmpa_tl { #1 }
+    \tl_replace_all:Nnn \l_tmpa_tl { / } { /\allowbreak }
+    \tl_use:N \l_tmpa_tl
+  }
+\NewDocumentCommand{\ORMSlashTableCell}{m}
+  {{\ORMTableCellStyle \orm_insert_slash_breaks:n {#1}}}
+\ExplSyntaxOff
+\newcolumntype{L}[1]{>{\ORMTableCellStyle\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\ORMTableCellStyle\arraybackslash}X}
+\newcolumntype{Q}[1]{>{\collectcell\ORMSlashTableCell}p{#1}<{\endcollectcell}}
+\newcolumntype{Z}{>{\collectcell\ORMSlashTableCell}X<{\endcollectcell}}
+\tikzset{
+    ormblock/.style={draw, rounded corners, fill=blue!5, align=center, font=\small,
+        minimum width=3.2cm, minimum height=1.05cm, inner sep=6pt},
+    ormaccent/.style={draw, rounded corners, fill=green!8, align=center, font=\small,
+        minimum width=3.0cm, minimum height=0.95cm, inner sep=6pt},
+    ormdanger/.style={draw, rounded corners, fill=red!6, align=center, font=\small,
+        minimum width=3.0cm, minimum height=0.95cm, inner sep=6pt},
+    ormnote/.style={draw, dashed, rounded corners, fill=gray!8, align=left, font=\small,
+        inner sep=6pt},
+    ormline/.style={-Latex, thick}
+}
+
+% --- Single Spacing for non-text environments ---
+\AtBeginEnvironment{tikzpicture}{\setstretch{1.1}}
+\AtBeginEnvironment{lstlisting}{\setstretch{1.1}}
+\AtBeginEnvironment{verbatim}{\setstretch{1.1}}
+\AtBeginEnvironment{tabular}{\setstretch{1.1}}
+\AtBeginEnvironment{longtable}{\setstretch{1.1}}
+
+\BeforeBeginEnvironment{tikzpicture}{\begin{adjustbox}{max width=\textwidth}}
+\AfterEndEnvironment{tikzpicture}{\end{adjustbox}}
+
+% --- Code Highlighting ---
+\definecolor{cppblue}{RGB}{0,0,180}
+\definecolor{cppgreen}{RGB}{0,128,0}
+\definecolor{cppred}{RGB}{180,0,0}
+\definecolor{cppgray}{RGB}{128,128,128}
+
+\lstset{
+    language=C++,
+    basicstyle=\footnotesize\ttfamily,
+    breaklines=true,
+    breakatwhitespace=false,
+    breakautoindent=false,
+    breakindent=0pt,
+    columns=fullflexible,
+    keepspaces=true,
+    postbreak=\mbox{\textcolor{cppgray}{\ensuremath{\hookrightarrow}}\space},
+    xleftmargin=1.5em,
+    xrightmargin=0.5em,
+    keywordstyle=\color{cppblue}\bfseries,
+    stringstyle=\color{cppred},
+    commentstyle=\color{cppgreen},
+    identifierstyle=\color{black},
+    showstringspaces=false,
+    numbers=left,
+    numberstyle=\tiny\color{cppgray},
+    numbersep=8pt,
+    aboveskip=1.5em,
+    belowskip=1.5em,
+    frame=single,
+    framerule=0.5pt,
+    rulecolor=\color{cppgray},
+    tabsize=4,
+    captionpos=b,
+    morekeywords={co_await, co_return, co_yield, Task, expected, unexpected,
+                  requires, concept, constexpr, noexcept, nullptr, override, final,
+                  ph, prepare, execute, select, insert, update, deleteq,
+                  Placeholder, IndexedPlaceholder, field, where, order_by, group_by, limit},
+    emph={orm, db, result, prepared_query, connector_trait, select_query,
+          insert_query, update_query, delete_query, MockDB, SQLiteDB},
+    emphstyle=\color{cppblue},
+    inputencoding=utf8,
+}
+
+\begin{document}
+
+% --- Title Page ---
+\begin{titlepage}
+\begin{center}
+    {\fontsize{18}{21.6}\selectfont\bfseries TECHNICAL UNIVERSITY OF SOFIA\par}
+    \vspace{0.5cm}
+    {\fontsize{16}{19.2}\selectfont\bfseries FACULTY OF COMPUTER SYSTEMS AND TECHNOLOGIES\par}
+
+    \vspace{1.5cm}
+
+    {\fontsize{20}{24}\selectfont\bfseries DESIGN AND IMPLEMENTATION OF A C++ COMPILE-TIME OBJECT-RELATIONAL MAPPING LIBRARY\par}
+
+    \vspace{1.5cm}
+
+    {\fontsize{14}{16.8}\selectfont\bfseries DIPLOMA THESIS\par}
+
+    \vfill
+
+    \begin{flushleft}
+    {\fontsize{14}{16.8}\selectfont\bfseries Author:\par}
+    Alex Tsvetanov, Faculty No. 121222225\par
+    Specialisation: Computer and Software Engineering\par
+
+    \vspace{1cm}
+
+    {\fontsize{14}{16.8}\selectfont\bfseries Supervisor:\par}
+    Assoc. Prof. Eng. Galya Pavlova, Ph.D.\par
+    \end{flushleft}
+
+    \vfill
+
+    {\fontsize{12}{14.4}\selectfont Sofia, 2026\par}
+\end{center}
+\end{titlepage}
+
+\newpage
+\pagenumbering{roman}
+\tableofcontents
+\newpage
+
+\pagenumbering{arabic}
+
+% ============================================================================
+% Abstract
+% ============================================================================
+\input{chapters/00_abstract.tex}
+
+\newpage
+
+% ============================================================================
+% Chapter 1: Introduction
+% ============================================================================
+\input{chapters/01_introduction.tex}
+
+\newpage
+
+% ============================================================================
+% Chapter 2: Review of Existing Solutions
+% ============================================================================
+\input{chapters/02_existing_solutions.tex}
+
+\newpage
+
+% ============================================================================
+% Chapter 3: Theoretical Background
+% ============================================================================
+\input{chapters/03_theoretical_background.tex}
+
+\newpage
+
+% ============================================================================
+% Chapter 4: ORM Architecture
+% ============================================================================
+\input{chapters/04_orm_architecture.tex}
+
+\newpage
+
+% ============================================================================
+% Chapter 5: Core Implementation
+% ============================================================================
+\input{chapters/05_core_implementation.tex}
+
+\newpage
+
+% ============================================================================
+% Chapter 6: Backend Scenarios
+% ============================================================================
+\input{chapters/06_backend_scenarios.tex}
+
+\newpage
+
+% ============================================================================
+% Chapter 7: Verification and Extensibility
+% ============================================================================
+\input{chapters/07_verification_extensibility.tex}
+
+\newpage
+
+% ============================================================================
+% Chapter 8: Future Work
+% ============================================================================
+\input{chapters/08_future_work.tex}
+
+\newpage
+
+% ============================================================================
+% Chapter 9: Conclusion
+% ============================================================================
+\input{chapters/09_conclusion.tex}
+
+\newpage
+
+\bibliographystyle{plain}
+\bibliography{../../references}
+
+\newpage
+\input{chapters/10_glossary.tex}
+
+\newpage
+\input{chapters/11_verification_appendix.tex}
+
+\newpage
+\input{chapters/12_capability_atlas.tex}
+
+\end{document}

@@ -1,0 +1,229 @@
+\section{Реализация на основните подсистеми}
+\label{sec:core_implementation}
+
+След като архитектурният модел е дефиниран, следващият въпрос е как той се реализира на ниво конкретни C++ конструкции и как отделните подсистеми си взаимодействат. Настоящата глава разглежда основните building blocks на библиотеката и ги проследява от entity описанията до изпълнението на заявките, подготвените заявки, миграциите и проверката на ограниченията.
+
+Тук фокусът вече не е върху слоевете като архитектурна схема, а върху тяхната реална механика. Как точно се натрупват \code{where} клаузите? Как query обектът се запазва за многократна употреба? Как \code{migrate<DB>} превръща разлика между entity модел и \code{live\_schema} в DDL операции? Как нишковият слой гарантира коректна употреба на връзките? Отговорът на тези въпроси показва доколко библиотеката е реално завършена като инженерна система.
+
+\subsection{Repository-backed mini case study: \code{User} и \code{Post}}
+
+За да остане изложението обвързано с реалния код, тази глава използва като опорна mini case study типовете \code{User} и \code{Post} от \path{tests/integration/test_mockdb.cpp}. Те са особено полезни, защото съчетават скаларни полета, table naming и join сценарий. Същият пример по-късно се използва и за prepared query, result typing и SQL rendering assertions.
+
+\begin{lstlisting}[language=C++,caption={Entity типове от \protect\path{tests/integration/test_mockdb.cpp}},label={lst:mockdb_entities}]
+struct Post
+{
+    orm::property<int, "id">             id;
+    orm::property<int, "author_id">      author_id;
+    orm::property<std::u8string, "body"> body;
+};
+
+struct User
+{
+    orm::property<int, "id">            id;
+    orm::property<std::u8string, "name"> name;
+    orm::property<double, "score">      score;
+};
+\end{lstlisting}
+
+Listing~\ref{lst:mockdb_entities} показва не само как се описва entity моделът, но и как той непосредствено участва в тестовете. \code{table\_name\_trait<User>} и \code{table\_name\_trait<Post>} фиксират логическите контейнери \code{"users"} и \code{"posts"}, а member pointers като \code{\&User::id} и \code{\&Post::author\_id} по-късно участват в query builder-а. Това е добра илюстрация на един от централните мотиви на тезата: моделът, query формата и execution тестовете използват едни и същи compile-time артефакти.
+
+\subsection{Скаларни свойства и именуване на контейнерите}
+
+Реализацията на \code{property<T, Name>} свързва стойностен тип с compile-time име. Функцията \code{column\_name()} дава еднозначен достъп до символното име на полето и се използва от конекторите при рендиране към SQL колони, document fields или други backend-специфични понятия. Тази конструкция е едновременно минималистична и достатъчна, защото не въвежда външна регистрация на метаданни.
+
+Именуването на целевия контейнер за съхранение се реализира чрез \code{table\_name\_trait<T>}. Макар името да е наследено от ORM традицията, архитектурно то играе по-обща роля: в SQLite и PostgreSQL означава таблица, в MongoDB --- collection, в Redis --- key prefix, а в Neo4j --- label. По този начин библиотеката използва единен логически интерфейс за адресиране на физически различни структури.
+
+Практически това означава, че connector авторът не извлича информация от външна схема или от runtime registry, а от типовата система. Това намалява количеството boilerplate и прави грешките в именуването по-лесни за локализиране в компилационната фаза или в unit тестовете.
+
+\subsection{Field wrappers, правила и placeholder-и}
+
+Полето в query израз се представя чрез \code{field<\&T::m>}. Това е \code{constexpr} wrapper над member pointer, който носи достатъчно информация за типа на таблицата, типа на стойността и името на колоната. Операторите върху \code{field} изграждат типизирани \code{Rule} обекти. Така изрази от вида \code{field<\&User::id> == Placeholder<int>\{\}} не са низове, а compile-time описания на предикати.
+
+Placeholder механизмът има две форми. \code{Placeholder<T>} моделира анонимни параметри, които се консумират позиционно от \code{execute()} аргументите. \code{orm::ph<T, std::placeholders::\_N>} моделира индексирани параметри, които позволяват една runtime стойност да се използва на повече от една позиция. Това е особено важно при backend-и като SQLite и PostgreSQL, където има естествена поддръжка на индексно адресирани placeholder-и.
+
+Тестовете \code{IndexedPlaceholderRendersQuestionMarkN}, \code{IndexedPlaceholderReusedSameArgInSQL} и \code{TwoDistinctIndexedPlaceholdersRenderCorrectSlots} в \path{tests/integration/test_mockdb.cpp} показват, че тази подсистема не е теоретична добавка, а реално използван механизъм за изразяване на по-точни parameter binding сценарии.
+
+\subsection{Изграждане на query обекти}
+
+Фабричните функции \code{select}, \code{insert}, \code{update} и \code{deleteq} създават query обекти, върху които последователно се наслагват \code{where}, \code{join}, \code{order\_by}, \code{group\_by} и \code{limit}. Съществено е, че всяка от тези операции не променя низ, а връща нов типизиран обект с разширено вътрешно състояние. В резултат query builder-ът е едновременно fluent на вид и статичен по природа.
+
+Това позволява в тестовете да се проверява не само крайният резултат от рендирането, а и самата форма на междинното представяне --- например броят на \code{where} клаузите или типът на response tuple-а. В \path{tests/integration/test_mockdb.cpp} това се вижда в \code{SelectWithInnerJoin}, \code{SelectWithOrderByDesc}, \code{SelectWithLimit} и множество други сценарии, които валидират различни фази на query composition.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.35cm and 1.2cm]
+    \node[ormaccent] (api) {\textbf{Fluent API}\\\code{select}/\code{where}/\code{join}/\code{limit}};
+    \node[ormblock, below=of api] (typed) {Ново типизирано\\query състояние при всяка стъпка};
+    \node[ormblock, below left=of typed] (shape) {Compile-time\\структура на заявката};
+    \node[ormblock, below right=of typed] (params) {Runtime\\стойности на параметрите};
+    \node[ormblock, below=of $(shape)!0.5!(params)$] (exec) {\code{connector\_trait<DB>::execute}};
+
+    \draw[ormline] (api) -- (typed);
+    \draw[ormline] (typed) -- (shape);
+    \draw[ormline] (typed) -- (params);
+    \draw[ormline] (shape) -- (exec);
+    \draw[ormline] (params) -- (exec);
+\end{tikzpicture}
+\caption{Взаимодействие между query composition, compile-time структура и runtime параметри}
+\label{fig:query_composition_execution}
+\end{figure}
+
+Фигура~\ref{fig:query_composition_execution} показва, че реализацията работи в два режима едновременно: структурната форма на заявката е фиксирана в типа, докато конкретните стойности се подават отделно. Точно това прави възможно едновременното наличие на compile-time проверки и runtime параметризация.
+
+\subsection{Изпълнение, резултати и достъп до полета}
+
+На етап изпълнение \code{db<DB>} предава query IR-а към \code{connector\_trait<DB>::execute}. Резултатът се връща като \code{orm::result<Row, Fields>}, където \code{Row} е tuple тип, а \code{fields} съдържа информация за избраните полета. Това решение позволява както итериране върху материализираните редове, така и достъп чрез \code{get\_field<\&T::m>}. Реализацията така остава типобезопасна и след изпълнението на заявката.
+
+Тестовете \code{SelectResultRowTypeIsTuple}, \code{SelectMultiFieldRowType}, \code{SelectGetByMemberPointer} и \code{SelectGetByIndex} показват, че result слойът не е просто контейнер от анонимни редове, а структурирана type-safe абстракция. Това е особено важно за тезата, защото демонстрира, че типовата дисциплина не приключва с query builder-а, а продължава и в result handling-а.
+
+\subsection{Prepared queries като повторно използваем execution артефакт}
+
+\code{prepared\_query<DB, Query>} разширява изпълнителния модел. Вместо да кешира SQL низ, той съхранява връзка към backend обекта и самия query IR. Това е естествено продължение на compile-time подхода: библиотеката третира query обекта като първичен артефакт, а не като временна стъпка по пътя към низ.
+
+\begin{lstlisting}[language=C++,caption={Извадка от \code{prepared\_query<DB, Query>}},label={lst:prepared_query}]
+template <typename DB, typename Query>
+class prepared_query
+{
+public:
+    prepared_query(DB& conn, Query q) : conn_(conn), query_(std::move(q)) {}
+
+    template <typename... Params>
+    auto execute(Params&&... params) const
+    {
+        return connector_trait<DB>::execute(
+            conn_, query_, std::forward<Params>(params)...);
+    }
+
+    [[nodiscard]] const Query& query() const noexcept { return query_; }
+};
+\end{lstlisting}
+
+Listing~\ref{lst:prepared_query} показва важен инженерeн избор: повторната употреба е организирана около IR-а, а не около текстовия резултат от рендирането. Това позволява една и съща логическа заявка да бъде изпълнявана многократно с различни параметри, без да се реконструира builder формата.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.35cm and 1.2cm]
+    \node[ormaccent] (build) {Създаване на query IR};
+    \node[ormblock, right=of build] (prepare) {\code{db.prepare(query)}};
+    \node[ormblock, right=of prepare] (store) {Съхранен IR +\\референция към \code{DB}};
+    \node[ormblock, below=of store] (exec1) {\code{execute(1)}};
+    \node[ormblock, left=of exec1] (exec2) {\code{execute(99)}};
+    \node[ormblock, right=of exec1] (exec3) {\code{execute(7)}};
+
+    \draw[ormline] (build) -- (prepare);
+    \draw[ormline] (prepare) -- (store);
+    \draw[ormline] (store) -- (exec1);
+    \draw[ormline] (store) -- (exec2);
+    \draw[ormline] (store) -- (exec3);
+\end{tikzpicture}
+\caption{Lifecycle на \code{prepared\_query}: един IR, множество изпълнения}
+\label{fig:prepared_query_lifecycle}
+\end{figure}
+
+Точно това поведение се валидира от \code{PrepareReturnsExecutableObject}, \code{PrepareWithParamExecutesCorrectly}, \code{PrepareCanBeCalledMultipleTimesWithDifferentParams} и \code{PrepareExposesQueryIR} в \path{tests/integration/test_mockdb.cpp}. Тестовете доказват, че prepared query обектът е едновременно изпълним и inspectable, което е силно доказателство за консистентността на подсистемата.
+
+\subsection{Миграционен слой и DDL генериране}
+
+Реализацията на \code{migrate<DB>} сравнява описаната от entity типовете схема с \code{live\_schema}. Когато има разлика, се създават DDL операции и се подават към \code{connector\_trait<DB>::ddl\_for(...)}. Това е добър пример за clean separation на responsibilities: diff логиката е обща, а конкретният DDL синтаксис е backend-специфичен.
+
+\begin{lstlisting}[language=C++,caption={Извадка от миграционния diff pipeline},label={lst:migration_diff}]
+[[nodiscard]] std::vector<ddl_op> diff(
+    const live_schema& live,
+    std::span<const entity_meta> entities) const
+{
+    std::vector<ddl_op> ops;
+
+    for (const auto& entity : entities)
+    {
+        auto live_it = live.find(entity.table_name);
+        if (live_it == live.end())
+        {
+            ops.push_back(create_table_op{entity.table_name, entity.columns});
+            continue;
+        }
+
+        for (const auto& [col, type] : entity.columns)
+        {
+            if (live_it->second.find(col) == live_it->second.end())
+                ops.push_back(add_column_op{entity.table_name, col, type});
+        }
+    }
+    return ops;
+}
+\end{lstlisting}
+
+Интересно е, че именно тук се вижда разликата между \emph{минимален работещ конектор} и \emph{пълен конектор}. Един backend може да изпълнява заявки, без да поддържа DDL генериране. Но ако трябва да участва в schema-aware tooling, неговият contract трябва да бъде разширен.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.35cm and 1.2cm]
+    \node[ormaccent] (entity) {Entity metadata\\\code{entity\_meta}};
+    \node[ormblock, right=of entity] (live) {Runtime schema\\\code{live\_schema}};
+    \node[ormblock, below=of $(entity)!0.5!(live)$] (diff) {\code{migrate<DB>::diff}};
+    \node[ormblock, below left=of diff] (ops) {DDL операции\\\code{create/add/drop/alter}};
+    \node[ormblock, below right=of diff] (ddl) {\code{generate\_ddl}};
+    \node[ormblock, below=of $(ops)!0.5!(ddl)$] (run) {dry-run или execution path};
+
+    \draw[ormline] (entity) -- (diff);
+    \draw[ormline] (live) -- (diff);
+    \draw[ormline] (diff) -- (ops);
+    \draw[ormline] (diff) -- (ddl);
+    \draw[ormline] (ops) -- (run);
+    \draw[ormline] (ddl) -- (run);
+\end{tikzpicture}
+\caption{Поток на schema migration подсистемата}
+\label{fig:migration_pipeline}
+\end{figure}
+
+Тестовете в \path{tests/unit/test_schema_migration.cpp} покриват създаване на таблица, добавяне и отпадане на колони, dry-run кодове на завършване, генериране на DDL и state machine поведението на \code{run()}. Това е добър пример как library subsystems с по-високо ниво на отговорност се валидират чрез насочени unit тестове, а не само чрез интеграционен smoke test.
+
+\subsection{Нишкова безопасност и transaction helpers}
+
+В библиотеката вече съществува отделен слой за \code{connection\_pool<DB, N>}, \code{thread\_local\_db<DB>} и \code{transaction\_guard<DB>}. Тези компоненти показват, че реализацията не спира до еднократно изпълнение на заявка, а разглежда и по-реалистични operational сценарии. Важното архитектурно решение е, че достъпът до тези механизми също е capability-базиран. Например \code{connection\_pool} изисква \code{supports\_concurrent\_execute}, а \code{transaction\_guard} --- \code{supports\_transactions}.
+
+\begin{lstlisting}[language=C++,caption={Извадка от thread-safety helper слоя},label={lst:thread_safety_helpers}]
+template <typename DB, std::size_t N>
+class connection_pool
+{
+    static_assert(
+     requires { typename connector_trait<DB>::supports_concurrent_execute; },
+     "connection_pool requires connector_trait<DB>::supports_concurrent_execute.");
+
+public:
+    [[nodiscard]] connection_guard<DB> acquire();
+};
+
+template <typename DB>
+class transaction_guard
+{
+    static_assert(
+     requires { typename connector_trait<DB>::supports_transactions; },
+     "transaction_guard requires connector_trait<DB>::supports_transactions.");
+};
+\end{lstlisting}
+
+Така compile-time контрактът не се ограничава до query формата, а достига и до lifecycle политиките на конектора. Това е важно за thesis аргумента, че библиотеката не е само builder за заявки, а инфраструктура за систематична и безопасна работа с backend ресурси.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Основни подсистеми и тяхната тестова опора}
+\label{tab:core_subsystem_tests}
+\begin{tabularx}{\textwidth}{L{3.1cm}L{3.8cm}Y}
+\toprule
+\textbf{Подсистема} & \textbf{Основни файлове} & \textbf{Тестова опора} \\
+\midrule
+Entity моделиране & \path{ORM/entity/property.hpp}, \path{ORM/entity/relationship.hpp} & \path{tests/unit/test_property.cpp}, \path{tests/unit/test_relationship.cpp} \\
+Query composition & \path{ORM/query/select.hpp} и свързаните query headers & \path{tests/unit/test_query.cpp}, \path{tests/integration/test_mockdb.cpp} \\
+Prepared queries & \path{ORM/connector/prepared_query.hpp} & \code{Prepare*} сценариите в \path{tests/integration/test_mockdb.cpp} \\
+Schema migration & \path{ORM/db/migration/migration.hpp} & \path{tests/unit/test_schema_migration.cpp} \\
+Thread safety & \path{ThreadSafety/thread_safety.hpp} & \path{tests/unit/test_thread_safety.cpp} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Извод за реализацията}
+
+Основните подсистеми имат пряка опора в кода и тестовете. \path{tests/unit/test_property.cpp} и \path{tests/unit/test_relationship.cpp} валидират entity описанията. \path{tests/unit/test_query.cpp} доказва, че query builder-ът наистина конструира правилни compile-time структури. \path{tests/integration/test_mockdb.cpp} и \path{tests/integration/test_sqlite.cpp} валидират изпълнението и prepared query сценариите. \path{tests/unit/test_schema_migration.cpp} покрива diff логиката на миграциите, а \path{tests/unit/test_thread_safety.cpp} проверява нишковия слой.
+
+Следователно реализацията на основните подсистеми не е само проектно намерение, а архитектурно решение, подкрепено от систематична верификация. Това е и най-важният извод от настоящата глава: compile-time ORM архитектурата в хранилището не остава на равнище абстракция, а се материализира в работещи подсистеми с ясно разграничени отговорности и тестово покритие.

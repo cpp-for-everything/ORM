@@ -1,0 +1,173 @@
+\section{Backend Scenarios Across Relational and Non-relational Databases}
+\label{sec:backend_scenarios}
+
+This chapter examines how one and the same C++ abstraction is materialised across different backends. The scenario analysis has two goals. First, it demonstrates that the library is not restricted to a purely SQL interpretation. Second, it clarifies the boundaries of the shared abstraction and the points at which backend-specific constraints must remain explicit.
+
+After the theoretical framework of Chapter~\ref{sec:theoretical_background}, the question is no longer whether the different storage models are equivalent. Instead, the question is whether one and the same logical ORM form can be adapted to them in a controlled way, without the library beginning to promise operations that a given backend cannot naturally execute. It is precisely here that the value of the capability-based connector contract becomes visible.
+
+\subsection{Methodology of the analysis}
+
+Each scenario follows the same sequence: theoretical basis, logical mapping from the C++ model, implementation in \code{connector\_trait<DB>}, limitations, and verification through tests. This makes comparison between backends possible. The aim is not to claim that all systems are equivalent, but that one and the same logical ORM abstraction can be adapted in a controlled fashion to distinct storage models.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Common analytical frame for each backend scenario}
+\label{tab:backend_analysis_frame}
+\begin{tabularx}{\textwidth}{L{3.3cm}Y}
+\toprule
+\textbf{Criterion} & \textbf{What is evaluated} \\
+\midrule
+Theoretical basis & to which storage model from Chapter~\ref{sec:theoretical_background} the backend belongs \\
+Logical mapping & how \code{property}, \code{field}, \code{Rule}, and \code{table\_name\_trait} are interpreted in the backend \\
+Capability profile & which ORM operations are explicitly admitted and which must be rejected \\
+Execution behaviour & how queries, parameters, and result projections are rendered \\
+Test evidence & which unit and integration tests validate the contract in the repository \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+This analytical frame matters because it keeps the comparison honest. SQL backends are not privileged merely because they expose a richer syntax, and NoSQL backends are not judged as ``incomplete'' merely because they reject operations that are inappropriate for their storage model.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.35cm and 1.2cm]
+    \node[ormaccent] (ir) {\textbf{Shared query IR}\\fields, predicates, placeholders, projections};
+    \node[ormblock, below left=of ir] (sql) {SQL materialisation\\SQLite/PostgreSQL/MySQL};
+    \node[ormblock, below=of ir] (doc) {Document materialisation\\MongoDB};
+    \node[ormblock, below right=of ir] (graph) {Graph materialisation\\Neo4j};
+    \node[ormblock, below=of doc, xshift=-3.2cm] (redis) {Key-based materialisation\\Redis};
+    \node[ormblock, below=of doc, xshift=3.2cm] (cass) {Partition-aware materialisation\\Cassandra};
+
+    \draw[ormline] (ir) -- (sql);
+    \draw[ormline] (ir) -- (doc);
+    \draw[ormline] (ir) -- (graph);
+    \draw[ormline] (ir) -- (redis);
+    \draw[ormline] (ir) -- (cass);
+\end{tikzpicture}
+\caption{One shared query IR and multiple backend-specific materialisation paths}
+\label{fig:backend_materialisation_paths}
+\end{figure}
+
+Figure~\ref{fig:backend_materialisation_paths} expresses the core claim of the chapter: there are not multiple unrelated ORM libraries in the repository, but one logical library with multiple materialisation paths. This is the strong argument in favour of the connector architecture --- backend diversity is managed through a shared IR and an explicit contract rather than by duplicating APIs.
+
+\subsection{Relational baseline scenario: SQLite}
+
+This scenario rests on the relational model discussed in Chapter~\ref{sec:theoretical_background}. \code{SQLiteDB} is the most natural reference backend for the library because it combines real SQL semantics, a compact operational context, and direct integration through the \code{sqlite3} API. In this backend, \code{property} materialises as a column, \code{table\_name\_trait} as a table name, and \code{Rule} trees as \code{WHERE} expressions.
+
+The connector declares \code{supports\_joins}, \code{supports\_transactions}, and \code{supports\_aggregation}, which makes it the closest to classical ORM expectations. It is precisely here that prepared queries, binding logic, \code{find\_one()} behaviour, and result hydration into typed tuples are validated. The integration tests in \path{tests/integration/test_sqlite.cpp} demonstrate not only correctness of \code{SELECT}, \code{INSERT}, \code{UPDATE}, and \code{DELETE}, but also behaviour under a transaction-capable and join-capable connector profile.
+
+From an academic point of view, SQLite plays the role of relational baseline. If a given ORM form is problematic already here, it is unlikely to generalise well toward more exotic backends. For that reason, the present work uses SQLite as a reference point rather than merely as one example among many.
+
+\subsection{Relational portability: PostgreSQL and MySQL}
+
+The theoretical basis here is again the relational model, but the architectural interest is different: to what extent one and the same query IR remains valid across different SQL dialects and different parameter-binding rules. \code{PostgreSQLDB} and \code{PostgreSQLLiveDB} support \code{supports\_joins}, \code{supports\_transactions}, and \code{supports\_aggregation}, while the tests in \path{tests/unit/test_postgresql_connector.cpp} and \path{tests/integration/test_postgresql_live.cpp} show real execution against a live database.
+
+\code{MySQLDB} and \code{MySQLLiveDB} also declare \code{supports\_joins} and \code{supports\_transactions}, but here the difference in binding model becomes important. While PostgreSQL can naturally address parameters through \code{\$1}, \code{\$2}, \ldots{}, MySQL relies on positional \code{?} placeholders. This does not break the shared IR, but it demonstrates that logical portability does not imply byte-for-byte identical backend materialisation.
+
+These SQL family scenarios therefore defend a stronger thesis than ``the library works with SQL'': the query IR is general enough for more than one dialect, yet honest enough to leave low-level differences within the connector layer.
+
+\subsection{Document scenario: MongoDB}
+
+This scenario is based on the document model from the theoretical chapter. In MongoDB, \code{property} is interpreted as a document field, while query predicate trees are translated into BSON-like filters. \code{select} expressions materialise as projections, and the notion of table in ORM terms becomes a collection. This is precisely where the practical value of a storage-agnostic query IR becomes visible: the user does not describe \code{\$eq}, \code{\$and}, or projection directly, yet the connector can derive them from the same logical form.
+
+An important detail is that \code{connector\_trait<MongoDB>} does not declare SQL-style capability tags. This is not an omission, but a correct description of the connector contract. There is no attempt to claim that the Mongo backend is join-equivalent to relational connectors. Instead, it provides a document-native interpretation of the query IR. The unit and integration tests in \path{tests/unit/test_mongodb_connector.cpp} and \path{tests/integration/test_mongodb_live.cpp} validate this adaptation against a real driver layer.
+
+The architectural value of this scenario is that it demonstrates an important restriction: a library may be multi-backend without claiming that all backends support the same operations. It is exactly this sort of controlled partiality that makes the design scientifically defensible.
+
+\subsection{Key-value scenario: Redis}
+
+This scenario rests on key-value theory. In Redis, one and the same entity model can be materialised in two principal ways: as \code{SET}/\code{GET} for single-field structures or as \code{HSET}/\code{HGETALL} for multi-field structures. \code{table\_name()} participates in generation of the key prefix, while access is concentrated around primary-key equality.
+
+Here it becomes very clear that the shared query IR does not imply identical expressiveness. \code{RedisDB} deliberately does not declare \code{supports\_joins}, \code{supports\_transactions}, or \code{supports\_aggregation}. This restriction is part of the correct contract rather than a weakness of the architecture. The unit and live tests in \path{tests/unit/test_redis_connector.cpp} and \path{tests/integration/test_redis_live.cpp} prove that the library correctly materialises key-based access without promising unsupported operations.
+
+This scenario is especially valuable for the thesis because it forces the architecture to distinguish clearly between the \emph{logical data model} and the \emph{admissible access model}. That distinction is easy to forget in SQL-first libraries, but here it is elevated into a central principle.
+
+\subsection{Graph scenario: Neo4j}
+
+The scenario for Neo4j is based on the graph model. The entity type materialises as a label and a set of properties, while the query IR is translated into \code{MATCH}, \code{RETURN}, and \code{WHERE} fragments. This is an important architectural test because graph-query semantics are among the furthest from the classical SQL model. Nevertheless, the logical elements --- fields, predicates, filtering, and result projections --- remain recognisable.
+
+\code{Neo4jDB} and \code{Neo4jLiveDB} declare \code{supports\_transactions}, but not SQL join/aggregation capabilities. This is meaningful: graph traversal is not the same as SQL join, even though both connect data at a logical level. The unit and integration tests in \path{tests/unit/test_neo4j_connector.cpp} and \path{tests/integration/test_neo4j_live.cpp} show that the abstraction can adapt one and the same logical model toward a graph backend if the connector takes responsibility for correct materialisation.
+
+From the standpoint of the thesis, this is one of the strongest demonstrations that the query IR is semantic rather than syntactic. If the IR were merely under-specified SQL, the Neo4j scenario would collapse. The fact that a working graph materialisation is possible supports the central architectural claim.
+
+\subsection{Wide-column scenario: Cassandra}
+
+This scenario is grounded in wide-column theory. Although Cassandra offers a CQL syntax reminiscent of SQL, the actual access model is governed by partition keys and the distributed organisation of data. The library therefore cannot treat Cassandra as an ordinary SQL backend. The mere existence of a \code{WHERE} clause is not enough; it must also remain compatible with partition logic.
+
+\code{CassandraDB} and \code{CassandraLiveDB} declare \code{supports\_transactions}, but not \code{supports\_joins}. This is highly revealing. On the one hand, the backend remains part of the same ORM library. On the other hand, the contract categorically refuses operations that would be misleading or expensive in a wide-column environment. The unit and live tests in \path{tests/unit/test_cassandra_connector.cpp} and \path{tests/integration/test_cassandra_live.cpp} provide concrete verification of this stricter operational profile.
+
+For that reason, Cassandra is the best example that the extensibility of the library is not based on false equivalence, but on formally described limits of admissible operations.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.2cm and 0.95cm]
+    \node[ormaccent, minimum width=3.4cm] (title) {Capability spectrum};
+    \node[ormblock, below left=1.5cm and 2.3cm of title, minimum width=2.8cm] (sqlite) {SQLite\\join + txn + agg};
+    \node[ormblock, below=1.5cm of title, minimum width=3.1cm] (pgsql) {PostgreSQL/MySQL\\join + txn + agg/txn};
+    \node[ormblock, below right=1.5cm and 2.3cm of title, minimum width=2.8cm] (mongo) {MongoDB\\no SQL capability tags};
+    \node[ormblock, below=of sqlite, minimum width=2.8cm] (redis) {Redis\\key-based only};
+    \node[ormblock, below=of pgsql, minimum width=2.8cm] (neo4j) {Neo4j\\txn only};
+    \node[ormblock, below=of mongo, minimum width=2.8cm] (cass) {Cassandra\\txn only};
+
+    \draw[ormline] (title) -- (sqlite);
+    \draw[ormline] (title) -- (pgsql);
+    \draw[ormline] (title) -- (mongo);
+    \draw[ormline] (sqlite) -- (redis);
+    \draw[ormline] (pgsql) -- (neo4j);
+    \draw[ormline] (mongo) -- (cass);
+\end{tikzpicture}
+\caption{Comparative capability profile of the backends in the repository}
+\label{fig:backend_capability_spectrum}
+\end{figure}
+
+Figure~\ref{fig:backend_capability_spectrum} synthesises one of the most important observations of the chapter: the library does not impose the same capability profile on every backend. On the contrary, the differences are used as first-class architectural information.
+
+\subsection{Comparison between test evidence and backend contract}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Backends, capability profile, and available test evidence}
+\label{tab:backend_evidence}
+\begin{tabularx}{\textwidth}{L{2.1cm}Q{2.4cm}L{2.8cm}Y}
+\toprule
+\textbf{Backend} & \textbf{Capability profile} & \textbf{Unit/contract test} & \textbf{Integration/live test} \\
+\midrule
+SQLite & joins, transactions, aggregation & capability asserts in \path{tests/integration/test_sqlite.cpp} & \path{tests/integration/test_sqlite.cpp} \\
+PostgreSQL & joins, transactions, aggregation & \path{tests/unit/test_postgresql_connector.cpp} & \path{tests/integration/test_postgresql_live.cpp} \\
+MySQL & joins, transactions, aggregation & \path{tests/unit/test_mysql_connector.cpp} & \path{tests/integration/test_mysql_live.cpp} \\
+MongoDB & no SQL capability tags & \path{tests/unit/test_mongodb_connector.cpp} & \path{tests/integration/test_mongodb_live.cpp} \\
+Redis & no joins/transactions/aggregation & \path{tests/unit/test_redis_connector.cpp} & \path{tests/integration/test_redis_live.cpp} \\
+Neo4j & transactions & \path{tests/unit/test_neo4j_connector.cpp} & \path{tests/integration/test_neo4j_live.cpp} \\
+Cassandra & transactions & \path{tests/unit/test_cassandra_connector.cpp} & \path{tests/integration/test_cassandra_live.cpp} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Table~\ref{tab:backend_evidence} is important because it translates the comparison from the level of narrative analysis to the level of verifiable repository evidence. For every backend there is at least one explicit contract-level or live-level correlate. This reduces the risk that the chapter becomes a declarative survey without technical support.
+
+\subsection{Comparative synthesis}
+
+The comparison across backends shows that the library succeeds in preserving a shared logical model at the level of entity types, fields, placeholders, and query IR. Differences appear at the level of capabilities and physical data organisation. This is the central conclusion of the chapter: a successful multi-backend ORM architecture does not erase differences between storage models, but makes them controllable through a formal connector contract.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Comparison of backend materialisation}
+\label{tab:backend_materialisation}
+\begin{tabularx}{\textwidth}{L{2.0cm}L{2.5cm}L{2.8cm}Y}
+\toprule
+\textbf{Backend} & \textbf{Primary structure} & \textbf{Logical interpretation} & \textbf{Representative limitation} \\
+\midrule
+SQLite & table & full SQL ORM interpretation & standard relational discipline and rich query expressiveness \\
+PostgreSQL/MySQL & table & portable SQL IR & different binding models and dialect details \\
+MongoDB & document & filter/projection interpretation & only partial equivalence with SQL operations \\
+Redis & key/value, hash & key-based entity access & lookup mostly by primary key and no join semantics \\
+Neo4j & node/properties & graph-pattern interpretation & graph-specific query semantics rather than SQL join behaviour \\
+Cassandra & wide-column row & CQL with key constraints & partition-driven access and restricted predicate profile \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+As a result, the multi-backend design of the library can be defended with a more precise formulation. The system does not promise a ``universal database through one API'', but rather a \emph{unified logical layer with explicit backend boundaries}. This formulation is both engineering-honest and scientifically grounded.

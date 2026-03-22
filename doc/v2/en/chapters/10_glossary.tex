@@ -1,0 +1,112 @@
+\section{Glossary of Abbreviations and Terms}
+\label{sec:glossary}
+
+The present section serves two functions. On the one hand, it summarises the abbreviations and terms used throughout the thesis in order to make the text easier to follow consistently. On the other hand, it fixes the precise meaning in which several concepts are used within the work. This matters because words such as ``model'', ``connector'', ``migration'', or ``capability'' can carry different meanings depending on context.
+
+\subsection{Basic abbreviations}
+
+Table~\ref{tab:glossary} summarises the principal abbreviations and terms used in the thesis.
+
+\begin{table}[H]
+\centering
+\caption{Glossary of abbreviations}
+\label{tab:glossary}
+\begin{tabular}{>{\bfseries}l L{5.8cm} L{6.0cm}}
+\toprule
+\textbf{Abbreviation} & \textbf{Full form} & \textbf{Context} \\
+\midrule
+API & Application Programming Interface & Programming interface between software components \\
+BSON & Binary JSON & Binary serialisation format used by MongoDB \\
+CQL & Cassandra Query Language & Query language for Apache Cassandra \\
+CRUD & Create, Read, Update, Delete & The four fundamental data operations \\
+DDL & Data Definition Language & Language for schema definition and evolution \\
+IR & Intermediate Representation & Intermediate representation of query structure \\
+ORM & Object-Relational Mapping & Mapping between an object model and persistent storage \\
+PFR & Plain Fields Reflection & \code{Boost.PFR} mechanism for aggregate inspection \\
+RAII & Resource Acquisition Is Initialization & C++ idiom for deterministic resource management \\
+RDBMS & Relational Database Management System & Engine for relational data storage \\
+SFINAE & Substitution Failure Is Not An Error & Classical C++ template-constraining mechanism \\
+SQL & Structured Query Language & Standard language for relational queries \\
+TMP & Template Metaprogramming & Compile-time computation through templates \\
+WG21 & Working Group 21 & ISO working group responsible for the C++ standard \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Working definitions of key concepts}
+
+Within the thesis, several terms are used in a more specific sense than in everyday technical language. Table~\ref{tab:working_definitions} fixes that sense so that architectural and general meanings are not inadvertently mixed.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Working definitions of the key concepts used in the thesis}
+\label{tab:working_definitions}
+\begin{tabularx}{\textwidth}{L{3.4cm}Y}
+\toprule
+\textbf{Concept} & \textbf{Working definition} \\
+\midrule
+Logical model & the compile-time description of entity types, their properties, and their relationships, independent of a concrete physical backend \\
+Query IR & the typed intermediate representation of a query before materialisation into SQL, a BSON-like filter, a Redis command, Cypher, or CQL \\
+Connector contract & the formal set of requirements imposed on \code{connector\_trait<DB>} through which a backend participates in the system \\
+Capability tag & a compile-time marker that constrains admissible operations and expresses architectural abilities of the backend \\
+Prepared query & an object that binds a previously constructed query IR to a concrete \code{db<DB>} instance for repeated execution \\
+Schema-aware support & a level of integration at which the library can work with schema metadata, DDL hooks, and migration-diff logic \\
+Hydration & materialisation of backend results into a typed C++ result object \\
+Verification & the joint role of compile-time constraints, unit tests, and integration tests in demonstrating correctness \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Notation and naming used in the text}
+
+The thesis also uses a consistent notation for types, traits, and backend roles. This notation is not accidental; it reflects the real structure of the repository and makes the connection between the text and the code easier to follow.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Notation and naming conventions used in the text}
+\label{tab:naming_conventions_glossary}
+\begin{tabularx}{\textwidth}{L{3.6cm}Y}
+\toprule
+\textbf{Notation} & \textbf{Meaning in the thesis} \\
+\midrule
+\code{DB} & a generic backend type used as a parameter in traits, helpers, and the \code{db<DB>} wrapper \\
+\code{db<DB>} & the facade type that exposes the user-facing query-execution interface \\
+\code{connector\_trait} & the specialisation that describes how a concrete backend executes the query IR \\
+\code{wire\_type<T>} & the mapping from a C++ type into a backend-specific wire representation \\
+\code{cursor\_type} & the abstraction describing result traversal or result-lifecycle management \\
+\code{field<...>} & a compile-time designation of a selected property in the query API \\
+\code{Placeholder<T>} & an anonymous runtime parameter in the query IR \\
+\code{*LiveDB} & the naming convention for connectors that use a real driver-backed backend rather than a mock variant \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Repository context of the most frequently cited artefacts}
+
+Because the thesis is closely tied to the real repository, it is also useful to fix the role of the most frequently cited groups of files. Table~\ref{tab:repository_artifact_map} serves as a compact guide to where the main evidence sources reside in the project.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Map of the principal repository artefacts used in the text}
+\label{tab:repository_artifact_map}
+\begin{tabularx}{\textwidth}{L{3.8cm}L{3.1cm}Y}
+\toprule
+\textbf{Path or file group} & \textbf{Role} & \textbf{How it is used in the thesis} \\
+\midrule
+\path{lib/include/ORM/entity/} & entity model & used as the source for \code{property}, \code{relationship}, and the logical description of data \\
+\path{lib/include/ORM/query/} & query IR and fluent API & used for analysing \code{select}, \code{insert}, \code{update}, \code{deleteq}, and the query-composition layer \\
+\path{lib/include/ORM/connector/} & connector contract and execution layer & used to formalise the capability mechanism, prepared queries, and the \code{db<DB>} facade \\
+\path{lib/include/ORM/db/migration/} & migration and schema-aware logic & used as the basis for analysing DDL hooks and the migration-diff pipeline \\
+\path{tests/unit/} & unit verification & serves as the evidence layer for local correctness of the individual subsystems \\
+\path{tests/integration/} & integration verification & serves to demonstrate that the abstraction works under real or mock query execution \\
+\path{doc/v2/bg/} and \path{doc/v2/en/} & documentation layer & used for the synchronous academic presentation of architecture and results \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Conclusion}
+
+The extended glossary shows that terminological consistency is an inseparable part of the quality of the present thesis. When an architecture is strongly typed and oriented toward multiple backend families, precise use of terms is not merely a stylistic question, but a condition for correct understanding of the entire argument.

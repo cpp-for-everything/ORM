@@ -1,47 +1,32 @@
-/**
- *  @file   string_literal.hpp
- *  @brief  Single header containing structure that allows to use string as template parameters
- *  @author Alex Tsvetanov
- *  @date   2023-06-04
- ***********************************************/
-
 #pragma once
-
 #include <algorithm>
 #include <string_view>
+#include <cstddef>
 
-namespace webframe::ORM
-{
-	namespace details
-	{
-		template <size_t N> struct string_literal
-		{
-			constexpr static size_t size = N;
+namespace orm::detail {
 
-			constexpr string_literal(const char (&str)[N])
-			{
-				std::copy_n(str, N, value);
-			}
+template <std::size_t N>
+struct string_literal {
+    char data[N]{};
 
-			constexpr operator std::string_view() const
-			{
-				return std::string_view(value);
-			}
+    constexpr string_literal(const char (&s)[N]) noexcept {
+        std::copy_n(s, N, data);
+    }
 
-			constexpr std::string_view to_sv() const
-			{
-				return std::string_view(value);
-			}
+    constexpr operator std::string_view() const noexcept {
+        return {data, N - 1};
+    }
 
-			char value[N];
-		};
-	} // namespace details
+    constexpr std::string_view view() const noexcept {
+        return {data, N - 1};
+    }
 
-	namespace literals
-	{
-		template <webframe::ORM::details::string_literal Str> constexpr decltype(Str) operator""_sl()
-		{
-			return Str;
-		}
-	} // namespace literals
-} // namespace webframe::ORM
+    constexpr bool operator==(const string_literal&) const noexcept = default;
+
+    template <std::size_t M>
+    constexpr bool operator==(const string_literal<M>&) const noexcept {
+        return false;
+    }
+};
+
+} // namespace orm::detail

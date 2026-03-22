@@ -1,3 +1,0 @@
-// the configured options and settings for WebFrame
-#define WebFrame_VERSION_MAJOR @WebframeORM_VERSION_MAJOR@
-#define WebFrame_VERSION_MINOR @WebframeORM_VERSION_MINOR@

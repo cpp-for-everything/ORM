@@ -1,0 +1,63 @@
+name: Docker Integration Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  docker-tests:
+    name: Run Tests in Docker
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: false  # Not needed when using system libraries
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      
+      - name: Build test container
+        run: |
+          docker compose -f docker/docker-compose.yml build orm-test
+      
+      - name: Start database services
+        run: |
+          docker compose -f docker/docker-compose.yml up -d mysql postgresql mongodb redis cassandra neo4j
+      
+      - name: Wait for services to be healthy
+        run: |
+          timeout 300 bash -c 'until docker compose -f docker/docker-compose.yml ps | grep -q "healthy"; do sleep 5; done'
+      
+      - name: Run tests
+        run: |
+          docker compose -f docker/docker-compose.yml run --rm orm-test /workspace/docker/scripts/run_tests.sh
+      
+      - name: Collect test results
+        if: always()
+        run: |
+          docker compose -f docker/docker-compose.yml logs > docker-logs.txt
+      
+      - name: Upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-test-logs
+          path: docker-logs.txt
+      
+      - name: Shutdown services
+        if: always()
+        run: |
+          docker compose -f docker/docker-compose.yml down -v

@@ -1,0 +1,51 @@
+\section{Introduction}
+\label{sec:introduction}
+
+\subsection{Problem Statement}
+
+Data access remains one of the areas where the mismatch between the programming language and the storage model produces the greatest number of structural errors. In traditional database access layers, queries are described as strings and validated only at execution time. This means that incorrect column names, incompatible types, invalid \code{JOIN} constructs, or wrongly supplied parameters are discovered late --- often against a real database and only after additional manual testing. At the same time, switching from one backend to another usually requires rewriting the entire data-access layer.
+
+Object-relational mapping is the classical way of connecting an application's object model with persistent storage~\cite{fowler2002}. Most ORM implementations, however, remain strongly tied to runtime mechanisms: SQL strings, code generation, annotations, macros, or dynamic metadata descriptions. In the context of C++, this introduces an additional tension. The language provides a powerful type system, templates, \code{constexpr} evaluation, and \code{concepts}, yet database libraries rarely exploit these mechanisms far enough for the compiler to become a first-class validator of query structure and backend compatibility.
+
+A distinctive feature of the present system is that, despite the name \ORMName{} library, its architecture is not restricted to the relational model alone. Instead, it uses the same C++ data model and the same query IR as a logical layer over relational and non-relational systems. This raises a second research question: which parts of the ORM abstraction are genuinely universal, and which parts must remain explicitly constrained through a capability-based backend contract.
+
+\subsection{Objectives and Tasks}
+
+The primary objective of the thesis is to present the design and implementation of a \ORMName{} library for C++ that:
+
+\begin{enumerate}[label=\arabic*.]
+    \item models data and queries through statically typed C++ constructs;
+    \item allows \code{SELECT}, \code{INSERT}, \code{UPDATE}, and \code{DELETE} queries to be built as \code{constexpr} objects;
+    \item separates logical query structure from backend-specific materialisation;
+    \item supports both relational and non-relational connectors through \code{connector\_trait<DB>};
+    \item uses compile-time capability tags to reject unsupported operations;
+    \item demonstrates how the C++ model determines both the logical schema and the physical data structure for different backend families;
+    \item formalises a contract for adding new connectors;
+    \item validates the architecture through systematic unit and integration tests.
+\end{enumerate}
+
+To achieve that objective, the work performs the following tasks: analysis of existing solutions; definition of a static entity model; construction of a typed query IR; design of the connector layer and capability mechanism; implementation of connectors for different classes of databases; investigation of migrations, prepared queries, and thread safety; and formulation of extensibility criteria.
+
+\subsection{Scope and Limitations}
+
+The thesis treats the library as a modelling, query-construction, and execution layer. Its scope therefore includes the entity model, query IR, placeholder mechanism, prepared queries, migration model, connector trait architecture, capability gating, and the concrete backend implementations present in the repository. A substantial part of the evaluation is the scenario analysis of SQLite, PostgreSQL, MySQL, MongoDB, Redis, Neo4j, and Cassandra.
+
+Out of immediate scope remain production-scale optimisations such as fully generalised connection management, backend-complete migration strategies, large-scale benchmarking, and full exploitation of future C++26 reflection. These are discussed as future work in Chapter~\ref{sec:future_work}.
+
+\subsection{Thesis Structure}
+
+The thesis is organised as follows.
+
+\textbf{Chapter~\ref{sec:existing_solutions}} reviews existing C++ solutions for database access and ORM, and positions the present work with respect to them.
+
+\textbf{Chapter~\ref{sec:theoretical_background}} presents the theoretical foundations of \ORMName{} and the storage models required for the later relational and non-relational analysis.
+
+\textbf{Chapter~\ref{sec:architecture}} describes the architecture of the library: entity declarations, query IR, \code{connector\_trait}, capability mechanisms, and the place of migrations within the overall design.
+
+\textbf{Chapter~\ref{sec:core_implementation}} follows the implementation of the core subsystems and shows how they connect at the code and runtime levels.
+
+\textbf{Chapter~\ref{sec:backend_scenarios}} analyses how the same logical abstraction is materialised in different backends --- relational, document, key-value, graph, and wide-column.
+
+\textbf{Chapter~\ref{sec:verification_extensibility}} examines the verification strategy and the formal contract for extending the library with new connectors.
+
+\textbf{Chapter~\ref{sec:future_work}} outlines the main limitations and future development directions, while \textbf{Chapter~\ref{sec:conclusion}} summarises the results and contributions.

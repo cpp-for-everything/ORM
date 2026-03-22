@@ -1,0 +1,266 @@
+\section{Theoretical Foundations of \ORMName{} and Storage Models}
+\label{sec:theoretical_background}
+
+The theoretical basis of the present work is not reducible to a single language feature or a single database type. The library combines ideas from ORM theory, static typing in C++, compile-time construction of intermediate representations, and the comparative analysis of different storage models. To understand the architecture developed later, it is necessary first to separate the logical layer of data description from the physical layer of backend-specific materialisation.
+
+Within this thesis, the term \ORMName{} should not be interpreted narrowly as a SQL-only technique. More precisely, it denotes an architectural approach in which the data model, the query form, and part of the admissibility constraints are described through the type system of the language rather than through runtime configuration. This makes it possible to carry one and the same logical structure toward relational, document, key-value, graph, and wide-column systems without hiding or falsifying backend-specific differences.
+
+\subsection{Taxonomy of the problem domain}
+
+Before the individual components are discussed, it is useful to fix the general picture of the problem domain. On one side stands the C++ model, in which the application describes entity types, fields, relationships, and constraints. On the other side stand different families of storage systems, each with its own model of physical organisation, access, and optimisation. Between them lies the typed query IR, which serves as the mediator between application logic and the concrete connector layer.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.5cm and 1.4cm]
+    \node[ormaccent] (cpp) {\textbf{Logical C++ model}\\entity types, fields, relationships};
+    \node[ormblock, below=of cpp] (ir) {\textbf{Typed query IR}\\fields, rules, placeholders};
+    \node[ormblock, below left=of ir] (rel) {Relational\\model};
+    \node[ormblock, below=of ir] (doc) {Document\\model};
+    \node[ormblock, below right=of ir] (kv) {Key-value\\model};
+    \node[ormblock, below=of doc, xshift=-3.2cm] (graph) {Graph\\model};
+    \node[ormblock, below=of doc, xshift=3.2cm] (wide) {Wide-column\\model};
+
+    \draw[ormline] (cpp) -- (ir);
+    \draw[ormline] (ir) -- (rel);
+    \draw[ormline] (ir) -- (doc);
+    \draw[ormline] (ir) -- (kv);
+    \draw[ormline] (ir) -- (graph);
+    \draw[ormline] (ir) -- (wide);
+\end{tikzpicture}
+\caption{Taxonomy of the logical model, query IR, and backend families}
+\label{fig:storage_taxonomy}
+\end{figure}
+
+Figure~\ref{fig:storage_taxonomy} highlights the central theoretical assumption of the library: what backends share is not their syntax, but the logical model of data and operations. A valid abstraction must therefore be positioned above SQL, BSON, Redis commands, Cypher, or CQL. It must operate at the level of fields, predicates, projections, relationships, and admissible operation classes.
+
+\subsection{\ORMName{} as an architectural approach}
+
+Classical ORM connects the object model of an application with its persistent schema~\cite{fowler2002}. In the compile-time variant, that connection is built not through runtime reflection or configuration files, but through types, templates, and \code{constexpr} values. In practice this means that field selection, admissible operations, and part of backend compatibility are checked by the compiler. Errors such as references to non-existent fields or attempts to use \code{JOIN} on a connector that lacks \code{supports\_joins} cease to be runtime surprises.
+
+An essential point is that compile-time ORM does not mean the absence of runtime data. Parameter values are still supplied at execution time, but the logical query form has already been fixed and validated. This yields a clear distinction between \emph{logical structure} and \emph{runtime values}. That distinction is fundamental for the thesis because it makes it possible to combine static guarantees with real interaction against external databases.
+
+From a theoretical perspective, this approach brings the ORM layer closer to a compiler pipeline. Application code describes a semantic structure, compile-time components turn that structure into an intermediate representation, and only the lowest layer materialises it into a backend-specific language or protocol. For that reason, the later architectural decisions in the library can be analysed through notions such as intermediate representation, static checking, and backend materialisation.
+
+\subsection{Static data modelling in C++}
+
+In the library, the domain model is expressed through C++ aggregates whose fields are declared using \code{property<T, Name>}. Each field thus carries both a value type and a symbolic field name. In addition, \code{table\_name\_trait<T>} links the type to a logical storage container --- a table, collection, key prefix, label, or some other backend-specific notion.
+
+This organisation has an important theoretical consequence: the C++ type becomes the primary carrier of the logical schema. Backends do not impose a separate user-level model; they merely interpret the same model differently. This is precisely why the same logical object may later become a relational table, a document with nested or referenced fields, a key-value structure, or a graph node.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Mapping between C++ constructs and theoretical ORM concepts}
+\label{tab:cpp_to_orm_concepts}
+\begin{tabularx}{\textwidth}{L{3.3cm}L{4.0cm}Y}
+\toprule
+\textbf{Construct} & \textbf{Theoretical role} & \textbf{Practical effect in the library} \\
+\midrule
+\code{property<T, Name>} & logical-schema attribute & carries both value type and symbolic materialisation name \\
+\code{relationship<...>} & logical object relationship & separates the relationship from the physical storage mechanism \\
+\code{table\_name\_trait<T>} & logical container & serves as a table name, collection, key prefix, or label \\
+\code{field<\&T::m>} & attribute address in query space & connects the entity layer to the query IR \\
+\code{connector\_trait<DB>} & backend materialisation & defines how the logical model is executed physically \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The ORM layer therefore does not begin from a driver or from SQL rendering. It begins from a static description of the meaning of the data. That is also why the entity layer is foundational for the entire architecture: if this layer is unclear or incomplete, no correct and extensible materialisation can emerge below it.
+
+\begin{lstlisting}[language=C++,caption={Excerpt from \code{property} and \code{relationship} in the entity layer},label={lst:property_relationship}]
+template <typename T, detail::string_literal Name>
+struct property
+{
+    using value_type = T;
+
+    [[nodiscard]] static constexpr std::string_view column_name() noexcept
+    {
+        return Name.view();
+    }
+
+    T value{};
+};
+
+enum class store_as { reference, embed };
+
+template <store_as Strategy, typename T, detail::string_literal Name>
+struct relationship
+{
+    static constexpr store_as strategy = Strategy;
+    using related_type = T;
+
+    [[nodiscard]] static constexpr std::string_view field_name() noexcept
+    {
+        return Name.view();
+    }
+};
+\end{lstlisting}
+
+Listing~\ref{lst:property_relationship} shows that the entity layer is minimalistic in form, yet semantically rich. \code{property} is not merely a value container; it also carries a name, and \code{relationship} is not merely a member field; it fixes the storage strategy as part of the type.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.4cm and 1.3cm]
+    \node[ormaccent] (entity) {\textbf{Entity type}\\aggregate of \code{property} and \code{relationship}};
+    \node[ormblock, below left=of entity] (props) {Scalar\\fields};
+    \node[ormblock, below right=of entity] (rels) {Logical\\relationships};
+    \node[ormblock, below=of props] (schema) {Logical\\schema};
+    \node[ormblock, below=of rels] (physical) {Physical\\structure};
+    \node[ormnote, below=1.2cm of $(schema)!0.5!(physical)$, minimum width=7.8cm] (note)
+        {The same C++ model may be materialised as a SQL table,
+         document, key prefix + value, label + properties, or wide-column row.};
+
+    \draw[ormline] (entity) -- (props);
+    \draw[ormline] (entity) -- (rels);
+    \draw[ormline] (props) -- (schema);
+    \draw[ormline] (rels) -- (schema);
+    \draw[ormline] (schema) -- (physical);
+\end{tikzpicture}
+\caption{From C++ entity description to logical schema and physical materialisation}
+\label{fig:entity_to_schema_mapping}
+\end{figure}
+
+\subsection{Typed query IR}
+
+Instead of describing a query directly as SQL or another textual representation, the library uses a typed query IR. Its building blocks are \code{field}, \code{Rule}, \code{Placeholder}, and query objects such as \code{select\_query}, \code{insert\_query}, \code{update\_query}, and \code{delete\_query}. This model offers two advantages. First, the query structure can be analysed at compile time and participate in \code{static\_assert} checks. Second, the same IR can be rendered into different backend languages and protocols.
+
+The IR therefore plays the role of an intermediate language between the domain model and the execution layer. The user works at a high level of abstraction, while the backend receives a specialised form aligned with its own storage model. This is why the query IR is logically closer to operation semantics than to the syntax of any concrete query language.
+
+\begin{lstlisting}[language=C++,caption={Excerpt from \code{select\_query} and \code{where} clause composition},label={lst:select_query_excerpt}]
+template <typename Response, typename Joins, typename Wheres,
+          typename Limits, typename Groups, typename Orders>
+struct select_query : select_query_tag
+{
+    using response_type = Response;
+    using row_type = projected_type<Response>;
+
+    template <typename RuleType>
+        requires is_rule<RuleType>
+    [[nodiscard]] constexpr auto where(RuleType r) const
+    {
+        using NewWheres = detail::append_type_t<Wheres, RuleType>;
+        return select_query<Response, Joins, NewWheres, Limits, Groups, Orders>(
+            response_, joins_,
+            detail::tuple_cat(wheres_, detail::orm_tuple<RuleType>(r)),
+            limits_, groups_, orders_);
+    }
+};
+\end{lstlisting}
+
+Listing~\ref{lst:select_query_excerpt} illustrates an important theoretical property: the query builder does not mutate text, but constructs new typed objects. This means that a sequence such as \code{select(...).where(...).group\_by(...)} can be interpreted as the construction of a new type-level structure rather than as a series of string mutations.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.35cm and 1.1cm]
+    \node[ormaccent] (query) {\textbf{User query form}\\\code{select}/\code{insert}/\code{update}/\code{deleteq}};
+    \node[ormblock, below=of query] (field) {\code{field}, \code{Rule}, \code{Placeholder}};
+    \node[ormblock, below=of field] (typed) {Typed IR\\structure and restrictions};
+    \node[ormblock, below left=of typed] (render) {Rendering\\into backend language};
+    \node[ormblock, below right=of typed] (execute) {Execution and\\parameter binding};
+
+    \draw[ormline] (query) -- (field);
+    \draw[ormline] (field) -- (typed);
+    \draw[ormline] (typed) -- (render);
+    \draw[ormline] (typed) -- (execute);
+\end{tikzpicture}
+\caption{Typed query-IR pipeline from application API to backend execution}
+\label{fig:query_ir_pipeline}
+\end{figure}
+
+\subsection{Relationship theory and storage strategies}
+
+Relationships between objects are among the hardest aspects of extending ORM beyond the relational world. In a relational context, a relationship is often materialised through a foreign key and a \code{JOIN}. In a document context, however, the same logical relationship may be realised as an embedded document, while in a key-value context it may require secondary lookup or denormalisation.
+
+The library abstracts these options through \code{relationship<Strategy, T, Name>} and \code{store\_as::reference}/\code{store\_as::embed}. \code{reference} denotes a logical external reference, which the backend may realise through a foreign key, lookup, separate key, or graph edge. \code{embed} denotes inclusion of the related data in the same physical structure. The relationship is thus described once at the logical level, while physical interpretation remains the connector's task.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.5cm and 1.4cm]
+    \node[ormaccent] (rel) {\textbf{Logical relationship}\\entity A $\leftrightarrow$ entity B};
+    \node[ormblock, below left=of rel] (reference) {\code{store\_as::reference}\\foreign key / lookup / edge};
+    \node[ormblock, below right=of rel] (embed) {\code{store\_as::embed}\\embedded document / denormalised data};
+    \node[ormnote, below=1.3cm of rel, minimum width=8.1cm] (conclusion)
+        {The choice is part of the logical description, but the cost and the concrete
+         implementation depend on the backend.};
+
+    \draw[ormline] (rel) -- (reference);
+    \draw[ormline] (rel) -- (embed);
+\end{tikzpicture}
+\caption{The two principal relationship materialisation strategies}
+\label{fig:relationship_strategies}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Comparison between \code{reference} and \code{embed} strategies}
+\label{tab:relationship_strategies}
+\begin{tabularx}{\textwidth}{L{2.8cm}L{3.2cm}L{3.0cm}Y}
+\toprule
+\textbf{Strategy} & \textbf{Logical idea} & \textbf{Natural backend families} & \textbf{Primary trade-off} \\
+\midrule
+\code{reference} & separate identity of the related object & SQL, graph systems, key-based lookup & a separate navigation or joining mechanism is required \\
+\code{embed} & physical inclusion in the parent structure & document systems, denormalised records & independent update and reuse become harder \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Relational model}
+
+The relational model organises data into tables, rows, and columns. Its main strengths are a clear schema, a declarative query language, and formally defined integrity constraints. For ORM systems this is the natural environment: the properties of a C++ object map easily to columns, and relationships map naturally to foreign keys. Operations such as \code{JOIN}, \code{GROUP BY}, and transactions belong to the normal language model.
+
+The relational backend is therefore the natural baseline scenario against which one can judge how far an ORM library preserves its usefulness outside the SQL world. In the present work, that baseline later materialises primarily through \code{SQLiteDB}, while portability of the IR is further analysed through \code{PostgreSQLDB} and \code{MySQLDB}.
+
+\subsection{Document model}
+
+The document model organises data into collections of documents whose fields may be nested and whose physical shape need not be identical across all records. This makes it naturally compatible with the \code{embed} strategy and more flexible for denormalised structures. On the other hand, directly projecting relational abstractions onto a document backend can be misleading. Not every relational operation has an equivalent with the same semantics or cost.
+
+Within the present work, the document model is important as a test of whether the query IR expresses logic rather than the syntax of a particular language. If one and the same IR can be interpreted as a BSON-like filter and projection, without the user writing native document queries, then a genuinely storage-agnostic layer of abstraction has been achieved.
+
+\subsection{Key-value model}
+
+Key-value systems organise access around a key and its associated value. They are especially effective when the access pattern is explicit and centred around identifier-based lookup. Their disadvantage is that general predicate-based queries and relational operations are strongly limited. An ORM abstraction over a key-value backend therefore cannot promise the same expressive power as over a SQL system.
+
+This model is useful for distinguishing between the \emph{logical object} and the \emph{admissible access pattern}. The object may remain the same, but not every query is meaningful against every physical organisation. In the repository, this becomes visible later through \code{RedisDB}, where lookup logic is natural, while join-oriented behaviour is architecturally inappropriate.
+
+\subsection{Graph model}
+
+The graph model represents data as nodes, edges, and properties. Its strength lies in expressing relationships as first-class objects rather than as values derived from foreign keys. This makes it suitable for scenarios involving rich navigation and traversal. At the same time, the graph model imposes its own query language and its own intuition for selection and filtering.
+
+For the library, this is a revealing scenario because it demonstrates that \code{connector\_trait} can transfer a shared query IR toward \code{MATCH}/\code{RETURN}/\code{WHERE} structures without forcing the user to write Cypher directly. If that is possible, then the common layer is indeed positioned above the concrete syntax layer.
+
+\subsection{Wide-column model}
+
+Wide-column systems such as Cassandra are based on distributed tables organised around partition and clustering keys. Although their syntax may resemble SQL, their access theory is different: a query is correct only if it follows the physical key model of data distribution. The mere existence of a field in the C++ model does not imply that it may be used freely in \code{WHERE} clauses.
+
+This is exactly the type of limitation that justifies the library's capability- and constraint-based design. It is not enough for a query IR to be type-correct; it must also be admissible with respect to the storage model. For that reason, the wide-column model is especially valuable for the theoretical defence of compile-time constraints.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Comparison of major storage models}
+\label{tab:storage_models}
+\begin{tabularx}{\textwidth}{L{2.3cm}L{2.7cm}L{2.8cm}Y}
+\toprule
+\textbf{Model} & \textbf{Storage unit} & \textbf{Typical relationships} & \textbf{Primary constraint} \\
+\midrule
+Relational & table/row & foreign key, join & consistent schema discipline and strong typing expectations \\
+Document & document & embed or reference & not every relational operation is natural or inexpensive \\
+Key-value & key and value & key-based lookup, hash fields & predicate queries outside the key path are strongly limited \\
+Graph & node and edge & traversal relationships & specialised query language and graph semantics \\
+Wide-column & partitioned row & key-oriented dependencies & queries must follow partition design rules \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Test evidence behind the theoretical claims}
+
+The theoretical claims of this chapter are not detached from the code. The entity layer is validated directly in \path{tests/unit/test_property.cpp} and \path{tests/unit/test_relationship.cpp}, where column naming, entity recognition, the distinction between \code{store\_as::reference} and \code{store\_as::embed}, and one-to-many inference are checked. The typed query IR is covered in \path{tests/unit/test_query.cpp}, which demonstrates field-based predicates, join forms, update composition, and delete semantics. In addition, \path{tests/unit/test_cpp26_reflection.cpp} shows that the compile-time description of fields can also be extended through a reflection-aware path when the toolchain supports it.
+
+This relation between theory and test evidence is crucial. It shows that the presented notions are not free academic metaphors, but real architectural units that can be inspected in the source code and validated through automated tests.
+
+\subsection{Boundaries of the shared abstraction}
+
+An important conclusion follows from the above. A unified ORM abstraction does not mean that all backends become equivalent. Unification is possible at the level of logical model, field, relationship, query IR, and basic operation categories. Beyond that point, backend differences reappear: SQL \code{JOIN} has no universal meaning in Redis; embedding has no identical cost in a classical SQL table; graph traversal is not reducible to an ordinary \code{SELECT}; and the partition-driven restrictions of Cassandra cannot be masked as ordinary predicate rules.
+
+For that reason, the architecturally correct strategy is not to hide all differences, but to make them explicit and formally controlled. That is precisely the role of \code{connector\_trait}, capability tags, and compile-time restrictions, which are examined in the following chapters. There it becomes visible how the theoretical framework of the present chapter is turned into a working library architecture.

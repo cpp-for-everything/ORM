@@ -1,0 +1,302 @@
+# Cypilot execution plan
+# Task: Implement C++ code for all 10 ORM FEATURE specs (connectors, thread safety, wire protocol, reflection, schema migration)
+
+[plan]
+task = "Implement CODE for 10 ORM FEATURE specs"
+type = "implement"
+target = "CODE"
+target_key = "feature-path:architecture/features/FEATURE-*:orm-connectors"
+kit_path = "z:/Users/AleksTsvetanov/Documents/GitHub/ORM/.cypilot/config/kits/sdlc"
+created = "2026-03-28T22:37:00+02:00"
+lifecycle = "archive"
+execution_status = "done"
+lifecycle_status = "done"
+plan_dir = ".cypilot/.plans/implement-code-orm-connectors"
+active_plan_dir = ".cypilot/.plans/.archive/implement-code-orm-connectors"
+total_phases = 12
+
+# ── Pre-resolved decisions ──────────────────────────────────────────────────────
+# system = "orm"
+# traceability_mode = "DOCS-ONLY"  (codebase = [] in artifacts.toml)
+# language = "C++23"
+# test_framework = "GoogleTest"
+# build_system = "CMake 3.20+ / Modern CMake"
+# lifecycle = "archive"
+
+# ── DELIVERY PHASES ─────────────────────────────────────────────────────────────
+
+[[phases]]
+number = 1
+title = "Scaffolding — directories, CMakeLists, and MockDB extensions"
+slug = "scaffolding"
+file = "phase-01-scaffolding.md"
+brief_file = "brief-01-scaffolding.md"
+status = "done"
+kind = "delivery"
+depends_on = []
+input_files = [
+  "lib/CMakeLists.txt",
+  "lib/include/ORM/connector/capabilities.hpp",
+  "lib/include/ORM/db/connectors/MockDB/mock_db.hpp",
+  "tests/CMakeLists.txt",
+  "tests/unit/CMakeLists.txt",
+]
+output_files = [
+  "lib/include/ORM/db/connectors/MySQLDB/mysql_db.hpp",
+  "lib/include/ORM/db/connectors/PostgreSQLDB/postgresql_db.hpp",
+  "lib/include/ORM/db/connectors/MongoDB/mongodb_db.hpp",
+  "lib/include/ORM/db/connectors/RedisDB/redis_db.hpp",
+  "lib/include/ORM/db/connectors/CassandraDB/cassandra_db.hpp",
+  "lib/include/ORM/db/connectors/Neo4jDB/neo4j_db.hpp",
+  "lib/src/ORM/db/connectors/MySQLDB/CMakeLists.txt",
+  "lib/src/ORM/db/connectors/PostgreSQLDB/CMakeLists.txt",
+  "lib/src/ORM/db/connectors/MongoDB/CMakeLists.txt",
+  "lib/src/ORM/db/connectors/RedisDB/CMakeLists.txt",
+  "lib/src/ORM/db/connectors/CassandraDB/CMakeLists.txt",
+  "lib/src/ORM/db/connectors/Neo4jDB/CMakeLists.txt",
+  "lib/src/ORM/db/connectors/ThreadSafety/CMakeLists.txt",
+  "lib/src/ORM/db/connectors/WireProtocol/CMakeLists.txt",
+  "lib/include/ORM/db/connectors/ThreadSafety/thread_safety.hpp",
+  "lib/include/ORM/db/connectors/WireProtocol/wire_protocol.hpp",
+]
+outputs = ["out/phase-01-scaffolding-summary.md"]
+inputs = []
+
+[[phases]]
+number = 2
+title = "MySQL Connector — connector_trait<MySQLDB> + tests"
+slug = "mysql-connector"
+file = "phase-02-mysql-connector.md"
+brief_file = "brief-02-mysql-connector.md"
+status = "done"
+kind = "delivery"
+depends_on = [1]
+input_files = [
+  "architecture/features/FEATURE-mysql-connector.md",
+  "lib/include/ORM/connector/capabilities.hpp",
+  "lib/include/ORM/connector/trait.hpp",
+  "lib/include/ORM/db/connectors/MockDB/mock_db.hpp",
+  "lib/include/ORM/db/connectors/MySQLDB/mysql_db.hpp",
+]
+output_files = [
+  "lib/include/ORM/db/connectors/MySQLDB/mysql_db.hpp",
+  "tests/unit/test_mysql_connector.cpp",
+]
+outputs = ["out/phase-02-mysql-summary.md"]
+inputs = ["out/phase-01-scaffolding-summary.md"]
+
+[[phases]]
+number = 3
+title = "PostgreSQL Connector — connector_trait<PostgreSQLDB> + tests"
+slug = "postgresql-connector"
+file = "phase-03-postgresql-connector.md"
+brief_file = "brief-03-postgresql-connector.md"
+status = "done"
+kind = "delivery"
+depends_on = [1]
+input_files = [
+  "architecture/features/FEATURE-postgresql-connector.md",
+  "lib/include/ORM/connector/capabilities.hpp",
+  "lib/include/ORM/connector/trait.hpp",
+  "lib/include/ORM/db/connectors/PostgreSQLDB/postgresql_db.hpp",
+]
+output_files = [
+  "lib/include/ORM/db/connectors/PostgreSQLDB/postgresql_db.hpp",
+  "tests/unit/test_postgresql_connector.cpp",
+]
+outputs = ["out/phase-03-postgresql-summary.md"]
+inputs = ["out/phase-01-scaffolding-summary.md"]
+
+[[phases]]
+number = 4
+title = "MongoDB Connector — connector_trait<MongoDB> + tests"
+slug = "mongodb-connector"
+file = "phase-04-mongodb-connector.md"
+brief_file = "brief-04-mongodb-connector.md"
+status = "done"
+kind = "delivery"
+depends_on = [1]
+input_files = [
+  "architecture/features/FEATURE-mongodb-connector.md",
+  "lib/include/ORM/connector/capabilities.hpp",
+  "lib/include/ORM/connector/trait.hpp",
+  "lib/include/ORM/db/connectors/MongoDB/mongodb_db.hpp",
+]
+output_files = [
+  "lib/include/ORM/db/connectors/MongoDB/mongodb_db.hpp",
+  "tests/unit/test_mongodb_connector.cpp",
+]
+outputs = ["out/phase-04-mongodb-summary.md"]
+inputs = ["out/phase-01-scaffolding-summary.md"]
+
+[[phases]]
+number = 5
+title = "Redis Connector — connector_trait<RedisDB> + tests"
+slug = "redis-connector"
+file = "phase-05-redis-connector.md"
+brief_file = "brief-05-redis-connector.md"
+status = "done"
+kind = "delivery"
+depends_on = [1]
+input_files = [
+  "architecture/features/FEATURE-redis-connector.md",
+  "lib/include/ORM/connector/capabilities.hpp",
+  "lib/include/ORM/connector/trait.hpp",
+  "lib/include/ORM/db/connectors/RedisDB/redis_db.hpp",
+]
+output_files = [
+  "lib/include/ORM/db/connectors/RedisDB/redis_db.hpp",
+  "tests/unit/test_redis_connector.cpp",
+]
+outputs = ["out/phase-05-redis-summary.md"]
+inputs = ["out/phase-01-scaffolding-summary.md"]
+
+[[phases]]
+number = 6
+title = "Cassandra Connector — connector_trait<CassandraDB> + tests"
+slug = "cassandra-connector"
+file = "phase-06-cassandra-connector.md"
+brief_file = "brief-06-cassandra-connector.md"
+status = "done"
+kind = "delivery"
+depends_on = [1]
+input_files = [
+  "architecture/features/FEATURE-cassandra-connector.md",
+  "lib/include/ORM/connector/capabilities.hpp",
+  "lib/include/ORM/connector/trait.hpp",
+  "lib/include/ORM/db/connectors/CassandraDB/cassandra_db.hpp",
+]
+output_files = [
+  "lib/include/ORM/db/connectors/CassandraDB/cassandra_db.hpp",
+  "tests/unit/test_cassandra_connector.cpp",
+]
+outputs = ["out/phase-06-cassandra-summary.md"]
+inputs = ["out/phase-01-scaffolding-summary.md"]
+
+[[phases]]
+number = 7
+title = "Neo4j Connector — connector_trait<Neo4jDB> + tests"
+slug = "neo4j-connector"
+file = "phase-07-neo4j-connector.md"
+brief_file = "brief-07-neo4j-connector.md"
+status = "done"
+kind = "delivery"
+depends_on = [1]
+input_files = [
+  "architecture/features/FEATURE-neo4j-connector.md",
+  "lib/include/ORM/connector/capabilities.hpp",
+  "lib/include/ORM/connector/trait.hpp",
+  "lib/include/ORM/db/connectors/Neo4jDB/neo4j_db.hpp",
+]
+output_files = [
+  "lib/include/ORM/db/connectors/Neo4jDB/neo4j_db.hpp",
+  "tests/unit/test_neo4j_connector.cpp",
+]
+outputs = ["out/phase-07-neo4j-summary.md"]
+inputs = ["out/phase-01-scaffolding-summary.md"]
+
+[[phases]]
+number = 8
+title = "Thread Safety — connection_pool + thread_local_db + transaction RAII + tests"
+slug = "thread-safety"
+file = "phase-08-thread-safety.md"
+brief_file = "brief-08-thread-safety.md"
+status = "done"
+kind = "delivery"
+depends_on = [2, 3, 4, 5, 6, 7]
+input_files = [
+  "architecture/features/FEATURE-thread-safety.md",
+  "lib/include/ORM/connector/capabilities.hpp",
+  "lib/include/ORM/connector/db.hpp",
+  "lib/include/ORM/db/connectors/ThreadSafety/thread_safety.hpp",
+  "lib/include/ORM/db/connectors/MockDB/mock_db.hpp",
+]
+output_files = [
+  "lib/include/ORM/db/connectors/ThreadSafety/thread_safety.hpp",
+  "tests/unit/test_thread_safety.cpp",
+]
+outputs = ["out/phase-08-thread-safety-summary.md"]
+inputs = ["out/phase-01-scaffolding-summary.md"]
+
+[[phases]]
+number = 9
+title = "Wire Protocol — async I/O awaitable + batch_insert + zero-copy + constexpr SQL + tests"
+slug = "wire-protocol"
+file = "phase-09-wire-protocol.md"
+brief_file = "brief-09-wire-protocol.md"
+status = "done"
+kind = "delivery"
+depends_on = [2, 3]
+input_files = [
+  "architecture/features/FEATURE-wire-protocol.md",
+  "lib/include/ORM/connector/capabilities.hpp",
+  "lib/include/ORM/connector/db.hpp",
+  "lib/include/ORM/db/connectors/WireProtocol/wire_protocol.hpp",
+  "lib/include/ORM/db/connectors/MockDB/mock_db.hpp",
+]
+output_files = [
+  "lib/include/ORM/db/connectors/WireProtocol/wire_protocol.hpp",
+  "tests/unit/test_wire_protocol.cpp",
+]
+outputs = ["out/phase-09-wire-protocol-summary.md"]
+inputs = ["out/phase-01-scaffolding-summary.md"]
+
+[[phases]]
+number = 10
+title = "C++26 Reflection — property<T> inference + PFR fallback + tests"
+slug = "cpp26-reflection"
+file = "phase-10-cpp26-reflection.md"
+brief_file = "brief-10-cpp26-reflection.md"
+status = "done"
+kind = "delivery"
+depends_on = [1]
+input_files = [
+  "architecture/features/FEATURE-cpp26-reflection.md",
+  "lib/include/ORM/entity/property.hpp",
+  "lib/include/ORM/details/reflection.hpp",
+  "lib/CMakeLists.txt",
+]
+output_files = [
+  "lib/include/ORM/entity/property.hpp",
+  "tests/unit/test_cpp26_reflection.cpp",
+]
+outputs = ["out/phase-10-reflection-summary.md"]
+inputs = ["out/phase-01-scaffolding-summary.md"]
+
+[[phases]]
+number = 11
+title = "Schema Migration — orm::migrate<DB> diff + DDL generation + dry-run + tests"
+slug = "schema-migration"
+file = "phase-11-schema-migration.md"
+brief_file = "brief-11-schema-migration.md"
+status = "done"
+kind = "delivery"
+depends_on = [2, 3]
+input_files = [
+  "architecture/features/FEATURE-schema-migration.md",
+  "lib/include/ORM/connector/capabilities.hpp",
+  "lib/include/ORM/connector/db.hpp",
+  "lib/include/ORM/db/connectors/MockDB/mock_db.hpp",
+]
+output_files = [
+  "lib/include/ORM/db/migration/migration.hpp",
+  "tests/unit/test_schema_migration.cpp",
+]
+outputs = ["out/phase-11-migration-summary.md"]
+inputs = ["out/phase-01-scaffolding-summary.md"]
+
+# ── LIFECYCLE PHASE ─────────────────────────────────────────────────────────────
+
+[[phases]]
+number = 12
+title = "Archive plan files"
+slug = "archive"
+file = "phase-12-archive.md"
+brief_file = "brief-12-archive.md"
+status = "done"
+kind = "lifecycle"
+depends_on = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+input_files = []
+output_files = []
+outputs = []
+inputs = []

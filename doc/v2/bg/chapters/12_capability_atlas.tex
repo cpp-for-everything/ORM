@@ -1,0 +1,123 @@
+\section{Атлас на capability профилите и зрелостта на backend-ите}
+\label{sec:capability_atlas_appendix}
+
+Настоящото приложение допълва основния анализ от глави~\ref{sec:backend_scenarios} и~\ref{sec:verification_extensibility}, като представя capability механизма и зрелостта на backend-ите в по-синтезиран вид. Ако предходното приложение систематизира тестовата инфраструктура, тук фокусът пада върху това как различните backend-и се позиционират спрямо общия connector contract.
+
+Този тип синтез е полезен по две причини. Първо, той позволява да се разгледа библиотеката като координирана система от capability профили, а не просто като набор от отделни адаптери. Второ, дава възможност да се формулира по-ясно какво означава един backend да бъде минимално поддържан, operationally useful или архитектурно зрял.
+
+\subsection{Capability механизмът като формален слой}
+
+Файлът \path{lib/include/ORM/connector/capabilities.hpp} дефинира capability слоя чрез първичния шаблон \code{connector\_trait<DB>} и чрез набора от capability tag структури в \code{namespace cap}. В разглежданата версия на библиотеката този набор включва \code{supports\_joins}, \code{supports\_transactions}, \code{supports\_aggregation}, \code{supports\_embedding}, \code{supports\_upsert} и \code{supports\_bulk\_insert}.
+
+Същественото е, че capability-ите не се пазят в runtime registry и не се описват като текстови метаданни. Те се кодират на ниво типове чрез присъствието или отсъствието на nested aliases в специализацията на \code{connector\_trait<DB>}. Това означава, че допустимостта на дадена операция може да бъде използвана като compile-time условие в query API-то и в помощните концепти.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Смисъл на capability tag-овете в разглежданата архитектура}
+\label{tab:capability_semantics}
+\begin{tabularx}{\textwidth}{L{4.6cm}Y}
+\toprule
+\textbf{Capability tag} & \textbf{Архитектурен смисъл} \\
+\midrule
+\code{supports\_joins} & backend-ът може да материализира join-подобна композиция между логически entity описания \\
+\code{supports\_transactions} & backend-ът предлага достатъчна transactional semantics или API hooks за transaction helpers \\
+\code{supports\_aggregation} & backend-ът поддържа агрегиращи операции в рамките на съответния query модел \\
+\code{supports\_embedding} & backend-ът допуска document-oriented или nested object materialization стратегии \\
+\code{supports\_upsert} & backend-ът позволява едностъпково обновяване/вмъкване в подходяща форма \\
+\code{supports\_bulk\_insert} & backend-ът разполага с ефективен път за batch insert сценарии \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Таблица~\ref{tab:capability_semantics} е важна, защото показва, че capability слойът не е декоративен. Всеки tag трябва да има конкретно архитектурно значение, а не да бъде само описателен етикет.
+
+\subsection{Зрелост на конектора като стълбица, а не като двоична оценка}
+
+В практиката един connector рядко преминава директно от ``липсва'' към ``напълно готов''. По-точно е да се мисли за него като за стълбица от нива на зрелост.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.05cm]
+    \node[ormaccent, minimum width=8.2cm] (lvl4) {Ниво 4: schema-aware и operationally rich connector};
+    \node[ormblock, below=of lvl4, minimum width=7.0cm] (lvl3) {Ниво 3: capability-aware connector с integration/live evidence};
+    \node[ormblock, below=of lvl3, minimum width=5.8cm] (lvl2) {Ниво 2: contract-correct connector};
+    \node[ormblock, below=of lvl2, minimum width=4.6cm] (lvl1) {Ниво 1: minimal connector};
+
+    \draw[ormline] (lvl1) -- (lvl2);
+    \draw[ormline] (lvl2) -- (lvl3);
+    \draw[ormline] (lvl3) -- (lvl4);
+\end{tikzpicture}
+\caption{Стълбица на зрелостта за backend connector-ите}
+\label{fig:connector_maturity_ladder}
+\end{figure}
+
+Стълбицата от Фигура~\ref{fig:connector_maturity_ladder} позволява по-прецизна оценка на backend интеграциите:
+
+\begin{enumerate}[label=\arabic*.]
+    \item \textbf{Minimal connector} --- backend-ът има специализация на \code{connector\_trait<DB>} и може поне да участва във формален compile-time contract.
+    \item \textbf{Contract-correct connector} --- налични са \code{is\_connector} доказателства и unit тестове за capability честност и базова materialization логика.
+    \item \textbf{Capability-aware connector с execution evidence} --- налице са integration или live тестове, които показват, че capability профилът не е само декларативен.
+    \item \textbf{Schema-aware и operationally rich connector} --- backend-ът може да участва в migration, thread-safety, prepared-query и по-богати production-oriented сценарии.
+\end{enumerate}
+
+\subsection{Capability профили по backend семейства}
+
+Синтезът на unit и integration тестовете позволява да се оформи компактна capability матрица за основните backend-и.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Capability профили на основните backend-и според наличните tests и connector specializations}
+\label{tab:capability_matrix}
+\begin{tabularx}{\textwidth}{L{2.3cm}L{1.2cm}L{1.5cm}L{1.4cm}L{1.4cm}L{1.4cm}Y}
+\toprule
+\textbf{Backend} & \textbf{Joins} & \textbf{Transactions} & \textbf{Aggregation} & \textbf{Upsert} & \textbf{Bulk insert} & \textbf{Кратък коментар} \\
+\midrule
+SQLite & present & present & present & limited & limited & най-близкият пълен релационен reference path в хранилището \\
+PostgreSQL & present & present & present & specific & possible & силен релационен contract с live execution evidence \\
+MySQL & present & present & absent in current tests & specific & possible & operational path е наличен, но capability профилът е по-консервативен \\
+MongoDB & absent & absent & absent & analogue & not central & силен document model, но не и SQL capability профил \\
+Redis & absent & absent & absent & analogue & limited & key-value semantics с минималистичен contract профил \\
+Neo4j & analogue & present & absent & not central & not central & graph backend със transaction focus, не със SQL-style aggregation \\
+Cassandra & absent & present & absent & not central & possible & wide-column backend с ограничен, но формално дефиниран capability набор \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Таблица~\ref{tab:capability_matrix} не трябва да се чете като универсална истина за самите бази данни. Тя описва конкретната архитектурна позиция на библиотеката спрямо тези backend-и в разглежданата версия на хранилището.
+
+\subsection{Карта на зрелостта по налична тестова опора}
+
+Capability профилът сам по себе си не е достатъчен. От гледна точка на инженерната надеждност е важно дали за даден backend има само contract-level unit тестове, локални integration сценарии или и live execution доказателства.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Backend maturity карта според наличната доказателствена опора}
+\label{tab:backend_maturity_map}
+\begin{tabularx}{\textwidth}{L{2.4cm}L{2.2cm}L{2.8cm}Y}
+\toprule
+\textbf{Backend} & \textbf{Ниво на зрелост} & \textbf{Основна доказателствена опора} & \textbf{Интерпретация} \\
+\midrule
+\code{MockDB} & ниво 3 & \path{test_mockdb.cpp} & служи като backend-independent execution baseline за query contract-а \\
+SQLite & ниво 3 към 4 & \path{test_sqlite.cpp} & локален реален execution path с богата query evidence и capability asserts \\
+PostgreSQL & ниво 3 & \path{test_postgresql_connector.cpp}, \path{test_postgresql_live.cpp} & силен contract + conditional live backend проверка \\
+MySQL & ниво 3 & \path{test_mysql_connector.cpp}, \path{test_mysql_live.cpp} & реален operational path с по-консервативен capability набор \\
+MongoDB & ниво 3 & \path{test_mongodb_connector.cpp}, \path{test_mongodb_live.cpp} & document-oriented execution evidence без SQL-style capabilities \\
+Redis & ниво 3 & \path{test_redis_connector.cpp}, \path{test_redis_live.cpp} & key-value execution evidence с ограничен, но честен contract профил \\
+Neo4j & ниво 3 & \path{test_neo4j_connector.cpp}, \path{test_neo4j_live.cpp} & graph execution path с Docker-gated live verification \\
+Cassandra & ниво 3 & \path{test_cassandra_connector.cpp}, \path{test_cassandra_live.cpp} & wide-column path с фокус върху формална пригодност и live coverage \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Какво показва capability atlas-ът за архитектурата}
+
+От capability atlas-а следват три практически извода. Първо, библиотеката не се опитва да наложи изкуствена еднородност между backend-ите. Напротив, тя прави различията експлицитни чрез capability tags и contract-level tests. Второ, релационните backend-и естествено концентрират по-богат capability профил, докато документните, графовите и key-value backend-и се оценяват през други, по-подходящи критерии. Трето, зрелостта на конектора трябва да се измерва не само по броя на поддържаните операции, а и по наличието на реална тестова опора.
+
+Тези изводи са важни и от изследователска гледна точка. Те показват, че compile-time ORM архитектурата е жизнеспособна именно защото не заличава различията между storage моделите. Вместо това тя ги формализира и прави управляеми на ниво типове, capability профили и verification стратегии.
+
+\subsection{Извод}
+
+Настоящото приложение завършва синтеза между connector contract-а и empirical evidence слоя. Ако основният текст показа как библиотеката работи, capability atlas-ът показва как тя структурира разнообразието от backend-и по дисциплиниран и проверим начин. Това е още една причина разработката да бъде разглеждана не само като програмна библиотека, а и като формално организирана инженерна система.

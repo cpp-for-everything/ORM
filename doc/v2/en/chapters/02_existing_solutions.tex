@@ -1,0 +1,133 @@
+\section{Review of Existing Solutions}
+\label{sec:existing_solutions}
+
+Reviewing existing solutions is necessary in order to evaluate whether the proposed architecture delivers a genuine contribution or merely reformulates already known practices. In the space of C++ database libraries, two orthogonal axes are especially useful: the level of abstraction and the stage at which queries are constructed and validated. The abstraction level ranges from almost direct use of a client C API to fully fledged ORM behaviour. The validation stage may be runtime, hybrid, or compile time.
+
+These two axes are especially important in the context of the present thesis. If one observes only ``API convenience'', it is easy to miss the essential difference between a library that merely makes SQL strings more readable and a library that truly transfers structural correctness into the compiler. If, on the other hand, one looks only at when an error appears, one may underestimate the cost of abstraction, build-toolchain complexity, and suitability for more than one storage model.
+
+\subsection{Classification of approaches}
+
+At the lowest level stand native client libraries such as the \code{SQLite C API}~\cite{sqlite_api}, \code{libpq}~\cite{libpq}, and \code{MySQL Connector/C}~\cite{mysql_connector}. They provide maximal control over queries, parameters, and results, but offer no logical abstraction. The application must work directly with SQL strings, column indices, parameter positions, and backend-specific types.
+
+The next group consists of runtime query-builder libraries. These typically improve readability and reduce part of the boilerplate, but they continue to rely on runtime construction of textual query representations. Type safety is only partial and usually stops at the API boundary. Structural validity of the query remains a runtime concern.
+
+At the highest abstraction level lies the ORM approach. There, C++ classes are associated with tables, columns, and relationships, and the library generates the required queries. The benefit is a significant reduction in boilerplate code. The cost is that many such frameworks introduce external code generators, annotations, macros, or opaque runtime metadata, making the correspondence between C++ code and the actual database operation harder to follow.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=2.0cm,y=1.6cm]
+    \draw[->, thick] (0,0) -- (4.6,0) node[right] {\small validation stage};
+    \draw[->, thick] (0,0) -- (0,3.4) node[above] {\small abstraction level};
+
+    \node[below] at (0.8,0) {\small runtime};
+    \node[below] at (2.3,0) {\small hybrid};
+    \node[below] at (3.8,0) {\small compile-time};
+
+    \node[left] at (0,0.6) {\small low};
+    \node[left] at (0,1.8) {\small medium};
+    \node[left] at (0,3.0) {\small high};
+
+    \node[ormblock, minimum width=2.2cm] at (0.9,0.7) {Native API};
+    \node[ormblock, minimum width=2.6cm] at (1.8,1.7) {Runtime query\\builders};
+    \node[ormblock, minimum width=2.6cm] at (2.8,2.1) {Typed SQL\\DSL solutions};
+    \node[ormblock, minimum width=2.4cm] at (2.4,2.8) {Classical ORM\\+ code generation};
+    \node[ormaccent, minimum width=2.5cm] at (3.8,2.9) {Compile-time ORM};
+\end{tikzpicture}
+\caption{Positioning of the principal solution families by abstraction and validation stage}
+\label{fig:existing_solutions_map}
+\end{figure}
+
+Figure~\ref{fig:existing_solutions_map} shows that the compile-time ORM approach is not merely ``another ORM library''. It occupies the upper-right quadrant, where high abstraction is combined with early structural validation. That combination is rare because it demands greater architectural discipline inside the library itself.
+
+\begin{table}[H]
+\centering
+\caption{Comparison of major data-access approaches in C++}
+\label{tab:existing_solutions_comparison}
+\begin{tabular}{L{3.2cm}L{2.5cm}L{2.7cm}L{2.9cm}L{2.8cm}}
+\toprule
+\textbf{Approach} & \textbf{Abstraction level} & \textbf{Validation stage} & \textbf{Strength} & \textbf{Primary limitation} \\
+\midrule
+Native API & low & runtime & full control and closeness to the driver & strong coupling to a concrete backend \\
+Runtime query builder & medium & mostly runtime & a more readable API and less boilerplate & the query still materialises as text \\
+Typed SQL DSL & medium to high & partial compile-time & stronger static structure for the SQL world & usually remains limited to SQL \\
+Classical ORM & high & runtime or code generation & convenient object-mapping behaviour & complex toolchain and reduced transparency \\
+Compile-time ORM & high & compile time for structure & early discovery of structural errors and a formal connector contract & greater complexity in the template layer \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Evaluation criteria}
+
+For the comparison to be academically complete, it is not enough to say that one library is ``more convenient'' while another is ``lower level''. In the present work, five criteria are used:
+
+\begin{enumerate}[label=\arabic*.]
+    \item \textbf{Level of logical abstraction} --- to what degree the library allows the data model to be described independently of the immediate backend syntax.
+    \item \textbf{Degree of static validation} --- which aspects of the model and query can be checked before execution.
+    \item \textbf{Portability across backends} --- whether the logical model can be adapted to more than one storage family.
+    \item \textbf{Toolchain complexity} --- whether the library requires external code generation, extra preprocessing stages, or generated metadata.
+    \item \textbf{Transparency of errors and execution} --- how clearly a developer can follow the link between the C++ source, the generated query, and the runtime behaviour.
+\end{enumerate}
+
+These criteria are directly related to the objectives of the thesis. If the proposed library is to be both expressive and formally checkable, then it must improve on alternatives not only in convenience, but in the balance between these five dimensions.
+
+\subsection{Native client libraries}
+
+SQLite~\cite{sqlite}, \code{libpq}, and \code{MySQL Connector/C} are representative of the approach in which the application constructs and submits queries directly to the driver. This is the most universal and often the most efficient option, but it places the full burden of correctness on application code. Developers must manually keep field names, parameter ordering, and schema details in sync. When the backend changes, not only the SQL dialect changes, but also the entire connection, preparation, binding, and result-reading API.
+
+This becomes especially problematic when the same domain model must be connected to more than one class of database. In such cases the application accumulates conditional code paths, backend-specific SQL strings, and duplicated hydration logic. Beyond a certain system size, this weakens not only convenience but also confidence in correctness.
+
+The strength of the native-API approach lies in its honesty. It does not promise more abstraction than it actually provides. Precisely for that reason, it often serves as a control point against which higher-level abstractions may be judged.
+
+\subsection{Runtime query builders}
+
+Libraries such as \code{SOCI}~\cite{soci} and part of the lighter fluent SQL tooling seek a balance between readability and control. They offer a more convenient C++ interface for query construction, yet in many cases they still rely on runtime description and subsequent rendering to SQL. In practice this means that part of the query structure is better encapsulated, but backend-independent switching between fundamentally different storage models remains limited.
+
+For the present work, these libraries are important as a point of comparison. They show that a fluent API and typed building blocks are useful, but not sufficient on their own. The decisive question is whether the compiler can validate the full logical structure of the query and whether the same abstraction can extend beyond the SQL world.
+
+\subsection{Typed SQL DSL solutions}
+
+\code{sqlpp11}~\cite{sqlpp11} is particularly interesting because it stands between the traditional runtime query builder and the more strongly static design. Libraries of this family use templates and types to make part of the SQL structure visible to the compiler. This is a significant step beyond purely runtime builders, because part of the structural error space becomes visible earlier.
+
+At the same time, however, a typed SQL DSL usually remains deeply tied to the relational model. Even when very strong as a C++ API, it typically assumes a world in which tables, columns, joins, and aggregates remain the central metaphor. That makes such solutions extremely valuable for SQL, but harder to generalise toward document, graph, or key-value systems.
+
+This is exactly one of the main distinctions relative to the present work. The goal here is not merely compile-time structuring of SQL, but a compile-time logical layer that can be materialised differently depending on the backend family.
+
+\subsection{Classical ORM frameworks and code generation}
+
+\code{ODB}~\cite{odb} is a characteristic example of an ORM framework that provides rich mapping between classes and relational tables, but depends on code generation and an external toolchain. This makes the library convenient to consume, yet moves complexity into the build process and generated artefacts. A strong dependency appears between the data model, the additional tooling step, and the concrete relational backends.
+
+A further tension is often visible in classical ORM frameworks: the higher the convenience at the application level, the less transparent the path toward the actual query and the performance characteristics of the system may become. This is not necessarily fatal, but it is an important limitation in the academic context of the present thesis, because it makes the relationship between abstraction and materialisation harder to inspect.
+
+\subsection{Limits of relationally centred abstractions}
+
+For applications that must work with document, graph, or key-value systems, the classical ORM model reveals natural limits. Some concepts --- such as \code{JOIN}, foreign keys, and rigid tabular schemas --- do not have direct equivalents in every storage model. Generalising ORM beyond the relational world therefore cannot be achieved merely by generating SQL.
+
+This observation matters not only for classical ORM frameworks, but also for native APIs and typed SQL DSLs. Even when technically strong, they often assume that SQL remains the central language of the data world. The present work begins from a different premise: the logical model should be primary, while relational materialisation is only one possible interpretation.
+
+\begin{table}[H]
+\centering
+\caption{Limitations of the different solution families relative to the multi-backend objective}
+\label{tab:existing_solution_limitations}
+\begin{tabularx}{\textwidth}{L{3.2cm}L{3.3cm}Y}
+\toprule
+\textbf{Solution family} & \textbf{What it does well} & \textbf{Where the limitation emerges} \\
+\midrule
+Native API & maximal control and driver-level closeness & no shared logical model and large duplication once more than one backend is used \\
+Runtime builders & better readability and query encapsulation & validation remains mostly runtime and often SQL-centred \\
+Typed SQL DSL & stronger static structure for SQL queries & the logic usually remains confined to the relational metaphor \\
+Classical ORM & convenient object mapping for relational systems & dependence on code generation and difficult transfer to non-relational models \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Positioning of the present work}
+
+The proposed library is positioned as a \ORMName{} solution that combines strong static typing, absence of external code generation, and a connector-driven model for transferring one logical abstraction across different backend families. Compared to the native API approach, it reduces duplication of logic and the risk of late-discovered structural errors. Compared to runtime query builders, it shifts structural validation into the compiler. Compared to classical ORM frameworks, it avoids external generators and puts explicit emphasis on the connector contract.
+
+The key distinction, however, is deeper. The present work does not treat compile-time techniques merely as a way to build a ``smarter SQL builder''. It treats them as a way to formalise the logical model of data access itself. That is precisely what allows the following chapters to move from the theory of typed models toward architecture, connector contracts, and real multi-backend scenarios.
+
+\subsection{Conclusions from the comparative analysis}
+
+The comparison with existing solutions leads to three principal conclusions. First, the native-API approach remains indispensable as a baseline for control and performance, but does not provide a satisfactory level of logical abstraction. Second, runtime query builders and typed SQL DSL solutions improve work with SQL, but do not fully solve the problem of a backend-independent logical layer. Third, classical ORM frameworks offer high abstraction, but often at the price of tooling complexity and limited suitability outside the relational world.
+
+It is exactly this positioning that justifies the more detailed discussion in the next chapter of two separate but connected questions: which language and theoretical mechanisms make a compile-time ORM approach possible, and how one and the same logical model can be interpreted across relational and non-relational systems.
