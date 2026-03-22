@@ -1,0 +1,181 @@
+\section{Map of Verification Scenarios and Repository Artefacts}
+\label{sec:verification_appendix}
+
+The present appendix systematises the relationship between the architectural claims made in the thesis and the concrete artefacts in the repository. Its goal is not to duplicate arguments already given in the main text, but to provide a compact and verifiable map of where the principal evidence for correctness resides in the code and testing infrastructure.
+
+Such an appendix is especially useful in the context of the present work because the library is not merely a conceptual prototype. It is implemented as a real CMake project with source code, unit tests, integration tests, and conditional live tests for different backend families. It is exactly this material structure that allows the thesis to move beyond the level of ``architectural intention'' and to be defended as an engineering system with verifiable evidence.
+
+\subsection{Overall structure of the evidence layer}
+
+Verification in the repository follows the architectural structure of the library. Production code is concentrated primarily under \path{lib/include/ORM/}, while tests are divided between a local unit layer and an integration/live layer. The CMake files register those tests differently depending on whether a backend is always available, conditionally available, or dependent on an external environment.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.35cm and 1.25cm]
+    \node[ormaccent] (src) {\path{lib/include/ORM/}\\production code};
+    \node[ormblock, below left=of src] (unit) {\path{tests/unit/}\\local invariants};
+    \node[ormblock, below right=of src] (integration) {\path{tests/integration/}\\execution scenarios};
+    \node[ormblock, below=of $(unit)!0.5!(integration)$] (cmake) {\path{tests/*/CMakeLists.txt}\\registration + gating};
+    \node[ormblock, below=of cmake] (ctest) {\code{gtest\_discover\_tests}\\and \code{ctest}};
+
+    \draw[ormline] (src) -- (unit);
+    \draw[ormline] (src) -- (integration);
+    \draw[ormline] (unit) -- (cmake);
+    \draw[ormline] (integration) -- (cmake);
+    \draw[ormline] (cmake) -- (ctest);
+\end{tikzpicture}
+\caption{Verification layer of the repository and its flow toward executable tests}
+\label{fig:verification_appendix_map}
+\end{figure}
+
+Figure~\ref{fig:verification_appendix_map} shows why verification should not be perceived as a single test package. It is composed of several levels: local properties of types, contract behaviour of connectors, integration scenarios for query execution, and a build-level mechanism that decides which tests are available in a given environment.
+
+\subsection{Catalogue of the principal unit tests}
+
+The unit tests cover two different categories of knowledge. The first is related to the logical model and the generic mechanisms of the library. The second is related to backend-specific connectors and their capability profiles.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Principal unit tests for the generic and core subsystems}
+\label{tab:appendix_unit_core}
+\begin{tabularx}{\textwidth}{L{3.3cm}L{3.8cm}Y}
+\toprule
+\textbf{File} & \textbf{Subsystem} & \textbf{What it validates} \\
+\midrule
+\path{test_types.cpp} & foundational type aliases & correctness of public aliases, including chrono-related types \\
+\path{test_property.cpp} & entity property layer & compile-time model of scalar fields and type-trait behaviour \\
+\path{test_relationship.cpp} & entity relationship layer & inference logic for relationships and storage-strategy behaviour \\
+\path{test_query.cpp} & query IR and fluent API & correctness of \code{select}, \code{insert}, \code{update}, \code{deleteq}, and derived query structures \\
+\path{test_thread_safety.cpp} & concurrency helpers & behaviour of connection pooling, thread-local access, and transaction guards \\
+\path{test_wire_protocol.cpp} & experimental execution layer & lower-level compile-time and wire-oriented mechanisms \\
+\path{test_cpp26_reflection.cpp} & future language integration & early path toward reflection-driven automation \\
+\path{test_schema_migration.cpp} & migration layer & DDL generation, diff logic, and state-machine behaviour \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Table~\ref{tab:appendix_unit_core} is important because it shows that the unit layer is not exhausted by connector tests. It also covers the generic architectural elements on which all backend integrations later depend.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Backend-oriented unit tests and their contract focus}
+\label{tab:appendix_unit_connectors}
+\begin{tabularx}{\textwidth}{L{3.4cm}L{3.3cm}Z}
+\toprule
+\textbf{File} & \textbf{Backend focus} & \textbf{Type of evidence} \\
+\midrule
+\path{test_postgresql_connector.cpp} & \code{PostgreSQLDB} & \code{is\_connector} compliance, capability assertions, and SQL parameter rendering \\
+\path{test_mysql_connector.cpp} & \code{MySQLDB} & joins/transactions capability profile and MySQL-specific rendering expectations \\
+\path{test_mongodb_connector.cpp} & \code{MongoDB} & negative capability validation and BSON-like filter rendering \\
+\path{test_redis_connector.cpp} & \code{RedisDB} & absence of joins/transactions/aggregation and key-value command materialisation \\
+\path{test_cassandra_connector.cpp} & \code{CassandraDB} & capability constraints and CQL rendering correlates \\
+\path{test_neo4j_connector.cpp} & \code{Neo4jDB} & transaction capability and graph-oriented query materialisation \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Integration and live tests}
+
+The integration layer is organised around two principles. The first is to have a backend-independent mock baseline that can validate the query-execution contract without external infrastructure. The second is to have live tests for real backends whenever the corresponding targets and environment flags are available.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Catalogue of the integration and live tests}
+\label{tab:appendix_integration_tests}
+\begin{tabularx}{\textwidth}{L{3.2cm}L{3.0cm}Y}
+\toprule
+\textbf{File} & \textbf{Execution mode} & \textbf{What it demonstrates} \\
+\midrule
+\path{test_mockdb.cpp} & always-available integration baseline & query composition, parameter binding, prepared queries, and CRUD scenarios without an external backend \\
+\path{test_sqlite.cpp} & local integration test & a real relational execution path with capability assertions and hydration scenarios \\
+\path{test_postgresql_live.cpp} & conditional live test & real connection management, table lifecycle, and CRUD execution on PostgreSQL \\
+\path{test_mysql_live.cpp} & conditional live test & real MySQL driver path, insert/update/delete, and select filtering \\
+\path{test_mongodb_live.cpp} & conditional live test & execution of document-oriented scenarios against a live backend \\
+\path{test_redis_live.cpp} & conditional live test & key-value and hash-command materialisation in a Redis environment \\
+\path{test_cassandra_live.cpp} & conditional live test & wide-column execution and backend-specific CQL scenarios \\
+\path{test_neo4j_live.cpp} & conditional live test & graph query execution through a controlled Docker environment \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+This catalogue matters because it shows that repository-backed evidence is layered. Not every backend has the same operational cost for live verification, but the repository contains a clear strategy indicating how and when such tests are activated.
+
+\subsection{Capability evidence by backend family}
+
+One of the central ideas of the library is that connectors must not claim more abilities than they actually provide. For that reason, capability evidence is distributed between unit tests and integration tests rather than being left only at the level of documentation.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Examples of capability evidence in the test layer}
+\label{tab:appendix_capability_evidence}
+\begin{tabularx}{\textwidth}{L{2.6cm}L{2.6cm}Z}
+\toprule
+\textbf{Backend} & \textbf{Principal test file} & \textbf{What is demonstrated} \\
+\midrule
+SQLite & \path{test_sqlite.cpp} & presence of \code{supports\_joins} and \code{supports\_transactions} in a real integration context \\
+PostgreSQL & \path{test_postgresql_connector.cpp} & presence of joins, transactions, and aggregation capability tags \\
+MySQL & \path{test_mysql_connector.cpp} & presence of joins and transactions, but absence of aggregation capability \\
+MongoDB & \path{test_mongodb_connector.cpp} & absence of SQL-oriented capability tags and correct filter-rendering behaviour \\
+Redis & \path{test_redis_connector.cpp} & absence of joins/transactions/aggregation and key-value materialisation semantics \\
+Neo4j & \path{test_neo4j_connector.cpp} & presence of transactions and graph-specific execution focus \\
+Cassandra & \path{test_cassandra_connector.cpp} & restricted capability profile and wide-column contract behaviour \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{CMake registration as part of the verification design}
+
+The build system is not a neutral background, but an active component of verification. This is visible in both \path{tests/unit/CMakeLists.txt} and \path{tests/integration/CMakeLists.txt}. In the unit layer, all core tests are grouped into a single executable target and registered through \code{gtest\_discover\_tests}. In the integration layer, some tests are always present, while live tests are activated only when the corresponding targets and feature flags are available.
+
+\begin{lstlisting}[caption={Excerpt from unit-test registration},label={lst:appendix_unit_cmake}]
+add_executable(test_unit
+    test_types.cpp
+    test_property.cpp
+    test_relationship.cpp
+    test_query.cpp
+    test_mysql_connector.cpp
+    test_postgresql_connector.cpp
+    test_mongodb_connector.cpp
+    test_redis_connector.cpp
+    test_cassandra_connector.cpp
+    test_neo4j_connector.cpp
+    test_thread_safety.cpp
+    test_wire_protocol.cpp
+    test_cpp26_reflection.cpp
+    test_schema_migration.cpp
+)
+
+gtest_discover_tests(test_unit)
+\end{lstlisting}
+
+Listing~\ref{lst:appendix_unit_cmake} is short, but highly informative: it describes the unit-verification layer as a systematic catalogue rather than a sporadic set of tests.
+
+\begin{lstlisting}[caption={Excerpt from conditional live-test registration},label={lst:appendix_integration_cmake}]
+add_executable(test_integration
+    test_mockdb.cpp
+)
+
+gtest_discover_tests(test_integration)
+
+if(TARGET orm::postgresql_live AND ORM_POSTGRESQL_LIVE_ENABLED)
+    add_executable(test_postgresql_live test_postgresql_live.cpp)
+    add_test(NAME PostgreSQLLive COMMAND test_postgresql_live)
+endif()
+
+if(TARGET orm::mysql_live AND ORM_MYSQL_LIVE_ENABLED)
+    add_executable(test_mysql_live test_mysql_live.cpp)
+    add_test(NAME MySQLLive COMMAND test_mysql_live)
+endif()
+\end{lstlisting}
+
+Listing~\ref{lst:appendix_integration_cmake} shows that integration and live verification are intentionally conditional. This is architecturally sound, because not every backend is always available in every environment, yet the registration framework remains formally specified.
+
+\subsection{Conclusions from the appendix}
+
+The present appendix shows that verification of the library possesses its own internal architecture. It includes a catalogue of unit evidence, a baseline integration execution path, conditional live scenarios, and a build-level mechanism for test registration and activation. This is an important part of the research value of the work, because it makes it possible to connect the claims of the main text to concrete, verifiable artefacts.
+
+Consequently, the thesis does not merely describe a library design, but documents a system whose principal claims can be traced to source headers, CMake registration, and executable tests. It is exactly this traceability that is critical for evaluating the \ORMName{} library as a completed engineering and academic work.

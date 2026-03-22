@@ -1,0 +1,101 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+This thesis presented the design, implementation, and analysis of a \ORMName{} library for C++, intended for both relational and non-relational databases. At the centre of the work stands the idea that query structure, the logical data model, and a significant portion of backend admissibility constraints can be described and validated through the type system of the language.
+
+In doing so, the thesis addresses a concrete problem of contemporary practice: the mismatch between strongly typed application code and the heterogeneous storage models that such code must use. Classical ORM solutions are strongest within the relational world, while purely driver-oriented approaches often move too much correctness toward runtime. The present work showed that between these two poles there exists a viable architectural position --- a compile-time ORM layer that is practical, formally organised, and sufficiently honest about backend differences.
+
+\subsection{Summary of the solved problem}
+
+The task was not merely to build another convenient query builder. The goal was to design a library in which:
+
+\begin{enumerate}[label=\arabic*.]
+    \item the logical data model is described through C++ types;
+    \item queries are represented as a typed IR rather than as strings;
+    \item backends are integrated through a formal connector contract;
+    \item differences between storage models are managed through capability and constraint mechanisms;
+    \item correctness is supported simultaneously by compile-time checks and by a testing infrastructure.
+\end{enumerate}
+
+Within the thesis, each of these sub-goals was addressed through concrete architectural and implementation decisions. The entity layer introduced typed properties and relationships, the \code{store\_as} policy, and traits for logical container naming. The query builder was organised around a typed intermediate representation. The connector layer was formalised through \code{connector\_trait<DB>}, and the verification strategy was supported by unit and integration tests across multiple backends.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.35cm and 1.15cm]
+    \node[ormaccent] (model) {Logical model layer\\entity types + relationships};
+    \node[ormblock, right=of model] (ir) {Typed query IR\\predicates, projections, placeholders};
+    \node[ormblock, below=of $(model)!0.5!(ir)$] (connector) {Connector contract\\capabilities + materialisation};
+    \node[ormblock, below left=of connector] (tests) {Verification\\unit + integration tests};
+    \node[ormblock, below right=of connector] (backends) {Multi-backend\\execution};
+
+    \draw[ormline] (model) -- (ir);
+    \draw[ormline] (model) -- (connector);
+    \draw[ormline] (ir) -- (connector);
+    \draw[ormline] (connector) -- (tests);
+    \draw[ormline] (connector) -- (backends);
+\end{tikzpicture}
+\caption{Synthesis of the principal construction of the developed library}
+\label{fig:thesis_synthesis}
+\end{figure}
+
+Figure~\ref{fig:thesis_synthesis} summarises the overall logic of the thesis. It shows that the library is not a collection of isolated techniques, but a coherent system in which the model layer, query IR, connector contract, verification, and multi-backend execution support one another.
+
+\subsection{Summary of achieved results}
+
+The work showed that C++ provides sufficiently strong mechanisms --- templates, \code{constexpr}, \code{concepts}, and trait specialisations --- for building an ORM layer in which queries are not described as strings. Instead, they are represented through a typed query IR that can be analysed at compile time and materialised differently depending on the chosen backend.
+
+At the level of data modelling, the library demonstrates how \code{property}, \code{relationship}, \code{store\_as}, and \code{table\_name\_trait} can serve as a unified logical layer. That layer is not restricted to relational interpretation, but acts as a shared description of data and relationships. It is precisely this that allows one and the same application-level structure to be carried toward tables, documents, key-value structures, graph nodes, or wide-column rows.
+
+At the level of architecture, the connector trait is formalised as the central extensibility mechanism. Through it, the library adapts one and the same query IR to SQL, BSON-like filters, Redis commands, Cypher, and CQL. The capability mechanism complements that architecture by making inadmissible operations visible already at compilation.
+
+At the level of verification, the work relies on a systematic set of unit and integration tests covering the entity layer, the query builder, prepared queries, migrations, thread safety, and concrete connectors. Architectural claims are therefore supported by real evidence from code and testing infrastructure.
+
+\subsection{Scientific and practical contributions}
+
+The first contribution of the work is the demonstration that a practically useful \ORMName{} library can be realised in standard C++. This is achieved without external code generation, without a virtual connector interface, and without forcing the user outside idiomatic C++.
+
+The second contribution lies in clarifying the relationship between the C++ entity description and the physical organisation of stored data. The thesis shows that the C++ model can be treated as the primary carrier of the logical schema, while the concrete backend determines the mode of physical materialisation. This claim has value not only for ORM libraries, but more broadly for systems that try to combine strong static typing with heterogeneous data sources.
+
+The third contribution is the formalisation of a connector contract that combines extensibility with strict compile-time discipline. This contract makes it possible to extend the library with new backends without breaking the guarantees already embedded in the query API. It is exactly here that the work differs from approaches that provide a shared interface but conceal critical backend differences.
+
+The fourth contribution is the demonstration that verification of such a library must be multi-layered. It is not sufficient merely to ``have tests'' or merely to ``have compile-time checks''. What is needed is a combination of the two: concept-level constraints, capability assertions, query-rendering tests, live integration scenarios, and migration/thread-safety validation.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Relationship between the thesis goals and the realised results}
+\label{tab:goal_result_mapping}
+\begin{tabularx}{\textwidth}{L{3.1cm}L{3.2cm}Y}
+\toprule
+\textbf{Goal} & \textbf{Realised mechanism} & \textbf{Evidence basis} \\
+\midrule
+Typed data model & \code{property}, \code{relationship}, \code{table\_name\_trait} & entity headers and the property/relationship unit tests \\
+Typed query layer & query builders and typed IR & query headers, \path{tests/unit/test_query.cpp}, \path{tests/integration/test_mockdb.cpp} \\
+Extensible multi-backend layer & connector contract and capability tags & connector headers and backend-specific unit/live tests \\
+Schema-aware direction & \code{migrate<DB>} and DDL hooks & \path{tests/unit/test_schema_migration.cpp} \\
+Safe operational use & thread-safety and transaction helpers & \path{tests/unit/test_thread_safety.cpp} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Table~\ref{tab:goal_result_mapping} shows that the thesis does not remain at the level of a declarative design document. For each principal goal there is a concrete realised mechanism and at least one direct technical correlate in the repository.
+
+\subsection{Principal limitations and the boundaries of generalisation}
+
+The work also shows clearly that a multi-backend ORM abstraction has limits. Not every storage model offers the same operations, and therefore the shared query IR cannot be interpreted identically everywhere. That is precisely why capability and constraint mechanisms are so important. They do not weaken the library; they make it correct with respect to different backend families.
+
+In addition, although the architectural foundation for migrations, thread safety, and lower-level execution support is already present, these subsystems remain natural areas for future development and broader empirical expansion. This means that the work should be evaluated as a completed architectural and implementation demonstration, but not as the last word on compile-time data access.
+
+From an academic point of view, it is also important to stress another boundary. The present work does not prove that compile-time ORM is universally the best approach for all applications. It proves something more precise: that for a class of systems requiring clear static structure, high type safety, and controlled multi-backend extensibility, this approach is viable and engineering-sound.
+
+\subsection{Significance for practice and for future research}
+
+The practical value of the work lies in the fact that the library already provides a stable foundation for further engineering development. The entity description, query IR, connector contract, and verification strategy are sufficiently clear to allow disciplined addition of new backends and operational capabilities.
+
+Its research value is related to the broader question of the role of the type system in modelling data access. The thesis shows that the C++ type system can serve not only for describing data and algorithms, but also for formalising architectural boundaries, admissibility of operations, and the transition between logical and physical layers. This places the library in a wider context that extends beyond ORM in the narrow sense.
+
+\subsection{Closing remarks}
+
+The analysis confirms that the C++ type system is sufficiently powerful to serve not only for modelling data and algorithms, but also for formalising access to persistent systems. The combination of a static entity model, query IR, a trait-based connector layer, and systematic verification demonstrates a viable path toward libraries that are expressive, safe, and extensible at the same time.
+
+In this way, the thesis achieves both an engineering and a research goal: it delivers a working library while also formulating principles that can guide future development of compile-time data-access layers. The most important conclusion is that the compile-time ORM approach is not merely a theoretical exercise, but a real engineering alternative for systems that require rigour, clarity, and extensibility across multiple storage models.

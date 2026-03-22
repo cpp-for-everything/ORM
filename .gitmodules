@@ -1,0 +1,24 @@
+[submodule "external/mysql-connector-c/mysql-connector-cpp"]
+	path = external/mysql-connector-c/mysql-connector-cpp
+	url = https://github.com/mysql/mysql-connector-cpp
+	branch = tags/9.6.0
+[submodule "external/mongo-c-driver/mongo-cxx-driver"]
+	path = external/mongo-c-driver/mongo-cxx-driver
+	url = https://github.com/mongodb/mongo-cxx-driver
+	branch = tags/r4.2.0
+[submodule "external/libpq/libpqxx"]
+	path = external/libpq/libpqxx
+	url = https://github.com/jtv/libpqxx
+	branch = tags/8.0.0
+[submodule "external/libneo4j-client/libneo4j-client"]
+	path = external/libneo4j-client/libneo4j-client
+	url = https://github.com/cleishm/libneo4j-client
+	branch = tags/v2.2.0
+[submodule "external/hiredis/hiredis"]
+	path = external/hiredis/hiredis
+	url = https://github.com/redis/hiredis
+	branch = tags/v1.3.0
+[submodule "external/cassandra-cpp-driver/cassandra-cpp-driver"]
+	path = external/cassandra-cpp-driver/cassandra-cpp-driver
+	url = https://github.com/apache/cassandra-cpp-driver
+	branch = tags/2.17.1

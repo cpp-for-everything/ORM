@@ -1,60 +1,26 @@
-﻿# ORM main CMakeLists with all sub projects
-cmake_minimum_required (VERSION 3.14)
+cmake_minimum_required(VERSION 3.20)
+project(ORM VERSION 2.0.0 LANGUAGES CXX)
 
-project (WebframeORM
-    VERSION 2.0.0.0 
-    DESCRIPTION ""
-    HOMEPAGE_URL ""
-    LANGUAGES CXX C
-)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-cmake_policy(SET CMP0057 NEW)
+# Add custom CMake modules directory
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-if (MSVC)
-    # warning level 4 and all warnings as errors
-    add_compile_options(/W4 /WX)
-else()
-    # lots of warnings and all warnings as errors
-    add_compile_options(-Wall -Wextra -pedantic -Werror)
-endif()
+# ── Live connector opt-in options ──────────────────────────────────────────────
+option(ORM_ENABLE_MYSQL      "Build live MySQL connector (requires libmysqlclient)"      OFF)
+option(ORM_ENABLE_POSTGRESQL "Build live PostgreSQL connector (requires libpq)"          OFF)
+option(ORM_ENABLE_MONGODB    "Build live MongoDB connector (requires mongo-c-driver)"    OFF)
+option(ORM_ENABLE_REDIS      "Build live Redis connector (requires hiredis)"             OFF)
+option(ORM_ENABLE_CASSANDRA  "Build live Cassandra connector (requires cassandra-cpp-driver)" OFF)
+option(ORM_ENABLE_NEO4J      "Build live Neo4j connector (requires libneo4j-client)"     OFF)
+option(ORM_ENABLE_SQLITE     "Build live SQLite connector (requires libsqlite3)"         OFF)
 
-option(USE_MYSQL "Use MySQL Client" OFF)
-option(RUN_TESTS "Run unit & integration tests" ON)
+# ── Build strategy option ──────────────────────────────────────────────────────
+option(ORM_USE_SYSTEM_LIBS   "Prefer system-installed libraries over submodules"         OFF)
 
-configure_file(ORM.hpp.in ${CMAKE_CURRENT_SOURCE_DIR}/lib/include/ORM/ORM-version.hpp)
+enable_testing()
 
-# Include sub-projects.
-add_subdirectory("lib")
-list(APPEND EXTRA_LIBS Webframe::ORM)
-list(APPEND EXTRA_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/lib/include")
-
-if(USE_MYSQL)
-    execute_process(COMMAND mysql_config --cflags
-        OUTPUT_VARIABLE MYSQL_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-    execute_process(COMMAND mysql_config --libs
-        OUTPUT_VARIABLE MYSQL_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-    add_compile_options(${MYSQL_CFLAGS})
-    add_definitions(-DUSE_MYSQL)
-    list(APPEND EXTRA_LIBS ${MYSQL_LIBS})
-endif()
-
-if(RUN_TESTS)
-    include(CTest)
-    enable_testing()
-    add_subdirectory("tests/")
-endif()
-
-# Generate example source code
-add_executable(Webframe_ORM_Example example/ORM.cpp)
-target_compile_definitions(Webframe_ORM_Example PUBLIC DB_USERNAME="root" DB_PASSWORD="test")
-target_link_libraries(Webframe_ORM_Example PUBLIC ${EXTRA_LIBS})
-target_include_directories(Webframe_ORM_Example PUBLIC
-                            ${EXTRA_INCLUDES}
-                            ${PROJECT_BINARY_DIR}
-                          )
-add_executable(Webframe::ORM::Example ALIAS Webframe_ORM_Example)
-
-include(CPack)
+add_subdirectory(lib)
+add_subdirectory(tests)

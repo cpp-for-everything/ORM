@@ -1,0 +1,38 @@
+# Build artifacts
+build*/
+cmake-build-*/
+out/
+.vs/
+.vscode/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+.worktrees/
+
+# Documentation
+doc/
+docs/
+example_doc/
+*.md
+!docker/README.md
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.log
+*.tmp
+*.bak
+
+# External dependencies (will be built from system packages)
+external/
+vcpkg_installed/

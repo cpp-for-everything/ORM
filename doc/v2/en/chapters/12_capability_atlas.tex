@@ -1,0 +1,123 @@
+\section{Atlas of Capability Profiles and Backend Maturity}
+\label{sec:capability_atlas_appendix}
+
+The present appendix complements the main analysis from Chapters~\ref{sec:backend_scenarios} and~\ref{sec:verification_extensibility} by presenting the capability mechanism and backend maturity in a more synthesised form. If the previous appendix systematised the testing infrastructure, the focus here falls on how the different backends are positioned relative to the shared connector contract.
+
+This type of synthesis is useful for two reasons. First, it makes it possible to view the library as a coordinated system of capability profiles rather than merely a set of isolated adapters. Second, it allows a clearer formulation of what it means for a backend to be minimally supported, operationally useful, or architecturally mature.
+
+\subsection{The capability mechanism as a formal layer}
+
+The file \path{lib/include/ORM/connector/capabilities.hpp} defines the capability layer through the primary template \code{connector\_trait<DB>} and the set of capability-tag structures in \code{namespace cap}. In the version of the library analysed here, this set includes \code{supports\_joins}, \code{supports\_transactions}, \code{supports\_aggregation}, \code{supports\_embedding}, \code{supports\_upsert}, and \code{supports\_bulk\_insert}.
+
+What matters is that capabilities are not kept in a runtime registry and are not described as textual metadata. They are encoded at the type level through the presence or absence of nested aliases inside the specialisation of \code{connector\_trait<DB>}. This means that admissibility of an operation can be used as a compile-time condition inside the query API and the associated concepts.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Meaning of the capability tags in the analysed architecture}
+\label{tab:capability_semantics}
+\begin{tabularx}{\textwidth}{L{3.6cm}Y}
+\toprule
+\textbf{Capability tag} & \textbf{Architectural meaning} \\
+\midrule
+\code{supports\_joins} & the backend can materialise join-like composition between logical entity descriptions \\
+\code{supports\_transactions} & the backend exposes sufficient transactional semantics or API hooks for transaction helpers \\
+\code{supports\_aggregation} & the backend supports aggregation operations within its corresponding query model \\
+\code{supports\_embedding} & the backend admits document-oriented or nested-object materialisation strategies \\
+\code{supports\_upsert} & the backend allows one-step update-or-insert behaviour in a suitable form \\
+\code{supports\_bulk\_insert} & the backend exposes an efficient path for batch insert scenarios \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Table~\ref{tab:capability_semantics} is important because it shows that the capability layer is not decorative. Every tag must have a concrete architectural meaning rather than acting as a purely descriptive label.
+
+\subsection{Connector maturity as a ladder rather than a binary judgement}
+
+In practice, a connector rarely moves directly from ``missing'' to ``fully ready''. It is more accurate to think of it as climbing a ladder of maturity.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.05cm]
+    \node[ormaccent, minimum width=8.2cm] (lvl4) {Level 4: schema-aware and operationally rich connector};
+    \node[ormblock, below=of lvl4, minimum width=7.0cm] (lvl3) {Level 3: capability-aware connector with integration/live evidence};
+    \node[ormblock, below=of lvl3, minimum width=5.8cm] (lvl2) {Level 2: contract-correct connector};
+    \node[ormblock, below=of lvl2, minimum width=4.6cm] (lvl1) {Level 1: minimal connector};
+
+    \draw[ormline] (lvl1) -- (lvl2);
+    \draw[ormline] (lvl2) -- (lvl3);
+    \draw[ormline] (lvl3) -- (lvl4);
+\end{tikzpicture}
+\caption{Maturity ladder for backend connectors}
+\label{fig:connector_maturity_ladder}
+\end{figure}
+
+The ladder in Figure~\ref{fig:connector_maturity_ladder} allows a more precise evaluation of backend integrations:
+
+\begin{enumerate}[label=\arabic*.]
+    \item \textbf{Minimal connector} --- the backend has a \code{connector\_trait<DB>} specialisation and can at least participate in the formal compile-time contract.
+    \item \textbf{Contract-correct connector} --- \code{is\_connector} evidence and unit tests exist for capability honesty and baseline materialisation logic.
+    \item \textbf{Capability-aware connector with execution evidence} --- integration or live tests are present, showing that the capability profile is not merely declarative.
+    \item \textbf{Schema-aware and operationally rich connector} --- the backend can participate in migration, thread safety, prepared-query workflows, and broader production-oriented scenarios.
+\end{enumerate}
+
+\subsection{Capability profiles by backend family}
+
+By synthesising the unit and integration tests, it becomes possible to form a compact capability matrix for the principal backends.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Capability profiles of the principal backends according to available tests and connector specialisations}
+\label{tab:capability_matrix}
+\begin{tabularx}{\textwidth}{L{2.3cm}L{1.2cm}L{1.5cm}L{1.4cm}L{1.4cm}L{1.4cm}Y}
+\toprule
+\textbf{Backend} & \textbf{Joins} & \textbf{Transactions} & \textbf{Aggregation} & \textbf{Upsert} & \textbf{Bulk insert} & \textbf{Short comment} \\
+\midrule
+SQLite & present & present & present & limited & limited & the closest full relational reference path in the repository \\
+PostgreSQL & present & present & present & specific & possible & strong relational contract with live execution evidence \\
+MySQL & present & present & absent in current tests & specific & possible & operational path exists, but the capability profile remains more conservative \\
+MongoDB & absent & absent & absent & analogue & not central & strong document model, but no SQL-style capability profile \\
+Redis & absent & absent & absent & analogue & limited & key-value semantics with a minimalist but honest contract profile \\
+Neo4j & analogue & present & absent & not central & not central & graph backend with transaction focus rather than SQL-style aggregation \\
+Cassandra & absent & present & absent & not central & possible & wide-column backend with a restricted yet formally defined capability set \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Table~\ref{tab:capability_matrix} should not be read as a universal truth about the databases themselves. It describes the specific architectural position of the library toward these backends in the analysed version of the repository.
+
+\subsection{Maturity map by available test evidence}
+
+The capability profile alone is not sufficient. From the standpoint of engineering reliability, it matters whether a backend has only contract-level unit tests, local integration scenarios, or live execution evidence as well.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Backend maturity map according to the available evidence base}
+\label{tab:backend_maturity_map}
+\begin{tabularx}{\textwidth}{L{2.4cm}L{2.2cm}L{2.8cm}Y}
+\toprule
+\textbf{Backend} & \textbf{Maturity level} & \textbf{Principal evidence base} & \textbf{Interpretation} \\
+\midrule
+\code{MockDB} & level 3 & \path{test_mockdb.cpp} & serves as the backend-independent execution baseline for the query contract \\
+SQLite & level 3 to 4 & \path{test_sqlite.cpp} & local real execution path with rich query evidence and capability assertions \\
+PostgreSQL & level 3 & \path{test_postgresql_connector.cpp}, \path{test_postgresql_live.cpp} & strong contract plus conditional live backend verification \\
+MySQL & level 3 & \path{test_mysql_connector.cpp}, \path{test_mysql_live.cpp} & real operational path with a more conservative capability set \\
+MongoDB & level 3 & \path{test_mongodb_connector.cpp}, \path{test_mongodb_live.cpp} & document-oriented execution evidence without SQL-style capabilities \\
+Redis & level 3 & \path{test_redis_connector.cpp}, \path{test_redis_live.cpp} & key-value execution evidence with a limited but honest contract profile \\
+Neo4j & level 3 & \path{test_neo4j_connector.cpp}, \path{test_neo4j_live.cpp} & graph execution path with Docker-gated live verification \\
+Cassandra & level 3 & \path{test_cassandra_connector.cpp}, \path{test_cassandra_live.cpp} & wide-column path focused on formal suitability and live coverage \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{What the capability atlas reveals about the architecture}
+
+Three practical conclusions follow from the capability atlas. First, the library does not attempt to impose artificial uniformity on the backends. On the contrary, it makes differences explicit through capability tags and contract-level tests. Second, the relational backends naturally concentrate a richer capability profile, while the document, graph, and key-value backends are assessed through different and more appropriate criteria. Third, connector maturity should be measured not only by the number of supported operations, but also by the existence of real evidence.
+
+These conclusions are important from a research point of view as well. They show that the compile-time ORM architecture is viable precisely because it does not erase the differences between storage models. Instead, it formalises and controls them at the level of types, capability profiles, and verification strategies.
+
+\subsection{Conclusion}
+
+The present appendix completes the synthesis between the connector contract and the empirical evidence layer. If the main text showed how the library works, the capability atlas shows how it structures the diversity of backends in a disciplined and verifiable way. This is yet another reason to treat the work not merely as a software library, but as a formally organised engineering system.

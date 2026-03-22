@@ -1,0 +1,229 @@
+\section{Verification and Extensibility Through New Connectors}
+\label{sec:verification_extensibility}
+
+One of the central claims of the project is that the library is both verifiable and extensible. This requires not merely the presence of tests, but a clearly defined connector contract that allows a new backend to be added without changing the query API and without breaking compile-time guarantees.
+
+The previous chapters showed that the library already works across relational and non-relational backends. The present chapter formalises how this is possible and how the next backend should be introduced. In other words, extensibility ceases here to be a general quality of the design and becomes a methodology with concrete requirements, signatures, testing criteria, and levels of completeness.
+
+\subsection{Formal contract of the connector layer}
+
+A connector is described through a \code{DB} type and a \code{connector\_trait<DB>} specialisation. This is a structural rather than inheritance-based contract. There is no common virtual interface such as \code{IConnector}. The reason is principled: different backends expose different capabilities and limitations, and those differences must remain visible at compile time. A virtual hierarchy would erase too many distinctions and would move part of validation toward runtime.
+
+A minimally working connector must provide \code{wire\_type}, \code{cursor\_type}, and suitable \code{execute(...)} entry points. Additional abilities are denoted through capability tags. In this way the contract remains both strict and extensible. There is no ``magic'' registration layer in this construction: the compiler sees the specialisation directly and can verify whether it satisfies the \code{is\_connector} concept.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.35cm and 1.2cm]
+    \node[ormaccent] (dbtype) {\textbf{New backend type}\\resource wrapper + lifecycle};
+    \node[ormblock, below=of dbtype] (trait) {\code{connector\_trait<DB>}\\mandatory signatures};
+    \node[ormblock, below left=of trait] (caps) {Capability\\declarations};
+    \node[ormblock, below right=of trait] (exec) {\code{execute(...)}\\materialisation path};
+    \node[ormblock, below=of $(caps)!0.5!(exec)$] (tests) {Unit + integration\\verification};
+
+    \draw[ormline] (dbtype) -- (trait);
+    \draw[ormline] (trait) -- (caps);
+    \draw[ormline] (trait) -- (exec);
+    \draw[ormline] (caps) -- (tests);
+    \draw[ormline] (exec) -- (tests);
+\end{tikzpicture}
+\caption{Architectural workflow for adding a new connector}
+\label{fig:connector_workflow}
+\end{figure}
+
+Figure~\ref{fig:connector_workflow} shows that adding a backend is not a one-step action. It begins with a clearly defined resource wrapper, continues with the trait contract, the capability profile, and the execution materialisation, and ends only after test verification. This is essential for the thesis because it places extensibility into a disciplined engineering process.
+
+\subsection{Mandatory elements of a minimal connector}
+
+In practical terms, a backend is considered minimally integrated if:
+
+\begin{enumerate}[label=\arabic*.]
+    \item a type exists that represents the backend connection wrapper;
+    \item a \code{connector\_trait<DB>} specialisation exists for that type;
+    \item the specialisation defines \code{template <typename T> struct wire\_type};
+    \item the specialisation defines \code{cursor\_type};
+    \item the specialisation can execute at least the basic ORM query forms it claims to support.
+\end{enumerate}
+
+This means that a ``connector'' is not merely a rendering function, but a full description of how C++ types and the query IR pass into a concrete backend. If even one of these elements is missing, the added backend is not architecturally complete, regardless of whether some subset of queries can be made to run.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Mandatory and optional connector elements}
+\label{tab:connector_requirements}
+\begin{tabularx}{\textwidth}{L{3.7cm}Y}
+\toprule
+\textbf{Element} & \textbf{Role} \\
+\midrule
+\code{DB} type & wrapper over a backend handle, session, or mock connection \\
+\code{connector\_trait<DB>} & central contract specialisation \\
+\code{template <typename T> struct wire\_type} & maps a C++ type into its wire representation \\
+\code{cursor\_type} & describes result traversal or cursor lifecycle \\
+\code{execute(...)} overloads & materialise the query IR into backend behaviour \\
+Capability tags & restrict admissible operations and lifecycle policies \\
+\code{begin}/\code{commit}/\code{rollback} & required when transaction support is claimed \\
+\code{ddl\_for(...)} & required for schema-aware integration and \code{migrate<DB>} \\
+\code{render\_constexpr(...)} & optional compile-time materialisation hook for specialised scenarios \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Typing, signatures, and naming}
+
+The connector contract is strict also in terms of typing. \code{wire\_type<T>::type} must be a stable compile-time function of \code{T}. \code{cursor\_type} must model realistic result iteration or at least clearly indicate mock behaviour. \code{execute(...)} overloads must accept \code{DB\&} as the first argument and return \code{orm::result<...>} for \code{SELECT} forms or \code{result<std::tuple<>>} for write operations.
+
+Naming of the connectors in the repository follows a consistent convention. ``Local'' or unit-friendly connectors use names such as \code{SQLiteDB}, \code{PostgreSQLDB}, \code{MySQLDB}, \code{MongoDB}, \code{RedisDB}, \code{Neo4jDB}, and \code{CassandraDB}. Real live variants are distinguished explicitly through the suffix \code{LiveDB}. This is not a minor stylistic choice, but part of contract clarity: from the type name alone it is clear whether a given connector is a mockable adapter, an in-memory/local wrapper, or a real driver-backed backend.
+
+Absence of inheritance must also be regarded as a formal rule rather than an implementation detail. A new connector should not derive from a common ``ORM base class'', because that would mix backend-specific logic with runtime polymorphism. The correct extension mechanism is specialisation of \code{connector\_trait<DB>}.
+
+\subsection{Capability mechanism and compile-time restrictions}
+
+Capability tags are the primary way in which the library distinguishes backends by admissible operations. If \code{connector\_trait<DB>} does not declare \code{supports\_joins}, then an attempt to execute a join-based query is architecturally invalid and should be rejected already at compilation. The same reasoning applies to transactions, aggregation, and concurrent execution.
+
+From the standpoint of verification, this is important because correctness no longer depends solely on tests. Part of the contract is directly checkable by the compiler. The tests then no longer prove that the contract exists, but that concrete specialisations apply it consistently. This is exactly why \path{tests/unit/test_mongodb_connector.cpp} and \path{tests/unit/test_redis_connector.cpp} validate the absence of \code{supports\_joins}, \code{supports\_transactions}, and \code{supports\_aggregation} for those connectors.
+
+This negative verification is just as important as positive verification. Proving that a backend \emph{does not} support a given operation is as important as proving that it does support another.
+
+\subsection{Minimal connector skeleton and operational connector skeleton}
+
+In the repository, \code{MockDB} and \code{MockMigrateDB} are especially valuable because they act as connector archetypes. The former shows the operational contract for query execution, while the latter shows how the same contract can be extended toward schema-aware migration scenarios.
+
+\begin{lstlisting}[language=C++,caption={Excerpt from \code{connector\_trait<MockDB>}},label={lst:mockdb_connector}]
+template <>
+struct connector_trait<MockDB>
+{
+    using supports_joins              = void;
+    using supports_transactions       = void;
+    using supports_aggregation        = void;
+    using supports_upsert             = void;
+    using supports_bulk_insert        = void;
+    using supports_concurrent_execute = void;
+
+    template <typename T>
+    struct wire_type { using type = T; };
+
+    struct cursor_type
+    {
+        [[nodiscard]] bool has_next() const noexcept { return false; }
+    };
+
+    template <typename Response, typename Joins, typename Wheres,
+              typename Limits, typename Groups, typename Orders>
+    static auto execute(MockDB& db,
+        select_query<Response, Joins, Wheres, Limits, Groups, Orders> q)
+        -> result<projected_type<Response>, Response>;
+};
+\end{lstlisting}
+
+Listing~\ref{lst:mockdb_connector} is revealing because it gathers in compact form almost all mandatory elements: capability profile, \code{wire\_type}, \code{cursor\_type}, and query-specific \code{execute(...)} signatures. Moreover, the connector uses separate overloads for \code{select\_query}, \code{insert\_query}, \code{update\_query}, and \code{delete\_query}, making the mapping toward backend behaviour explicit.
+
+\begin{lstlisting}[language=C++,caption={Excerpt from the schema-aware extension \code{MockMigrateDB}},label={lst:mockmigratedb_connector}]
+template <>
+struct connector_trait<MockMigrateDB>
+{
+    using supports_joins              = void;
+    using supports_transactions       = void;
+    using supports_aggregation        = void;
+    using supports_concurrent_execute = void;
+
+    template <typename T>
+    struct wire_type { using type = T; };
+
+    template <typename... Args>
+    static auto execute(MockMigrateDB& db, Args&&... args)
+    {
+        return connector_trait<MockDB>::execute(
+            static_cast<MockDB&>(db), std::forward<Args>(args)...);
+    }
+
+    [[nodiscard]] static std::string ddl_for(const create_table_op& op);
+    [[nodiscard]] static std::string ddl_for(const add_column_op& op);
+};
+\end{lstlisting}
+
+Listing~\ref{lst:mockmigratedb_connector} shows how the operational connector skeleton can be extended. Query-execution logic is delegated to \code{MockDB}, but DDL hooks and transaction hooks are added. This is a good example of a progressive connector-maturity model.
+
+\subsection{Transactions, thread safety, and prepared queries}
+
+A mature backend contract is not exhausted by a single \code{SELECT}. If the connector declares \code{supports\_transactions}, it is expected to support \code{begin}, \code{commit}, and \code{rollback} so that \code{transaction\_guard<DB>} remains valid. If it declares \code{supports\_concurrent\_execute}, it must participate safely in \code{connection\_pool<DB, N>}.
+
+The prepared-query layer also imposes requirements regarding the stability of \code{DB\&} lifetime and the consistency of binding behaviour under repeated execution. Consequently, a mature connector should be evaluated not only by whether it renders correct syntax, but also by the operational contract around resources, transactions, and reuse. This is particularly important for backends whose driver lifecycle is more complex than that of \code{MockDB}.
+
+\subsection{Migrations and schema-aware integration}
+
+A connector that participates in \code{migrate<DB>} must also offer DDL extension points. In the repository this is demonstrated through \code{MockMigrateDB}. The example is especially useful because it shows how schema-aware behaviour can be layered on top of an already existing execution backend. In this way, the library formalises different levels of connector completeness.
+
+It is important to note that schema-aware support is not mandatory for every backend. Some connectors may be entirely adequate for query-execution analysis without supporting automated migrations. But if a connector claims a fuller ORM integration, the presence of \code{ddl\_for(...)} hooks and migration tests becomes mandatory.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.35cm and 1.15cm]
+    \node[ormaccent] (lvl1) {Level 1\\minimal connector};
+    \node[ormblock, below=of lvl1] (lvl2) {Level 2\\operational connector\\query execution + result contract};
+    \node[ormblock, below=of lvl2] (lvl3) {Level 3\\transaction/concurrency aware};
+    \node[ormblock, below=of lvl3] (lvl4) {Level 4\\schema-aware connector\\DDL + migration hooks};
+    \node[ormnote, right=1.5cm of lvl3, minimum width=4.7cm] (note)
+        {\code{MockDB} covers operational maturity, while
+         \code{MockMigrateDB} demonstrates the transition toward schema-aware maturity.};
+
+    \draw[ormline] (lvl1) -- (lvl2);
+    \draw[ormline] (lvl2) -- (lvl3);
+    \draw[ormline] (lvl3) -- (lvl4);
+\end{tikzpicture}
+\caption{Maturity ladder for a new connector}
+\label{fig:connector_maturity_ladder}
+\end{figure}
+
+Figure~\ref{fig:connector_maturity_ladder} proposes a practical evaluation model. It is useful also for future development of the library because it allows new backends to be positioned not simply as ``connector present/absent'', but according to the level of their integration.
+
+\subsection{Methodology for adding a new backend}
+
+Adding a new backend follows a clear sequence. First, the backend type and its resource wrapper are defined. Next, \code{connector\_trait<DB>} is implemented with the mandatory elements. Then capability declarations and the rules for rendering or executing the query IR are added. Finally, unit tests for the contract are written and, when possible, live integration tests are added for the real driver.
+
+The architecturally correct order is important: one should not begin from runtime workarounds, but from formalising the compile-time boundaries and the mapping logic. If this order is violated, the result is usually a connector that ``works'' for one happy path but is not actually compatible with the general architecture.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Recommended verification matrix for a new connector}
+\label{tab:connector_verification_matrix}
+\begin{tabularx}{\textwidth}{L{3.0cm}L{3.3cm}Y}
+\toprule
+\textbf{Verification layer} & \textbf{What must be proven} & \textbf{Representative repository correlate} \\
+\midrule
+Concept compliance & \code{is\_connector<DB>} is satisfied & \path{tests/unit/test_mongodb_connector.cpp} \\
+Capability honesty & declared and undeclared capability tags are correct & \path{tests/unit/test_redis_connector.cpp}, \path{tests/integration/test_sqlite.cpp} \\
+Execution correctness & the query IR is materialised correctly & \path{tests/integration/test_mockdb.cpp} and the live backend tests \\
+Resource/lifecycle correctness & transaction and concurrency hooks behave correctly & \path{tests/unit/test_thread_safety.cpp} \\
+Schema-aware correctness & DDL hooks and migration diff behave correctly & \path{tests/unit/test_schema_migration.cpp} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Criteria for a ``fully implemented and functioning'' connector}
+
+On the basis of the code and tests in the repository, the following criteria can be formulated:
+
+\begin{enumerate}[label=\arabic*.]
+    \item the connector satisfies the \code{is\_connector} contract;
+    \item capability declarations correspond to real behaviour;
+    \item naming and typing conventions remain compatible with the other connectors;
+    \item resource lifecycle is correct and testable;
+    \item supported ORM operations are covered by unit tests;
+    \item when a live driver exists, integration tests run against a real database;
+    \item when schema-aware support is claimed, DDL hooks and migration tests are present.
+\end{enumerate}
+
+These criteria are stricter than merely saying ``there is a working adapter'', because they require consistency between architectural intent, API contract, and verified behaviour. That is precisely what distinguishes an ad hoc integration from a connector that truly belongs to the library.
+
+\subsection{Verification through tests}
+
+The test layer in the repository follows the structure of the architecture. Unit tests for the individual connectors validate \code{is\_connector} compliance, capability declarations, and basic rendering. \path{tests/unit/test_thread_safety.cpp} checks \code{connection\_pool}, \code{thread\_local\_db}, and \code{transaction\_guard}. \path{tests/unit/test_schema_migration.cpp} validates the migration diff logic. \path{tests/integration/test_mockdb.cpp} and the live integration tests for individual backends prove that the abstraction also works during real execution.
+
+Verification is therefore not concentrated in one place. It is distributed so that every architectural claim has at least one direct testing correlate. This turns connector extensibility from a declarative objective into a verifiable engineering practice.
+
+\subsection{Assessment of the existing connectors}
+
+\code{SQLiteDB} may be regarded as a reference mature implementation for a relational backend. \code{PostgreSQLDB}, \code{MySQLDB}, \code{MongoDB}, \code{RedisDB}, \code{Neo4jDB}, and \code{CassandraDB} already demonstrate important parts of the contract and have varying degrees of live coverage. \code{MockDB} and \code{MockMigrateDB} play a special role as verification connectors: they are not merely test doubles, but instruments for formalising the rules of the architecture.
+
+A broader conclusion follows from this: the extensibility of the library was not added afterwards, but is embedded in the very way the connector layer is defined. That is exactly what allows the project to continue toward new backends without breaking the formal character of the compile-time ORM architecture.

@@ -1,187 +1,231 @@
-# <span style="font-size: 2.25em;">ORM Library for C++</span>
-### Make your database usage easier and more universal now!
-<hr>
+# ORM Library for C++23
 
-#### Requirements
-| Compiler version | Minimum C++ standard required |
-|:----------------:|:-----------------------------:|
-| GCC              | -std=c++20                    |
+A zero-overhead, compile-time query builder ORM for C++23. All query structure lives in the type system — no runtime parsing, no string manipulation at the call site.
 
-# How to use
+## Requirements
 
-1. Make sure to include the library and the database interface
+| Compiler | Minimum standard | Notes |
+|:--------:|:----------------:|:------|
+| GCC 15+  | C++23            | Primary CI target |
+| Clang 18+ | C++23           | Supported |
+| MSVC 19.38+ | C++23         | Supported |
 
-    ```cpp
-    #include <ORM/ORM.hpp>
-    ```
-<!---
-    - MySQL
-        ```cpp
-        #include <ORM/database/MySQL/mysql.hpp>
-        ```
-    - MockSQL
-        ```cpp
-        #include <ORM/database/MockSQL/MockSQL.hpp>
-        ```
-1. Initiate your Database
-    
-    **_Note:_** Make sure your database is set as ``constexpr``.
+> **C++26 reflection** (`__cpp_impl_reflection`): when detected, property column names are inferred automatically. Otherwise Boost.PFR is used and the string argument is mandatory.
 
-    - MySQL
-        ```cpp
-        constexpr const auto DB = ORM::Database<ORM::MySQL>(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_PORT, UNIX_SOCKET/nullptr, MYSQL_FLAGS, AUTO_COMMIT);
-        ``` 
-    - MockSQL
-        ```cpp
-        constexpr const auto DB = ORM::Database<ORM::MockSQL>(RANDOM_STRING);
-        ```
--->    
-1. Initiate your table
+## CMake integration
 
-    Any struct or class can be a table. Just use `webframe::ORM::property<type, column name>` to define the columns.    
-    ```cpp
-    struct Users {
-        property<int, "id"> id;
-        property<std::string, "username"> username;
-        property<std::string, "password"> hashed_password;
+```cmake
+add_subdirectory(lib)          # builds orm::orm (header-only interface)
+
+target_link_libraries(my_app PRIVATE
+    orm::orm          # core ORM headers
+    orm::mockdb       # in-memory SQL renderer (testing)
+    orm::sqlite       # SQLite3 connector (requires SQLite3 installed)
+)
+```
+
+The `orm::sqlite` target is only created when `find_package(SQLite3)` succeeds.
+
+## Quick start
+
+### 1 — Define an entity
+
+```cpp
+#include <ORM/ORM.hpp>
+
+struct User
+{
+    orm::property<int,          "id">    id;
+    orm::property<std::u8string,"name">  name;
+    orm::property<double,       "score"> score;
+};
+
+namespace orm {
+    template <> struct table_name_trait<User> {
+        static constexpr std::string_view value = "users";
     };
-    ```
-1. Initiate a relationship
-   
-    Any column can be used for a relationship. Just use `webframe::ORM::relationship<relationship type, mapping property>` to define the column.    
-    ```cpp
-    struct Post {
-        property<int, "id"> id;
-        property<std::string, "content"> content;
-    };
+}
+```
 
-    struct User {
-        property<int, "id"> id;
-        property<std::string, "username"> username;
-        property<std::string, "password"> hashed_password;
-        relationship<RelationshipTypes::one2many, &Post::id> posts;
-    };
-    ```
-    - You can also create a separate mapping table:
-    ```cpp
-    struct UserPost {
-        property<int, "id"> id;
-        relationship<RelationshipTypes::one2one, &User::id> author;
-        relationship<RelationshipTypes::one2one, &Post::id> post;
-    };
-    ```
-1. Initiate your queries
-   
-    **_Note:_** The queries should be declared as ``constexpr``. For easy usage, they should be declared as ``static`` if declared in classes/structures.
+### 2 — Open a connection
 
-    ```cpp
-    struct UserPost {
-        property<int, "id"> id;
-        relationship<RelationshipTypes::one2one, &User::id> author;
-        relationship<RelationshipTypes::one2one, &Post::id> post;
+```cpp
+// SQLite (real storage)
+orm::SQLiteDB conn = orm::SQLiteDB::open("my.db");
+orm::db<orm::SQLiteDB> db{conn};
 
-        static constexpr auto select_all = select(&UserPost::id, &User::id, &User::username, &Post::id, &Post::content)
-                    .join((P<&UserPost::author> == P<&User::id>) && (P<&UserPost::post> == P<&Post::id>));
-        // or
-        static constexpr auto select_all = select(&UserPost::id, &User::id, &User::username, &Post::id, &Post::content)
-                    .join(P<&UserPost::author> == P<&User::id>)
-                    .join(P<&UserPost::post> == P<&Post::id>);
+// MockDB (in-memory SQL renderer — ideal for unit tests)
+orm::MockDB mock;
+orm::db<orm::MockDB> db{mock};
+```
 
-        static constexpr auto select_all_where_user_id_is_greater_than = select(&UserPost::id, &User::id, &User::username, &Post::id, &Post::content)
-                    .join((P<&UserPost::author> == P<&User::id>) && (P<&UserPost::post> == P<&Post::id>))
-                    .filter(P<&User::id> > Placeholder<int>);
-    };
-    ```
-    or
-    ```cpp
-    constexpr auto select_all_users_and_posts = select(&UserPost::id, &User::id, &User::username, &Post::id, &Post::content)
-                    .join((P<&UserPost::author> == P<&User::id>) && (P<&UserPost::post> == P<&Post::id>));
-    //or
-    constexpr auto select_all_users_and_posts = select(&UserPost::id, &User::id, &User::username, &Post::id, &Post::content)
-                    .join(P<&UserPost::author> == P<&User::id>)
-                    .join(P<&UserPost::post> == P<&Post::id>);
-    constexpr auto select_all_where_user_id_is_greater_than = select(&UserPost::id, &User::id, &User::username, &Post::id, &Post::content)
-                    .join((P<&UserPost::author> == P<&User::id>) && (P<&UserPost::post> == P<&Post::id>))
-                    .filter(P<&User::id> > Placeholder<int>);
-    ```
-    _**Note:** We highly recommend using your own ``class`` or ``namespace`` where to put the relevant queries that you would like to use. If you want to prevent the use of some of the queries, make sure to use proper encapsulation._
-1. How to use your queries
-    - Request calls
-        If the database and the table(s) are setup as shown above, the requests should be used in the following way:
-        ```cpp
-        auto collection = UserPost::select_all();
-        //or
-        auto collection = select_all_users_and_posts();
-        auto collection = select_all_where_user_id_is_greater_than(5);
-        ```
-    - Access different columns of the output rows
-        ```cpp
-        for (auto row : collection) {
-            std::cout << row.get<&User::id>() << ", ";
-        }
-        ```
-    **_Note:_** Even if the request's output is 1 row, it is still returned as collection (std::list) of the rows.
+### 3 — Query
 
-Check [example/](https://github.com/WebFrame/ORM-Abstract/blob/main/example) for more information.
+```cpp
+// SELECT id, name FROM users
+constexpr auto q = orm::select(orm::field<&User::id>, orm::field<&User::name>);
+auto result = db << q;                    // orm::result<std::tuple<int,std::u8string>, ...>
 
-# Benefits of the library
-<!--
-1. DB migration
-    If a change in the database type is needed, all you have to do is to change the ``DB`` variable template parameter with the new database. Then change the SQL requests if neccessary and you are set.
--->
-1. Type-strict queries
+// Iterate rows
+for (const auto& row : result)
+    std::cout << std::get<0>(row) << "\n";
 
-    Webframe::ORM allows you to develop your queries as lambdas behind the scenes. This leads to later on passing values to those lambdas and it will fill the placeholders with them. However, it also checks the types of the parameters and compares them to those of the placeholders. If something doesn't match you get compile-time error which prevents bugs later.
-1. Query optimization compile-time
+// Access by member pointer (compile-time column lookup)
+for (const auto& row : result)
+    std::cout << result.get_field<&User::name>(row) << "\n";
 
-    Webframe::ORM allows you to write your join conditions and filter conditions as boolean expression and it optimizes all of them compile-time for faster execution runtime.
-1. SQL injection prevention
+// Materialise
+std::vector<std::tuple<int,std::u8string>> rows = result.to_vector();
+```
 
-    All database interfaces have their own SQL injection protection in case you want to use query parameters. Webframe::ORM gives easy-to-use interface to the bridges between databases' API and the ORM which is meant to use the native API's SQL injection protection keeping you 100% safe from this kind of attack.
+### 4 — WHERE + runtime parameters
 
-# Socials
+**Anonymous placeholders** — consumed left-to-right:
+
+```cpp
+constexpr auto q = orm::select(orm::field<&User::id>)
+    .where(orm::field<&User::id> == orm::Placeholder<int>{});
+
+auto res = db.execute(q, 42);   // binds 42 to the single slot
+```
+
+**Indexed placeholders** — `orm::ph<T, std::placeholders::_N>` lets you name each slot explicitly. The same index can appear multiple times to reuse one argument:
+
+```cpp
+using namespace std::placeholders;
+
+// _1 appears twice: both conditions receive the same runtime argument
+constexpr auto q = orm::select(orm::field<&User::id>, orm::field<&User::score>)
+    .where((orm::field<&User::id>    == orm::ph<int, _1>)
+        && (orm::field<&User::score>  > orm::ph<double, _2>)
+        && (orm::field<&User::id>    == orm::ph<int, _1>));   // _1 reused
+
+auto res = db.execute(q, 42, 9.5);  // _1 → 42, _2 → 9.5
+```
+
+> `orm::ph<T, _N>` is a `constexpr` variable template of type `orm::IndexedPlaceholder<T, N>`.
+> The SQL rendered by indexed placeholders uses SQLite's `?NNN` syntax (`?1`, `?2`, …),
+> which natively supports binding the same slot multiple times.
+
+### 5 — ORDER BY, GROUP BY, LIMIT
+
+```cpp
+constexpr auto q = orm::select(orm::field<&User::id>, orm::field<&User::score>)
+    .order_by<orm::order::direction::desc, &User::score>()
+    .group_by<&User::id>()
+    .limit(10_per_page * 1_page);
+```
+
+### 6 — JOIN
+
+```cpp
+constexpr auto q = orm::select(orm::field<&User::id>, orm::field<&Post::body>)
+    .join<orm::join::mode::inner, Post>(
+        orm::field<&User::id> == orm::field<&Post::author_id>);
+```
+
+### 7 — INSERT / UPDATE / DELETE
+
+```cpp
+// INSERT INTO users (id, name) VALUES (?, ?)
+constexpr auto ins = orm::insert(orm::field<&User::id>, orm::field<&User::name>);
+db.execute(ins, 1, u8"alice");
+
+// UPDATE users SET name = ? WHERE id = ?
+constexpr auto upd = orm::update<User>()
+    .set(orm::field<&User::name>, orm::Placeholder<std::u8string>{})
+    .where(orm::field<&User::id> == orm::Placeholder<int>{});
+db.execute(upd, u8"bob", 1);
+
+// DELETE FROM users WHERE id = ?
+constexpr auto del = orm::deleteq<User>()
+    .where(orm::field<&User::id> == orm::Placeholder<int>{});
+db.execute(del, 1);
+```
+
+### 8 — Prepared statements (`db.prepare()`)
+
+Call `db.prepare(query)` to bind a query IR to a specific `db` instance, returning a `prepared_query<DB, Query>`. Store it as `static const` (or any long-lived object) to avoid reconstructing the IR on every call:
+
+```cpp
+using namespace std::placeholders;
+
+// constructed once — ideal as a static local inside a hot function
+static const auto pq = db.prepare(
+    orm::select(orm::field<&User::id>, orm::field<&User::name>)
+        .where(orm::field<&User::id> == orm::ph<int, _1>));
+
+// executed cheaply on every call — no query IR reconstruction
+auto res1 = pq.execute(1);    // WHERE id = 1
+auto res2 = pq.execute(42);   // WHERE id = 42
+auto res3 = pq.execute(99);   // WHERE id = 99
+```
+
+`pq.execute()` is `const`-qualified, so the prepared query can also be stored in a `const` variable or a member of a const-qualified object.
+
+### 9 — find_one
+
+```cpp
+constexpr auto q = orm::select(orm::field<&User::id>, orm::field<&User::name>);
+orm::optional_result<std::tuple<int,std::u8string>> opt = db.find_one(q);
+if (opt)
+    std::cout << std::get<1>(*opt) << "\n";
+```
+
+## Architecture
+
+```
+orm::db<DB>
+  ├── operator<< / execute / find_one
+  │     └── connector_trait<DB>::execute(conn, query_ir, params...)
+  │           ├── connector_trait<MockDB>   — renders SQL string, stores in MockDB::last_sql
+  │           └── connector_trait<SQLiteDB> — prepares + executes sqlite3 statement
+  └── prepare(query) → prepared_query<DB, Query>
+        └── .execute(params...)  — reuses stored IR, no reconstruction
+```
+
+- **Query IR** — fully compile-time, all structure in template parameters. No runtime parsing.
+- **`connector_trait<DB>`** — specialise this struct to add a new backend.
+- **`prepared_query<DB, Query>`** — returned by `db.prepare()`; stores the IR + connection ref; `execute()` is `const`-qualified for safe use in `static const` locals.
+- **Capability gating** — connectors declare `using supports_joins = void;` etc.; missing capability + usage = `static_assert` at the call site.
+- **`orm::result<Row, FieldTuple>`** — lazy range over `std::vector<Row>`; supports `get<I>()`, `get_field<&T::m>()`, `to_vector()`, range-for, `find_one()`.
+
+## Connectors
+
+| Connector | Header | CMake target | Status |
+|-----------|--------|--------------|--------|
+| MockDB    | `ORM/db/connectors/MockDB/mock_db.hpp` | `orm::mockdb` | Full — renders SQL for test inspection |
+| SQLite    | `ORM/db/connectors/SQLite/sqlite_db.hpp` | `orm::sqlite` | Full — SELECT/INSERT/UPDATE/DELETE with prepared statements |
+
+## Running tests
+
+```bash
+cmake -S . -B build -G "Ninja"   # or "MinGW Makefiles" on Windows
+cmake --build build --parallel
+ctest --test-dir build --output-on-failure
+```
+
+153 tests across unit + integration + SQLite suites, all passing.
+
+## Benefits
+
+- **Zero-overhead abstractions** — all query structure resolved at compile time; no runtime parsing or allocation at query construction.
+- **Type-safe results** — `orm::result<Row, FieldTuple>` carries the exact `std::tuple` type; `get_field<&T::m>()` is a compile-time index lookup.
+- **SQL-injection safe** — runtime values always go through prepared-statement parameter binding; no string concatenation of user data.
+- **Prepared statement caching** — `db.prepare(q)` returns a `prepared_query` that can be stored as `static const` and executed repeatedly with different parameters at zero IR-reconstruction cost.
+- **Connector-agnostic IR** — the same fluent query compiles for any backend; NoSQL connectors translate the same IR to their wire format.
+- **Capability-gated** — using `.join()` on a connector that doesn't declare `supports_joins` is a `static_assert`, not a runtime error.
+
+## Roadmap
+
+- MySQL connector
+- MongoDB connector
+- HAVING clause
+- IN / NOT IN rules
+- COUNT(*) aggregate
+- Auto-migration tooling
+- C++26 reflection path (column names inferred, no string argument needed)
+
+## Socials
+
 [![LinkedIn](https://img.shields.io/badge/linkedin-%230077B5.svg?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/alex-tsvetanov/)
-
-# ToDo
-1. Limits fix
-    - ```sql
-        [LIMIT [offset_value] number_rows | LIMIT number_rows OFFSET offset_value]
-      ```
-1. Result type
-    - Member pointers and standard types
-    - Get references by member pointer
-    - Get references by table class
-    - Get references by index
-1. Rules
-    - IN / NOT IN
-1. CRUD operations
-    - Read / select
-      - COUNT(*) / COUNT(...)
-      ```sql
-        SELECT [ ALL | DISTINCT | DISTINCTROW ]
-            [ HIGH_PRIORITY ]
-            [ STRAIGHT_JOIN ]
-            [ SQL_SMALL_RESULT | SQL_BIG_RESULT ] [ SQL_BUFFER_RESULT ]
-            [ SQL_CACHE | SQL_NO_CACHE ]
-            [ SQL_CALC_FOUND_ROWS ]
-        expressions
-        FROM tables
-        [[LEFT | RIGHT | INNER] JOIN table]
-        [WHERE conditions]
-        [GROUP BY expressions]
-        [HAVING condition]
-        [ORDER BY expression [ ASC | DESC ]]
-        [LIMIT [offset_value] number_rows | LIMIT number_rows OFFSET offset_value]
-        INTO [ OUTFILE 'file_name' options 
-            | DUMPFILE 'file_name'
-            | @variable1, @variable2, ... @variable_n]
-        [FOR UPDATE | LOCK IN SHARE MODE];
-      ```
-1. Transferring the abstract database implementation from v1.1 to v2 using the new SQL-free query style
-1. Implement free MySQL driver
-1. Implement free MongoDB driver
-1. Auto-migrating on startup
-    - Keep track of latest migration done
-    - Apply new migrations if any
-    - C++ Migrations tool
-1. Run tests with SQL and NoSQL databases

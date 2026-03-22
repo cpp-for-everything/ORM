@@ -13,3 +13,10 @@ out/
 WSL_Build/
 build*/
 **/.DS_Store
+old/
+.worktrees/
+vcpkg_installed
+
+# Docker
+docker-logs.txt
+.docker/

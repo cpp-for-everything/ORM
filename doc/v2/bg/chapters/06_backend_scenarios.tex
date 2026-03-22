@@ -1,0 +1,173 @@
+\section{Сценарии за работа с релационни и нерелационни бази данни}
+\label{sec:backend_scenarios}
+
+Настоящата глава изследва как една и съща C++ абстракция се материализира в различни backend-и. Сценарийният анализ има две цели. Първо, да покаже, че библиотеката не е ограничена до чисто SQL интерпретация. Второ, да изясни границите на унифицираната абстракция и местата, където backend-специфичните ограничения трябва да останат явни.
+
+След теоретичната рамка от Глава~\ref{sec:theoretical_background}, тук вече не се пита дали различните модели за съхранение са еквивалентни. Вместо това се пита дали една и съща логическа ORM форма може да бъде адаптирана контролирано към тях, без библиотеката да започне да обещава операции, които даден backend не може естествено да изпълнява. Тъкмо в това се проявява стойността на capability-базирания connector contract.
+
+\subsection{Методика на анализа}
+
+Всеки сценарий следва една и съща последователност: теоретична опора, логическо картографиране от C++ модела, реализация в \code{connector\_trait<DB>}, ограничения и верификация чрез тестове. Това прави сравнението между backend-ите възможно. Не се търси твърдение, че всички системи са еквивалентни, а че една и съща логическа ORM абстракция може да бъде адаптирана контролирано към различни модели за съхранение.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Еднаква аналитична рамка за всеки backend сценарий}
+\label{tab:backend_analysis_frame}
+\begin{tabularx}{\textwidth}{L{3.3cm}Y}
+\toprule
+\textbf{Критерий} & \textbf{Какво се оценява} \\
+\midrule
+Теоретична опора & към кой модел за съхранение от Глава~\ref{sec:theoretical_background} принадлежи backend-ът \\
+Логическо картографиране & как \code{property}, \code{field}, \code{Rule} и \code{table\_name\_trait} се интерпретират в конкретния backend \\
+Capability профил & кои ORM операции са изрично допустими и кои трябва да бъдат отхвърлени \\
+Execution поведение & как се рендират заявки, параметри и резултатни проекции \\
+Тестова опора & кои unit и integration тестове доказват contract-а в хранилището \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Тази аналитична рамка е важна, защото позволява сравнението да остане честно. SQL backend-ите не се привилегироват само защото имат по-богат синтаксис, а NoSQL backend-ите не се оценяват като ``непълни'' само защото отказват операции, които са неподходящи за техния модел на съхранение.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.35cm and 1.2cm]
+    \node[ormaccent] (ir) {\textbf{Споделен query IR}\\fields, predicates, placeholders, projections};
+    \node[ormblock, below left=of ir] (sql) {SQL материализация\\SQLite/PostgreSQL/MySQL};
+    \node[ormblock, below=of ir] (doc) {Документна материализация\\MongoDB};
+    \node[ormblock, below right=of ir] (graph) {Graph materialization\\Neo4j};
+    \node[ormblock, below=of doc, xshift=-3.2cm] (redis) {Key-based materialization\\Redis};
+    \node[ormblock, below=of doc, xshift=3.2cm] (cass) {Partition-aware materialization\\Cassandra};
+
+    \draw[ormline] (ir) -- (sql);
+    \draw[ormline] (ir) -- (doc);
+    \draw[ormline] (ir) -- (graph);
+    \draw[ormline] (ir) -- (redis);
+    \draw[ormline] (ir) -- (cass);
+\end{tikzpicture}
+\caption{Един споделен query IR и множество backend-specific materialization пътища}
+\label{fig:backend_materialisation_paths}
+\end{figure}
+
+Фигура~\ref{fig:backend_materialisation_paths} показва ключовото твърдение на главата: не съществуват множество ORM библиотеки в рамките на хранилището, а една логическа библиотека с различни материализационни пътища. Това е силният аргумент в полза на connector architecture-а --- backend разнообразието е овладяно чрез общ IR и explicit contract, а не чрез копиране на API-та.
+
+\subsection{Релационен базов сценарий: SQLite}
+
+Този сценарий стъпва върху релационния модел, разгледан в Глава~\ref{sec:theoretical_background}. \code{SQLiteDB} е най-естественият референтен backend за библиотеката, защото съчетава реална SQL семантика, малък operational контекст и пряка интеграция чрез \code{sqlite3} API. В него \code{property} се материализира като колона, \code{table\_name\_trait} --- като име на таблица, а \code{Rule} дърветата --- като \code{WHERE} изрази.
+
+Конекторът декларира \code{supports\_joins}, \code{supports\_transactions} и \code{supports\_aggregation}, което го прави най-близък до класическото ORM очакване. Именно върху него се валидират подготвени заявки, bind логика, \code{find\_one()} сценарии и result hydration към typed tuples. Интеграционните тестове в \path{tests/integration/test_sqlite.cpp} показват не само коректност на \code{SELECT}, \code{INSERT}, \code{UPDATE} и \code{DELETE}, но и поведение при transaction-capable connector и join-capable profile.
+
+От академична гледна точка SQLite играе ролята на релационен baseline. Ако дадена ORM форма е проблематична още тук, тя трудно би могла да бъде обобщена към по-екзотични backend-и. Затова настоящата работа използва SQLite като отправна точка, а не просто като един от многото примери.
+
+\subsection{Релационна преносимост: PostgreSQL и MySQL}
+
+Теоретичната основа и тук е релационният модел, но архитектурният интерес е различен: доколко един и същ query IR остава валиден при различни SQL диалекти и различни правила за bind на параметри. \code{PostgreSQLDB} и \code{PostgreSQLLiveDB} поддържат \code{supports\_joins}, \code{supports\_transactions} и \code{supports\_aggregation}, а тестовете в \path{tests/unit/test_postgresql_connector.cpp} и \path{tests/integration/test_postgresql_live.cpp} показват реално изпълнение срещу жива база данни.
+
+\code{MySQLDB} и \code{MySQLLiveDB} също декларират \code{supports\_joins} и \code{supports\_transactions}, но тук е важно различието в bind модела. Докато PostgreSQL може естествено да адресира параметри чрез \code{\$1}, \code{\$2}, \ldots{}, MySQL разчита на позиционни \code{?} placeholders. Това не нарушава общия IR, но показва, че logical portability не означава byte-for-byte идентична backend материализация.
+
+Тъкмо тези SQL family сценарии защитават по-силна теза от ``работи със SQL'': библиотеката демонстрира, че query IR-ът е достатъчно общ за повече от един диалект, а в същото време е достатъчно честен, за да остави нисконивовите различия на connector слоя.
+
+\subsection{Документен сценарий: MongoDB}
+
+Този сценарий стъпва върху документния модел от теоретичната глава. При MongoDB \code{property} се интерпретира като поле в документ, а query predicate дърветата се превеждат към BSON-подобни филтри. \code{select} изразите се материализират като projection, а таблицата от ORM гледна точка се превръща в collection. Точно тук се вижда практическата стойност на storage-agnostic query IR: потребителят не описва \code{\$eq}, \code{\$and} и projection директно, но конекторът може да ги изведе от същата логическа форма.
+
+Важна подробност е, че \code{connector\_trait<MongoDB>} не декларира SQL-style capability tags. Това не е пропуск, а коректно описание на connector contract-а. Няма претенция, че Mongo backend-ът е join-equivalent на релационните конектори. Вместо това той предлага документно-естествено тълкуване на query IR-а. Unit и integration тестовете в \path{tests/unit/test_mongodb_connector.cpp} и \path{tests/integration/test_mongodb_live.cpp} валидират тази адаптация срещу реален driver слой.
+
+Архитектурната стойност на този сценарий е, че доказва едно важно ограничение: една библиотека може да бъде multi-backend, без да твърди, че всички backend-и поддържат едни и същи операции. Именно този тип ``контролирана частичност'' прави дизайна научно защитим.
+
+\subsection{Key-value сценарий: Redis}
+
+Този сценарий стъпва върху key-value теорията. При Redis един и същ entity модел може да бъде материализиран по два основни начина: като \code{SET}/\code{GET} при еднополеви структури или като \code{HSET}/\code{HGETALL} при многополеви структури. \code{table\_name()} участва в генерирането на key prefix, а достъпът е концентриран около primary-key equality.
+
+Тук ясно се вижда, че споделеният query IR не означава идентична изразителност. \code{RedisDB} умишлено не декларира \code{supports\_joins}, \code{supports\_transactions} или \code{supports\_aggregation}. Това ограничение е част от коректния contract, а не слабост на архитектурата. Unit и live тестовете в \path{tests/unit/test_redis_connector.cpp} и \path{tests/integration/test_redis_live.cpp} доказват, че библиотеката правилно материализира key-based достъп, без да обещава неподдържани операции.
+
+Този сценарий е особено ценен за дипломната работа, защото принуждава архитектурата да прави ясно разграничение между \emph{логически модел на данните} и \emph{допустим модел на достъп}. Това разграничение е лесно да се забрави при SQL-first библиотеките, но тук е изведено като централен принцип.
+
+\subsection{Графов сценарий: Neo4j}
+
+Сценарият за Neo4j стъпва върху графовия модел. Entity типът се материализира като label и набор от свойства, а query IR се превежда към \code{MATCH}, \code{RETURN} и \code{WHERE} фрагменти. Това е важен архитектурен тест, защото graph query семантиката е най-отдалечена от класическия SQL модел. Въпреки това логическите елементи --- полета, предикати, филтриране и резултатни проекции --- остават разпознаваеми.
+
+\code{Neo4jDB} и \code{Neo4jLiveDB} декларират \code{supports\_transactions}, но не и join/aggregation capabilities на SQL слоя. Това е смислено: графовият traversal не е същото като SQL join, макар на логическо ниво и двете да свързват данни. Unit и integration тестовете в \path{tests/unit/test_neo4j_connector.cpp} и \path{tests/integration/test_neo4j_live.cpp} показват, че abstraction-ът може да адаптира един и същ логически модел и към graph backend, ако конекторът поеме отговорността за правилната материализация.
+
+От гледна точка на тезата това е една от най-силните демонстрации, че query IR-ът е семантичен, а не синтактичен слой. Ако IR-ът беше просто недо-SQL, Neo4j сценарият би се разпаднал. Фактът, че е възможна работеща графова материализация, подкрепя централната архитектурна претенция.
+
+\subsection{Wide-column сценарий: Cassandra}
+
+Този сценарий стъпва върху wide-column теорията. Макар Cassandra да предлага CQL синтаксис, наподобяващ SQL, действителният модел на достъп е подчинен на partition ключовете и на разпределената организация на данните. Затова библиотеката не може да третира Cassandra като обикновен SQL backend. Наличието на \code{WHERE} клауза само по себе си не е достатъчно; тя трябва да бъде съвместима с partition логиката.
+
+\code{CassandraDB} и \code{CassandraLiveDB} декларират \code{supports\_transactions}, но не и \code{supports\_joins}. Това е много показателно. От една страна, backend-ът продължава да е част от същата ORM библиотека. От друга страна, contract-ът категорично отказва операции, които биха били подвеждащи или скъпи в wide-column среда. Unit и live тестовете в \path{tests/unit/test_cassandra_connector.cpp} и \path{tests/integration/test_cassandra_live.cpp} дават конкретна верификация на този по-строг operational profile.
+
+Именно поради това Cassandra е най-добрият пример, че разширяемостта на библиотеката не е базирана на фалшиво уеднаквяване, а на формално описани граници на допустимите операции.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.2cm and 0.95cm]
+    \node[ormaccent, minimum width=3.4cm] (title) {Capability спектър};
+    \node[ormblock, below left=1.5cm and 2.3cm of title, minimum width=2.8cm] (sqlite) {SQLite\\join + txn + agg};
+    \node[ormblock, below=1.5cm of title, minimum width=3.1cm] (pgsql) {PostgreSQL/MySQL\\join + txn + agg/txn};
+    \node[ormblock, below right=1.5cm and 2.3cm of title, minimum width=2.8cm] (mongo) {MongoDB\\без SQL capability tags};
+    \node[ormblock, below=of sqlite, minimum width=2.8cm] (redis) {Redis\\key-based only};
+    \node[ormblock, below=of pgsql, minimum width=2.8cm] (neo4j) {Neo4j\\txn only};
+    \node[ormblock, below=of mongo, minimum width=2.8cm] (cass) {Cassandra\\txn only};
+
+    \draw[ormline] (title) -- (sqlite);
+    \draw[ormline] (title) -- (pgsql);
+    \draw[ormline] (title) -- (mongo);
+    \draw[ormline] (sqlite) -- (redis);
+    \draw[ormline] (pgsql) -- (neo4j);
+    \draw[ormline] (mongo) -- (cass);
+\end{tikzpicture}
+\caption{Сравнителен capability профил на backend-ите в хранилището}
+\label{fig:backend_capability_spectrum}
+\end{figure}
+
+Фигура~\ref{fig:backend_capability_spectrum} синтезира едно от най-важните наблюдения в главата: библиотеката не налага еднакъв capability профил на всички backend-и. Точно обратното --- различията се използват като first-class архитектурна информация.
+
+\subsection{Съпоставка между test evidence и backend contract}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Backend-и, capability профил и налична тестова опора}
+\label{tab:backend_evidence}
+\begin{tabularx}{\textwidth}{L{2.1cm}Q{2.4cm}L{2.8cm}Y}
+\toprule
+\textbf{Backend} & \textbf{Capability профил} & \textbf{Unit/contract тест} & \textbf{Integration/live тест} \\
+\midrule
+SQLite & joins, transactions, aggregation & capability asserts в \path{tests/integration/test_sqlite.cpp} & \path{tests/integration/test_sqlite.cpp} \\
+PostgreSQL & joins, transactions, aggregation & \path{tests/unit/test_postgresql_connector.cpp} & \path{tests/integration/test_postgresql_live.cpp} \\
+MySQL & joins, transactions, aggregation & \path{tests/unit/test_mysql_connector.cpp} & \path{tests/integration/test_mysql_live.cpp} \\
+MongoDB & без SQL capability tags & \path{tests/unit/test_mongodb_connector.cpp} & \path{tests/integration/test_mongodb_live.cpp} \\
+Redis & без joins/transactions/aggregation & \path{tests/unit/test_redis_connector.cpp} & \path{tests/integration/test_redis_live.cpp} \\
+Neo4j & transactions & \path{tests/unit/test_neo4j_connector.cpp} & \path{tests/integration/test_neo4j_live.cpp} \\
+Cassandra & transactions & \path{tests/unit/test_cassandra_connector.cpp} & \path{tests/integration/test_cassandra_live.cpp} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Таблица~\ref{tab:backend_evidence} е важна, защото превежда сравнението от равнището на narrative analysis към равнището на проверима repository evidence. За всеки backend има поне един ясен contract-level или live-level корелат. Това намалява риска главата да се превърне в декларативен преглед без техническа опора.
+
+\subsection{Сравнителен синтез}
+
+Съпоставката между backend-ите показва, че библиотеката успява да запази единен логически модел на равнището на entity типове, полета, placeholder-и и query IR. Различията се появяват на равнището на capability и на физическата организация на данните. Това е и най-важният извод на настоящата глава: успешната multi-backend ORM архитектура не премахва различията между моделите за съхранение, а ги прави контролируеми чрез формален connector contract.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Съпоставка на backend материализацията}
+\label{tab:backend_materialisation}
+\begin{tabularx}{\textwidth}{L{2.0cm}L{2.5cm}L{2.8cm}Y}
+\toprule
+\textbf{Backend} & \textbf{Основна структура} & \textbf{Логическа интерпретация} & \textbf{Показателно ограничение} \\
+\midrule
+SQLite & таблица & пълна SQL ORM интерпретация & стандартна релационна дисциплина и богата query изразителност \\
+PostgreSQL/MySQL & таблица & преносим SQL IR & различен bind модел и диалектни особености \\
+MongoDB & документ & filter/projection интерпретация & частична еквивалентност спрямо SQL операции \\
+Redis & ключ/стойност, hash & key-based entity access & lookup предимно по primary key и липса на join semantics \\
+Neo4j & възел/свойства & graph-pattern интерпретация & graph-специфична query семантика вместо SQL join слой \\
+Cassandra & wide-column row & CQL с ключови ограничения & partition-driven достъп и ограничен predicate profile \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+В резултат multi-backend design-ът на библиотеката може да бъде защитен с по-прецизна формулировка. Системата не обещава ``универсална база данни през един API'', а \emph{унифициран логически слой с експлицитни backend граници}. Именно тази формулировка е едновременно инженерно честна и научно обоснована.

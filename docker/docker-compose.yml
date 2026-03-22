@@ -1,0 +1,201 @@
+version: '3.8'
+
+services:
+  # ══════════════════════════════════════════════════════════════════════════════
+  # Database Services (shared across all tests)
+  # ══════════════════════════════════════════════════════════════════════════════
+  
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: test_password
+      MYSQL_DATABASE: test_db
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-ptest_password"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - orm-network
+
+  postgresql:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: test_password
+      POSTGRES_DB: test_db
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - orm-network
+
+  mongodb:
+    image: mongo:7.0
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: test_password
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - orm-network
+
+  redis:
+    image: redis:7.2-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - orm-network
+
+  cassandra:
+    image: cassandra:4.1
+    environment:
+      CASSANDRA_CLUSTER_NAME: test_cluster
+      CASSANDRA_DC: datacenter1
+      CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
+    ports:
+      - "9042:9042"
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'describe cluster'"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    networks:
+      - orm-network
+
+  # ══════════════════════════════════════════════════════════════════════════════
+  # Per-Database Test Services
+  # ══════════════════════════════════════════════════════════════════════════════
+
+  test-postgresql:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: postgresql-test
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    environment:
+      ORM_POSTGRESQL_HOST: postgresql
+      ORM_POSTGRESQL_PORT: 5432
+      ORM_POSTGRESQL_USER: postgres
+      ORM_POSTGRESQL_PASSWORD: test_password
+      ORM_POSTGRESQL_DB: test_db
+    networks:
+      - orm-network
+
+  test-mongodb:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: mongodb-test
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      ORM_MONGODB_HOST: mongodb
+      ORM_MONGODB_PORT: 27017
+      ORM_MONGODB_USER: root
+      ORM_MONGODB_PASSWORD: test_password
+      ORM_MONGODB_DB: test_db
+    networks:
+      - orm-network
+
+  test-redis:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: redis-test
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      ORM_REDIS_HOST: redis
+      ORM_REDIS_PORT: 6379
+    networks:
+      - orm-network
+
+  test-cassandra:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: cassandra-test
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    environment:
+      ORM_CASSANDRA_HOST: cassandra
+      ORM_CASSANDRA_PORT: 9042
+    networks:
+      - orm-network
+
+  test-sqlite:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: sqlite-test
+    # SQLite doesn't need external database service
+    networks:
+      - orm-network
+
+  # ══════════════════════════════════════════════════════════════════════════════
+  # Full Test Suite (All Drivers)
+  # ══════════════════════════════════════════════════════════════════════════════
+
+  test-all:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: all-test
+    depends_on:
+      mysql:
+        condition: service_healthy
+      postgresql:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      cassandra:
+        condition: service_healthy
+    environment:
+      ORM_MYSQL_HOST: mysql
+      ORM_MYSQL_PORT: 3306
+      ORM_MYSQL_USER: root
+      ORM_MYSQL_PASSWORD: test_password
+      ORM_MYSQL_DATABASE: test_db
+      ORM_POSTGRESQL_HOST: postgresql
+      ORM_POSTGRESQL_PORT: 5432
+      ORM_POSTGRESQL_USER: postgres
+      ORM_POSTGRESQL_PASSWORD: test_password
+      ORM_POSTGRESQL_DATABASE: test_db
+      ORM_MONGODB_HOST: mongodb
+      ORM_MONGODB_PORT: 27017
+      ORM_MONGODB_USER: root
+      ORM_MONGODB_PASSWORD: test_password
+      ORM_MONGODB_DB: test_db
+      ORM_REDIS_HOST: redis
+      ORM_REDIS_PORT: 6379
+      ORM_CASSANDRA_CONTACT_POINTS: cassandra
+      ORM_CASSANDRA_PORT: 9042
+    networks:
+      - orm-network
+
+networks:
+  orm-network:
+    driver: bridge

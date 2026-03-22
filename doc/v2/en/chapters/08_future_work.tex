@@ -1,0 +1,127 @@
+\section{Limitations and Future Work}
+\label{sec:future_work}
+
+The current version of the library already demonstrates a working architecture for \ORMName{} across relational and non-relational backends, but scientific accuracy requires a clear distinction between what has already been achieved and what remains for future work. The repository contains a real query-IR layer, a capability-based connector contract, a migration prototype, thread-safety helpers, and a substantial set of unit and integration tests. At the same time, some subsystems still need to be extended or validated more broadly under production-like conditions.
+
+Future development is not an arbitrary list of ideas. It follows directly from the architectural decisions analysed in the previous chapters. If the C++ model is the primary carrier of the logical schema, then fuller schema-aware tooling is a natural next step. If the connector layer is the central point of extensibility, then future work must refine the taxonomy of capabilities. If the query IR is truly the shared layer across distinct backends, then it must be exercised under richer operational scenarios and stricter performance constraints.
+
+\subsection{Strategic directions of development}
+
+From the perspective of the present thesis, future work can be grouped into four strategic directions. The first is \emph{greater operational maturity} of the already existing backends. The second is \emph{more complete automation of schema and metadata handling}. The third is \emph{reduction of runtime overhead} through lower-level execution and tighter control of the wire-protocol layer. The fourth is \emph{reduction of boilerplate} through deeper integration with newer C++ language facilities.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.35cm and 1.2cm]
+    \node[ormaccent] (core) {\textbf{Current library}\\typed IR + connector contract + tests};
+    \node[ormblock, above right=of core] (maturity) {Operational\\maturity};
+    \node[ormblock, below right=of core] (schema) {Schema-aware\\automation};
+    \node[ormblock, below left=of core] (perf) {Execution / wire\\optimisation};
+    \node[ormblock, above left=of core] (lang) {Language-level\\automation};
+
+    \draw[ormline] (core) -- (maturity);
+    \draw[ormline] (core) -- (schema);
+    \draw[ormline] (core) -- (perf);
+    \draw[ormline] (core) -- (lang);
+\end{tikzpicture}
+\caption{Four strategic directions for future development}
+\label{fig:future_work_axes}
+\end{figure}
+
+Figure~\ref{fig:future_work_axes} is useful because it shows that future work is not one-dimensional. Some tasks aim at operational maturity, others at stronger compile-time automation, and still others at performance and runtime engineering. This distinction matters because the different directions require different success criteria.
+
+\subsection{Broader live backend coverage}
+
+Although the repository already contains live integration tests for several backends, the maturity of the individual implementations is not identical. SQLite remains the most natural reference relational path because it combines query rendering, binding logic, and result hydration most tightly. For PostgreSQL, MySQL, MongoDB, Redis, Neo4j, and Cassandra, the next step is broader coverage of operational scenarios: richer type families, diagnostic paths under failure, connection lifecycle policies, and behaviour under more demanding query patterns.
+
+This direction matters not only as an engineering improvement, but also as a scientific validation of the limits of the shared query IR. Only broader empirical coverage can show how far one and the same logical layer remains adequate across distinct storage systems. A join-oriented logic that is natural for PostgreSQL, for instance, carries a very different operational meaning in Neo4j or Cassandra. Live coverage is therefore not merely a testing discipline, but an instrument for studying architectural applicability.
+
+In addition, live backend coverage should include negative paths: connection-establishment failures, partially invalid parameter sets, driver-specific timeout scenarios, and behaviour under interrupted connections. These questions are often underestimated in early ORM systems, but in a multi-backend context they are essential for real adoption.
+
+\subsection{Full schema-aware integration and runtime introspection}
+
+The prototype migration layer is sufficient to show how the C++ entity model can participate in schema evolution. The next natural direction is live schema introspection, metadata extraction from drivers, and safe execution of DDL operations. This is especially important for relational backends, but it also matters for document and wide-column systems, where the notion of schema may be partial or more flexible.
+
+Further work in this direction must clarify the boundary between compile-time guarantees and runtime facts about a deployed system. The compiler can validate query structure, but it cannot validate the real state of a production schema without supplementary runtime information. A future migration layer should therefore combine two sources of truth: the entity description in C++ and the metadata picture extracted from the live database.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.3cm and 1.1cm]
+    \node[ormaccent] (model) {C++ model\\entity metadata};
+    \node[ormblock, right=of model] (live) {Live backend\\metadata};
+    \node[ormblock, below=of $(model)!0.5!(live)$] (compare) {Schema diff +\\compatibility analysis};
+    \node[ormblock, below left=of compare] (ddl) {DDL generation};
+    \node[ormblock, below right=of compare] (report) {Safety report\\and dry-run};
+    \node[ormblock, below=of $(ddl)!0.5!(report)$] (apply) {Controlled migration\\execution};
+
+    \draw[ormline] (model) -- (compare);
+    \draw[ormline] (live) -- (compare);
+    \draw[ormline] (compare) -- (ddl);
+    \draw[ormline] (compare) -- (report);
+    \draw[ormline] (ddl) -- (apply);
+    \draw[ormline] (report) -- (apply);
+\end{tikzpicture}
+\caption{Target direction for schema-aware tooling beyond the current migration prototype}
+\label{fig:future_schema_tooling}
+\end{figure}
+
+Figure~\ref{fig:future_schema_tooling} shows that the future migration pipeline must be bidirectional: it must read both from the compile-time description and from the live system. This is the natural next step if the library is to be used not only experimentally, but also as a practical development tool.
+
+\subsection{Thread safety and connection lifecycle}
+
+The existing helper layer for connection pooling, thread-local access, and transaction guards already provides an architectural basis for multi-threaded use. Future work must answer more precise questions: how exactly \code{supports\_concurrent\_execute} should be defined for different drivers; when a connection is safe to share; and which policies should govern reconnection, shutdown, and deferred release of resources.
+
+There is also an important research dimension here: different backends have different concurrency semantics, and therefore compile-time capability annotation must be precise enough to avoid misleading promises. It is entirely possible that future versions of the library will split the current \code{supports\_concurrent\_execute} into finer-grained capabilities such as safe parallel reads, parallel execution with isolated connection handles, or strict serialisation policies.
+
+In practical terms, this means that the thread-safety helper layer should not remain an isolated convenience module. On the contrary, it should become an architectural continuation of the connector contract and participate in the full assessment of backend maturity.
+
+\subsection{Low-level execution and wire-protocol optimisation}
+
+The experimental layer in \path{WireProtocol/wire_protocol.hpp} points toward future directions such as \code{io\_uring} / IOCP awaitables, \code{zero\_copy\_result}, \code{batch\_insert}, and \code{make\_constexpr\_sql}. These components are not yet a production-ready communication stack, but they outline a possible path by which the library may move beyond the classical synchronous driver model.
+
+Especially promising are zero-copy result handling and compile-time SQL generation for connectors that can support it. Both would reduce runtime overhead further without sacrificing the typed architecture. This matters because a common criticism of heavily typed abstraction layers is that they hide excessive runtime cost. Future work should demonstrate that compile-time expressiveness and low overhead are not necessarily opposing goals.
+
+Moreover, performance should not be viewed only through latency or throughput. It also includes memory layout of results, the number of temporary allocations, repeated reuse of prepared-query artefacts, and the quality of driver-level batching strategies.
+
+\subsection{Integration with C++26 reflection and further automation}
+
+Support for C++26 reflection has already been conceptually prepared through build-time detection and helper paths, and \path{tests/unit/test_cpp26_reflection.cpp} shows the presence of an early verification route. The public API, however, still relies on explicit string literal names in \code{property<T, Name>}. Future work should turn the reflection path into a stable public mechanism that can infer field names automatically while preserving backward compatibility.
+
+Such a development would reduce boilerplate and make even more explicit the idea that the C++ model is the primary source of the logical schema. From a research perspective, it would also move the library closer to a model-first style in which much of the metadata is derived automatically rather than duplicated manually.
+
+There is, however, an important boundary here. Reflection should not weaken the clarity of the compile-time contract. If automation reduces type transparency or makes compiler diagnostics harder to understand, it may undermine one of the principal values of the library. This direction must therefore be pursued carefully.
+
+\subsection{Extension of the connector contract and capability taxonomy}
+
+As new backends are added, it may become necessary to distinguish more finely between classes of capability. Future versions of the library may need to separate graph traversal support, partial document embedding support, schema introspection support, streaming result support, or explicit batching support. This direction follows naturally from the current trait-based architecture.
+
+An important rule must be preserved, however: new capability tags should never be decorative. They must carry real compile-time meaning and constrain inadmissible operations. If a capability tag has no architectural consequence, it adds noise instead of value and makes the contract less precise.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Priority directions for future development}
+\label{tab:future_work_priorities}
+\begin{tabularx}{\textwidth}{L{3.0cm}L{3.2cm}L{3.1cm}Y}
+\toprule
+\textbf{Direction} & \textbf{Affected subsystems} & \textbf{Expected effect} & \textbf{Principal challenge} \\
+\midrule
+Live backend maturity & connectors, integration tests, error paths & higher practical reliability & different operational semantics across backends \\
+Schema-aware automation & \code{migrate<DB>}, DDL hooks, metadata introspection & a more production-oriented ORM integration & combining compile-time and runtime truth \\
+Execution optimisation & wire-protocol layer, prepared queries, batching & lower runtime overhead & preserving the typed abstraction \\
+Reflection-driven modelling & entity layer, metadata extraction, API ergonomics & less boilerplate and a more automatic model-first workflow & balancing automation against transparency \\
+Capability refinement & connector contract and static checks & a more precise contract for future backends & avoiding decorative capability tags \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Need for stricter empirical evaluation}
+
+A future version of the work should also include a more systematic benchmarking layer. It should compare not only separate backends, but also different execution modes inside the library itself --- direct execution, \code{prepare()} + reuse, batch-insert scenarios, and distinct forms of result materialisation. Such benchmarking would be valuable both engineering-wise and scientifically because it would reveal the concrete cost of the different architectural choices.
+
+Alongside this, it would be useful to add a formalised evaluation of error diagnostics. One of the strengths of a compile-time ORM design lies precisely in early fault localisation. The quality of error messages and the clarity of compile-time failure paths are therefore themselves valid objects of investigation.
+
+\subsection{Summary}
+
+The future of the library does not begin from an empty slate. On the contrary, it builds on an architecture that is already general enough to absorb new backends and strict enough to enforce formal limits. This is what makes the work suitable both for continued engineering development and for further academic investigation into compile-time modelling of data access.
+
+The most important conclusion of the present chapter is that future work should not be understood as a repair of an incoherent prototype. It is the natural unfolding of an already defensible architectural foundation. That difference matters: the library has reached a stage at which extension is a matter of disciplined development rather than conceptual reinvention.

@@ -1,0 +1,15 @@
+\section*{Abstract}
+
+This diploma thesis presents the design, implementation, and evaluation of an \ORMName{} library for C++23~\cite{cpp23standard}. The central idea of the work is that the logical structure of queries and the logical structure of the data model should not be described through runtime strings, but through typed \code{constexpr} objects validated by the compiler. In this way, a substantial class of traditional data-access errors --- incorrect field names, incompatible predicate types, missing query parts, and misuse of unsupported backend operations --- is moved from execution time to compilation time.
+
+The developed library uses a static data model expressed in C++ through constructions such as \code{property<T, Name>}, \code{relationship<...>}, \code{table_name_trait<T>}, and a typed query IR represented by \code{select\_query}, \code{insert\_query}, \code{update\_query}, and \code{delete\_query}. This intermediate model is independent of the concrete database type. Materialisation toward relational and non-relational systems is performed by specialised \code{connector\_trait<DB>} implementations, which declare supported capabilities and translate the same logical query into SQL, BSON-like filters, Redis commands, Cypher, or CQL depending on the selected backend.
+
+The thesis analyses both relational scenarios for SQLite, PostgreSQL, and MySQL, and non-relational scenarios for MongoDB, Redis, Neo4j, and Cassandra. It demonstrates how the same C++ model dictates the logical schema while being materialised differently as a table, document, key-value structure, graph node, or wide-column row. Particular attention is given to the role of \code{store\_as::reference} and \code{store\_as::embed} as a shared abstraction for object relationships whose concrete interpretation depends on the storage model.
+
+Validation of the work is grounded in the repository's unit and integration tests. These tests cover query IR construction, capability-based restriction of operations, prepared queries, migrations, thread safety, and the behaviour of individual connectors with either live or mock drivers. This makes it possible to formulate not only an architectural model, but also concrete criteria for a “fully implemented and functioning” connector.
+
+The main contribution of the thesis lies in three directions. First, it proposes a practically usable model for an \ORMName{} library that combines static type safety with a backend-independent architecture. Second, it shows how a C++ data model can serve as the primary source of a logical schema across different classes of databases. Third, it formalises a connector contract through which the library can be extended with new backend implementations without changing the user-facing query API.
+
+\vspace{1cm}
+
+\textbf{Keywords:} C++23, \ORMName{}, query IR, \code{connector\_trait}, type safety, relational and non-relational databases, prepared queries, migrations
