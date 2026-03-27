@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['relationshiptypes_1394',['RelationshipTypes',['../d4/d86/namespacewebframe_1_1_o_r_m.html#a662644ae08d69778b01a10f4ae7f9c9b',1,'webframe::ORM']]]
+  ['expression_5foperators_402',['expression_operators',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aef35be1160d90aba17d968d260ffde7c',1,'webframe::ORM::details']]]
 ];

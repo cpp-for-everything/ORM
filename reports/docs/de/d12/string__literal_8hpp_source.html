@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>WebFrame++ ORM: lib/include/ORM/details/string_literal.hpp Source File</title>
+<title>WebFrame++ ORM: lib/include/ORM/tools/string_literal.hpp Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -63,7 +63,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_97aefd0d527b934f1d99a682da8fe6a9.html">lib</a></li><li class="navelem"><a class="el" href="../../dir_5a30104352ef4255dc24354b02eb2d20.html">include</a></li><li class="navelem"><a class="el" href="../../dir_5cfbc25a2a26fe117ba1c87374e14247.html">ORM</a></li><li class="navelem"><a class="el" href="../../dir_6405fefcf63feb15db57f067ecd4a013.html">details</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_97aefd0d527b934f1d99a682da8fe6a9.html">lib</a></li><li class="navelem"><a class="el" href="../../dir_5a30104352ef4255dc24354b02eb2d20.html">include</a></li><li class="navelem"><a class="el" href="../../dir_5cfbc25a2a26fe117ba1c87374e14247.html">ORM</a></li><li class="navelem"><a class="el" href="../../dir_01c1dafe829f518be6a92172e5966836.html">tools</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -106,13 +106,14 @@ $(function() {
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
 <div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="../../d7/d59/namespacewebframe_1_1_o_r_m_1_1literals.html">   40</a></span>&#160;    <span class="keyword">namespace </span>literals</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    {</div>
-<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="../../d7/d59/namespacewebframe_1_1_o_r_m_1_1literals.html#a3ac3a94b1d735ee3b9a7fdf42ffecf67">   42</a></span>&#160;        <span class="keyword">template</span> &lt;webframe::ORM::details::<span class="keywordtype">string</span>_literal Str&gt; constexpr decltype(Str) <span class="keyword">operator</span><span class="stringliteral">&quot;&quot;</span>_sl()</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        {</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;            <span class="keywordflow">return</span> Str;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        }</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    } <span class="comment">// namespace literals</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;} <span class="comment">// namespace webframe::ORM</span></div>
-<div class="ttc" id="anamespacewebframe_1_1_o_r_m_html"><div class="ttname"><a href="../../d4/d86/namespacewebframe_1_1_o_r_m.html">webframe::ORM</a></div><div class="ttdef"><b>Definition:</b> <a href="../../db/dd3/delete_8hpp_source.html#l00007">delete.hpp:8</a></div></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        <span class="keyword">using namespace </span>std::literals::string_view_literals;</div>
+<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="../../d7/d59/namespacewebframe_1_1_o_r_m_1_1literals.html#a3ac3a94b1d735ee3b9a7fdf42ffecf67">   43</a></span>&#160;        <span class="keyword">template</span> &lt;webframe::ORM::details::<span class="keywordtype">string</span>_literal Str&gt; constexpr decltype(Str) <span class="keyword">operator</span><span class="stringliteral">&quot;&quot;</span>_sl()</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        {</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            <span class="keywordflow">return</span> Str;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        }</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    } <span class="comment">// namespace literals</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;} <span class="comment">// namespace webframe::ORM</span></div>
+<div class="ttc" id="anamespacewebframe_1_1_o_r_m_html"><div class="ttname"><a href="../../d4/d86/namespacewebframe_1_1_o_r_m.html">webframe::ORM</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/d09/forward-decl_8hpp_source.html#l00007">forward-decl.hpp:8</a></div></div>
 <div class="ttc" id="astructwebframe_1_1_o_r_m_1_1details_1_1string__literal_html"><div class="ttname"><a href="../../da/d64/structwebframe_1_1_o_r_m_1_1details_1_1string__literal.html">webframe::ORM::details::string_literal</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/d12/string__literal_8hpp_source.html#l00017">string_literal.hpp:18</a></div></div>
 <div class="ttc" id="astructwebframe_1_1_o_r_m_1_1details_1_1string__literal_html_a50116c1d5a5bc19821e47035556be2a9"><div class="ttname"><a href="../../da/d64/structwebframe_1_1_o_r_m_1_1details_1_1string__literal.html#a50116c1d5a5bc19821e47035556be2a9">webframe::ORM::details::string_literal::to_sv</a></div><div class="ttdeci">constexpr std::string_view to_sv() const</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d12/string__literal_8hpp_source.html#l00031">string_literal.hpp:31</a></div></div>
 <div class="ttc" id="astructwebframe_1_1_o_r_m_1_1details_1_1string__literal_html_a70653374c3882b9400c31e4dc527ffe7"><div class="ttname"><a href="../../da/d64/structwebframe_1_1_o_r_m_1_1details_1_1string__literal.html#a70653374c3882b9400c31e4dc527ffe7">webframe::ORM::details::string_literal::value</a></div><div class="ttdeci">char value[N]</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d12/string__literal_8hpp_source.html#l00036">string_literal.hpp:36</a></div></div>

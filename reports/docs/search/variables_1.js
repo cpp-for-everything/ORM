@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['andwrapper_1217',['AndWrapper',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#ae7b4abc0a49c9e9848bb4ff63351ad19',1,'webframe::ORM::details']]],
-  ['args_1218',['args',['../d5/df4/classwebframe_1_1_o_r_m_1_1_nullable.html#aec65108e93b33ccc9ec2e0f69a800124',1,'webframe::ORM::Nullable']]],
-  ['assignmentbitwiseandwrapper_1219',['AssignmentBitWiseAndWrapper',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a0a8479afe5e2c9b9f4acf955b05c7d8c',1,'webframe::ORM::details']]],
-  ['assignmentbitwisexorwrapper_1220',['AssignmentBitWiseXorWrapper',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#aaf1c7e4247281f860815aec1d774dc36',1,'webframe::ORM::details']]],
-  ['assignmentmultiplicationwrapper_1221',['AssignmentMultiplicationWrapper',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#adfee082c539a94b7dee34ee7818cf5cc',1,'webframe::ORM::details']]]
+  ['a_347',['a',['../d7/d4b/classwebframe_1_1_o_r_m_1_1_rule.html#a3b2dad0571750c36b1999523cc1118ed',1,'webframe::ORM::Rule::a()'],['../db/db7/classwebframe_1_1_o_r_m_1_1_statement.html#af55dcce0a34729072b3f1f38d9124e4b',1,'webframe::ORM::Statement::a()'],['../d7/dc6/classwebframe_1_1_o_r_m_1_1_constant.html#a11f6b1259d7b5b4fc0124403d07703c4',1,'webframe::ORM::Constant::a()'],['../d7/dc4/classwebframe_1_1_o_r_m_1_1_expression.html#aca50a9f61500694ab49332aab70f2c85',1,'webframe::ORM::Expression::a()']]],
+  ['allow_5frepeats_348',['allow_repeats',['../d2/da9/classwebframe_1_1_o_r_m_1_1details_1_1_insert_query.html#ae83a4872eb67b92831c52077bffb8af4',1,'webframe::ORM::details::InsertQuery::allow_repeats()'],['../d1/d08/classwebframe_1_1_o_r_m_1_1details_1_1_insert_into_select_query.html#ae74441ec76b646aabc5bbcac4079ff69',1,'webframe::ORM::details::InsertIntoSelectQuery::allow_repeats()']]],
+  ['as_349',['as',['../d7/dc4/classwebframe_1_1_o_r_m_1_1_expression.html#a085152928d9f4475fb4ae74d6818df9c',1,'webframe::ORM::Expression']]]
 ];

@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['binaryoperatorwrapper_1417',['BinaryOperatorWrapper',['../de/de5/primitive__type__wrapper_8hpp.html#a893d03f459cc76566681005c0a4a54f5',1,'primitive_type_wrapper.hpp']]],
-  ['binaryrefoperatorwrapper_1418',['BinaryRefOperatorWrapper',['../de/de5/primitive__type__wrapper_8hpp.html#a1cf8a2af58410d8bc3beb4a543b90b7c',1,'primitive_type_wrapper.hpp']]]
+  ['comma_446',['COMMA',['../de/dc1/db__types_8hpp.html#aa2f49001be13949a16a57e6c99ab00ad',1,'db_types.hpp']]],
+  ['create_5fdb_5ftype_447',['create_db_type',['../de/dc1/db__types_8hpp.html#ac7fb8b5b6e19618e10f624b0f30067da',1,'db_types.hpp']]],
+  ['create_5fplaceholder_448',['create_placeholder',['../d3/d85/placeholder_8hpp.html#adb08b225e9751b26909aec45daf24d1d',1,'placeholder.hpp']]]
 ];

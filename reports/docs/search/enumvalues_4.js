@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['left_1404',['LEFT',['../d7/dc6/namespacewebframe_1_1_o_r_m_1_1modes.html#a5263bab36505c99a9c5d5450fd3da7e5a299035e5d41c46b937294312b977bea2',1,'webframe::ORM::modes']]]
+  ['fixed_5fstring_418',['fixed_string',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a55cc43c8cdfbf3c1c59a63f4696c007ba7a194069bb8553f21ac6d927da881871',1,'webframe::ORM::details']]],
+  ['floating_5fpoint_419',['floating_point',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a55cc43c8cdfbf3c1c59a63f4696c007bafd4f964d93d8fdf5e2110e5cb21737ec',1,'webframe::ORM::details']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['limitations_1352',['Limitations',['../d0/d9e/classwebframe_1_1_o_r_m_1_1_c_r_u_d_1_1select__query.html#ae626ae05844040ca8803a18146845e59',1,'webframe::ORM::CRUD::select_query']]]
+  ['select_5fquery_393',['select_query',['../d1/d08/classwebframe_1_1_o_r_m_1_1details_1_1_insert_into_select_query.html#a25b9fb19bdfa932da43b823abf75f318',1,'webframe::ORM::details::InsertIntoSelectQuery']]]
 ];

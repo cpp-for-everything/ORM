@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['character_1225',['Character',['../d4/d86/namespacewebframe_1_1_o_r_m.html#aef19921ba0d2e6b8817d5f1a523cc43d',1,'webframe::ORM']]],
-  ['contains_5fv_1226',['contains_v',['../dd/d8d/namespacewebframe_1_1_o_r_m_1_1_c_r_u_d_1_1details.html#ad763b9a2971596cf60f3e62808d59096',1,'webframe::ORM::CRUD::details']]]
+  ['cols_351',['cols',['../d2/da9/classwebframe_1_1_o_r_m_1_1details_1_1_insert_query.html#a74816f6d4dc12db4b995fad5e09d4186',1,'webframe::ORM::details::InsertQuery::cols()'],['../d1/d08/classwebframe_1_1_o_r_m_1_1details_1_1_insert_into_select_query.html#ab43e69eddcc7c99240cc0e593507c58d',1,'webframe::ORM::details::InsertIntoSelectQuery::cols()']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['join_1392',['join',['../d7/dc6/namespacewebframe_1_1_o_r_m_1_1modes.html#a5263bab36505c99a9c5d5450fd3da7e5',1,'webframe::ORM::modes']]]
+  ['assignment_5foperators_400',['assignment_operators',['../d8/da4/namespacewebframe_1_1_o_r_m_1_1details.html#a352faca374f0b3ae7a80248f0f4d48ab',1,'webframe::ORM::details']]]
 ];
