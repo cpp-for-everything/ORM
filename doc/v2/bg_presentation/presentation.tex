@@ -1,0 +1,577 @@
+% ============================================================
+%  Beamer презентация – Дипломна защита
+%  Compile-time ORM библиотека на C++
+%  Алекс Цветанов  |  ТУ–София  |  2026
+%  Компилация: lualatex presentation.tex (два пъти за ToC)
+% ============================================================
+\documentclass[aspectratio=169,12pt]{beamer}
+
+% ── Кирилица и езикова поддръжка (LuaLaTeX – native UTF-8) ─
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setdefaultlanguage{bulgarian}
+\setotherlanguage{english}
+% Windows system fonts — гарантирано присъстват, пълна Кирилица
+\setmainfont{Times New Roman}
+\setsansfont{Arial}
+\setmonofont[Scale=0.88]{Courier New}
+% Polyglossia изисква явна декларация за всяко семейство
+\newfontfamily\cyrillicfont{Times New Roman}
+\newfontfamily\cyrillicfontsf{Arial}
+\newfontfamily\cyrillicfonttt{Courier New}
+
+% ── Тема и цветове (TU-Sofia blue) ─────────────────────────
+\usetheme{Madrid}
+\definecolor{tusofia}{RGB}{0,86,145}
+\definecolor{tusofiadark}{RGB}{0,60,105}
+\definecolor{tusofialight}{RGB}{220,235,248}
+
+\setbeamercolor{palette primary}{bg=tusofia,fg=white}
+\setbeamercolor{palette secondary}{bg=tusofiadark,fg=white}
+\setbeamercolor{palette tertiary}{bg=tusofia!70,fg=white}
+\setbeamercolor{palette quaternary}{bg=tusofia,fg=white}
+\setbeamercolor{structure}{fg=tusofia}
+\setbeamercolor{block title}{bg=tusofia,fg=white}
+\setbeamercolor{block body}{bg=tusofialight,fg=black}
+\setbeamercolor{alerted text}{fg=red!70!black}
+
+% ── Шрифт за code ──────────────────────────────────────────
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{cppblue}{RGB}{0,0,170}
+\definecolor{cppgreen}{RGB}{0,120,0}
+\definecolor{cppred}{RGB}{170,0,0}
+\definecolor{cppgray}{RGB}{110,110,110}
+
+\lstset{
+    language=C++,
+    basicstyle=\fontsize{6}{7.5}\ttfamily,
+    keywordstyle=\color{cppblue}\bfseries,
+    stringstyle=\color{cppred},
+    commentstyle=\color{cppgreen}\itshape,
+    identifierstyle=\color{black},
+    showstringspaces=false,
+    breaklines=true,
+    breakatwhitespace=true,
+    columns=flexible,
+    keepspaces=true,
+    tabsize=4,
+    frame=single,
+    framerule=0.4pt,
+    rulecolor=\color{cppgray},
+    xleftmargin=0.4em,
+    xrightmargin=0.2em,
+    morekeywords={constexpr,requires,concept,auto,nullptr,noexcept,
+                  select,insert,update,deleteq,where,order_by,group_by,
+                  limit,prepare,execute,field,Placeholder,ph,
+                  IndexedPlaceholder,static_assert,using,namespace},
+}
+
+% ── TikZ ───────────────────────────────────────────────────
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,calc,decorations.pathreplacing}
+
+\tikzset{
+    layerbox/.style={draw=tusofia, rounded corners=3pt, fill=tusofialight,
+        align=center, text width=3.4cm, font=\footnotesize,
+        minimum width=3.8cm, minimum height=0.55cm, inner sep=3pt},
+    appbox/.style={layerbox, fill=green!12, draw=green!60!black},
+    ormline/.style={-Latex, thick, color=tusofia},
+    capbox/.style={draw=orange!70!black, rounded corners=3pt, fill=orange!10,
+        align=center, text width=1.7cm, font=\scriptsize,
+        minimum width=1.9cm, minimum height=0.55cm, inner sep=3pt},
+}
+
+% ── Графики ────────────────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+
+% ── Метаданни ──────────────────────────────────────────────
+\title[Compile-time ORM за C++]{%
+    Compile-time Object-Relational Mapping\\[0.2em]
+    библиотека на C++}
+\subtitle{Дипломна работа}
+\author[Алекс Цветанов]{%
+    Алекс Цветанов, фак.~№~121222225\\[0.3em]
+    {\footnotesize Научен ръководител: доц.~д-р~инж.~Галя Павлова}}
+\institute[ТУ--София]{%
+    Технически университет~--~София\\
+    Факултет „Компютърни системи и технологии"\\
+    Компютърно и софтуерно инженерство}
+\date{2026}
+
+% ══════════════════════════════════════════════════════════
+\begin{document}
+% ══════════════════════════════════════════════════════════
+
+% ── Заглавна страница ──────────────────────────────────────
+\begin{frame}
+    \titlepage
+\end{frame}
+
+% ── Съдържание ─────────────────────────────────────────────
+\begin{frame}{Съдържание}
+    \tableofcontents
+\end{frame}
+
+% ══════════════════════════════════════════════════════════
+\section{Мотивация}
+% ══════════════════════════════════════════════════════════
+
+\begin{frame}{Проблемът с runtime заявките}
+    \begin{columns}[T]
+        \begin{column}{0.54\textwidth}
+            \textbf{Традиционен подход:}
+            \begin{itemize}
+                \item Заявките се описват като \alert{низове}
+                \item Валидиране едва при изпълнение
+                \item Грешни имена на полета → runtime crash
+                \item Несъвместими типове → late discovery
+                \item Смяна на backend → \alert{пълно пренаписване}
+            \end{itemize}
+            \vspace{0.3em}
+            \textbf{Изследователски въпрос:}\\
+            \textit{Може ли компилаторът да поеме ролята на
+            първи валидатор на заявките?}
+        \end{column}
+        \begin{column}{0.43\textwidth}
+            \begin{tabularx}{\linewidth}{@{}XX@{}}
+                \toprule
+                \textbf{Runtime} & \textbf{Compile-time}\\
+                \midrule
+                Низ заявки &
+                    \texttt{constexpr} IR\\
+                {Грешка при\newline изпълнение} & {Грешка при\newline \alert{компилация}}\\
+                Late discovery &
+                    Early detection\\
+                \bottomrule
+            \end{tabularx}
+            \vspace{0.3em}
+            \begin{alertblock}{Цел}
+                {\small Компилаторът поема ролята
+                на първи валидатор
+                на заявките.}
+            \end{alertblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Съществуващи решения и позиция на разработката}
+    \begin{columns}[T]
+        \begin{column}{0.52\textwidth}
+            \begin{tabularx}{\linewidth}{@{}llX@{}}
+                \toprule
+                \textbf{Решение} & \textbf{Подход} & \textbf{Ограничение}\\
+                \midrule
+                SOCI      & runtime bind & низ-базирани заявки\\
+                ODB       & codegen      & external compiler\\
+                sqlpp11   & EDSL         & само SQL\\
+                Hiberlite & ORM          & само SQLite\\
+                \bottomrule
+            \end{tabularx}
+        \end{column}
+        \begin{column}{0.45\textwidth}
+            \begin{block}{Приносът на разработката}
+                \begin{itemize}
+                    \item[$+$] \texttt{constexpr} query IR без codegen
+                    \item[$+$] Multi-backend: SQL \emph{и} NoSQL
+                    \item[$+$] Compile-time capability проверки
+                    \item[$+$] Формален connector contract
+                \end{itemize}
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% ══════════════════════════════════════════════════════════
+\section{Архитектура}
+% ══════════════════════════════════════════════════════════
+
+\begin{frame}{Слоеста архитектура на библиотеката}
+    \begin{columns}[T]
+        \begin{column}{0.42\textwidth}
+            \centering
+            \begin{tikzpicture}[node distance=0.28cm]
+                \node[appbox] (app)
+                    {\textbf{Приложен слой}\\ entity + query};
+                \node[layerbox, below=of app] (ent)
+                    {\textbf{Entity слой}\\
+                    \texttt{property}, \texttt{relationship}};
+                \node[layerbox, below=of ent] (ir)
+                    {\textbf{Query IR слой}\\
+                    \texttt{field}, \texttt{Rule}, заявки};
+                \node[layerbox, below=of ir] (conn)
+                    {\textbf{Connector слой}\\
+                    {\scriptsize\texttt{connector\_trait<DB>}}};
+                \node[layerbox, fill=gray!10, draw=gray!50,
+                    below=of conn] (drv)
+                    {\textbf{Driver / runtime}\\
+                    SQL, BSON, Cypher, CQL};
+                \draw[ormline] (app)  -- (ent);
+                \draw[ormline] (ent)  -- (ir);
+                \draw[ormline] (ir)   -- (conn);
+                \draw[ormline] (conn) -- (drv);
+            \end{tikzpicture}
+        \end{column}
+        \begin{column}{0.55\textwidth}
+            \textbf{Ключови архитектурни принципа:}
+            \begin{itemize}
+                \item Никакъв виртуален интерфейс\\
+                    {\footnotesize trait-базиран, не наследствен contract}
+                \item Query IR е \texttt{constexpr}\\
+                    {\footnotesize значима валидация при компилация}
+                \item Capability tags ограничават\\
+                    неподдържаните операции
+                \item Смяна на backend = смяна само на\\
+                    типа на конектора
+            \end{itemize}
+            \vspace{0.2em}
+            \begin{alertblock}{Централен инвариант}
+                Приложният код не комуникира директно с драйвера —
+                работи само с C++ типове.
+            \end{alertblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% ══════════════════════════════════════════════════════════
+\section{Реализация}
+% ══════════════════════════════════════════════════════════
+
+\begin{frame}[fragile]{Entity модел и Query IR}
+    \begin{columns}[T]
+        \begin{column}{0.49\textwidth}
+            \textbf{Entity описание:}
+\begin{lstlisting}
+struct User {
+  orm::property<int,        "id">    id;
+  orm::property<std::string,"name"> name;
+  orm::property<double,     "score"> score;
+};
+
+template<> struct orm::table_name_trait<User> {
+  static constexpr std::string_view
+    value = "users";
+};
+\end{lstlisting}
+        \vspace{0.2em}
+        {\scriptsize
+        \texttt{property<T,"col">} носи тип, compile-time
+        name и member pointer — без macro, без codegen.}
+        \end{column}
+        \begin{column}{0.49\textwidth}
+            \textbf{Query IR конструкции:}
+\begin{lstlisting}
+// field<Ptr> -- wrapper над member ptr
+// Rule       -- типизиран предикат
+// Placeholder -- анонимен параметър
+
+auto pred =
+  orm::field<&User::id>
+    == orm::Placeholder<int>{};
+
+// constexpr обект
+static constexpr auto q =
+  orm::select(
+    orm::field<&User::id>,
+    orm::field<&User::name>)
+  .where(pred);
+\end{lstlisting}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile,shrink=2]{Изграждане на сложна заявка}
+    \begin{columns}[T]
+        \begin{column}{0.52\textwidth}
+\begin{lstlisting}
+using namespace orm::literals;
+
+static constexpr auto q =
+  orm::select(
+    orm::field<&User::id>,
+    orm::field<&User::name>,
+    orm::field<&User::score>)
+  .where(
+    orm::field<&User::score> > 3.14)
+  .where(
+    orm::field<&User::id>
+      == orm::Placeholder<int>{})
+  .order_by<orm::order::direction::desc>(
+    orm::field<&User::score>)
+  .limit(10_per_page & 1_page);
+
+static_assert(
+  decltype(q.where_clauses())::size == 2);
+\end{lstlisting}
+        \end{column}
+        \begin{column}{0.45\textwidth}
+            \textbf{Характеристики:}
+            \begin{itemize}\small
+                \item Fluent API — всяка стъпка
+                    връща \emph{нов} типизиран обект
+                \item \texttt{static constexpr} — IR
+                    живее в code сегмента;
+                    нулев runtime overhead
+                \item \texttt{static\_assert} проверява
+                    структурата при компилация
+                \item \texttt{group\_by}, \texttt{join<>}
+                    — аналогичен синтаксис
+            \end{itemize}
+            \vspace{0.15em}
+            \begin{block}{Pagination UDL}
+                {\small\texttt{10\_per\_page \& 2\_page}}\\
+                {\scriptsize двата оператора са взаимозаменяеми}
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Connector trait и Capability механизъм}
+    \begin{columns}[T]
+        \begin{column}{0.52\textwidth}
+            \textbf{Минимален connector contract:}
+\begin{lstlisting}
+template<>
+struct orm::connector_trait<MyDB> {
+  // Задължителни типове
+  template<typename T> struct wire_type;
+  using cursor_type = ...;
+
+  // Capability тагове
+  using supports_joins        = true_type;
+  using supports_transactions = true_type;
+
+  // Materialization entry point
+  static auto execute(
+    MyDB& db, auto query,
+    auto&&... params);
+};
+\end{lstlisting}
+        \end{column}
+        \begin{column}{0.45\textwidth}
+            \textbf{Compile-time capability:}
+            \begin{itemize}\small
+                \item \texttt{is\_connector<DB>} concept
+                    проверява всеки тип
+                \item JOIN без \texttt{supports\_joins}
+                    → \alert{compile error}
+                \item Транзакция без\newline
+                    \texttt{supports\_transactions}
+                    → \alert{compile error}
+            \end{itemize}
+            \vspace{0.2em}
+            \begin{tikzpicture}[node distance=0.4cm]
+                \node[capbox] (ir2) {Query IR};
+                \node[capbox, right=0.3cm of ir2] (cap) {Capability?};
+                \node[capbox, fill=green!12, draw=green!60,
+                    below=0.4cm of cap] (ok) {execute()};
+                \node[capbox, fill=red!12, draw=red!60,
+                    below=0.4cm of ir2] (err) {compile err};
+                \draw[-Latex,thick,color=tusofia] (ir2) -- (cap);
+                \draw[-Latex,thick,color=green!60!black] (cap) -- (ok);
+                \draw[-Latex,thick,color=red!70] (cap) -- (err);
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% ══════════════════════════════════════════════════════════
+\section{Backend сценарии}
+% ══════════════════════════════════════════════════════════
+
+\begin{frame}{Multi-backend материализация}
+    \begin{columns}[T]
+        \begin{column}{0.50\textwidth}
+            {\small Един Query IR → различни backend-и:}
+            \begin{tabularx}{\linewidth}{@{}lX@{}}
+                \toprule
+                \textbf{Backend}  & \textbf{Материализация}\\
+                \midrule
+                SQLite      & \texttt{WHERE id = ?}\\
+                PostgreSQL  & \texttt{WHERE id = \$1}\\
+                MySQL       & \texttt{WHERE id = ?}\\
+                \midrule
+                MongoDB     & BSON filter\\
+                Redis       & \texttt{GET}/\texttt{SET}/\texttt{DEL}\\
+                Neo4j       & Cypher \texttt{MATCH…WHERE}\\
+                Cassandra   & CQL \texttt{SELECT…FROM}\\
+                \bottomrule
+            \end{tabularx}
+        \end{column}
+        \begin{column}{0.47\textwidth}
+            \textbf{Абстракция на връзките:}\\[0.1em]
+            \begin{tabularx}{\linewidth}{@{}lX@{}}
+                \texttt{embed}     & MongoDB вложен документ\\
+                \texttt{reference} & SQL foreign key / JOIN\\
+                                   & Redis: key prefix\\
+                                   & Neo4j: edge\\
+            \end{tabularx}
+            \vspace{0.1em}
+            \begin{alertblock}{Принцип}
+                {\small C++ моделът е единственият
+                \emph{логически} носител на схемата.
+                Backend-ът определя физическата
+                материализация.}
+            \end{alertblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile,shrink=3]{Подготвени заявки}
+    \begin{columns}[T]
+        \begin{column}{0.52\textwidth}
+\begin{lstlisting}
+static constexpr auto q =
+  orm::select(orm::field<&User::name>)
+  .where(orm::field<&User::id>
+    == orm::Placeholder<int>{});
+
+auto stmt = db.prepare(q);
+auto r1 = stmt.execute(42);
+auto r2 = stmt.execute(99);
+
+// Индексирани placeholder-и
+using namespace orm;
+static constexpr auto q2 =
+  orm::select(orm::field<&User::name>)
+  .where(orm::field<&User::id>
+    == ph<int, _1>)
+  .where(orm::field<&User::score>
+    > ph<double, _1>);
+\end{lstlisting}
+        \end{column}
+        \begin{column}{0.45\textwidth}
+            \textbf{Характеристики:}\\[0.2em]
+            {\small
+            \textbullet~\texttt{prepare()} →
+                \texttt{prepared\_query<Q,DB>}\\[0.2em]
+            \textbullet~Многократна употреба без
+                повторно рендиране\\[0.2em]
+            \textbullet~\texttt{ph<T,\_N>} — индексиран
+                placeholder; \texttt{?N} (SQLite)
+                или \texttt{\$N} (PostgreSQL)\\[0.2em]
+            \textbullet~Един runtime параметър може
+                да запълни повече от един слот
+            }
+            \vspace{0.2em}
+            \begin{block}{Верифицирано в}
+                {\scriptsize
+                \texttt{test\_mockdb.cpp}:\\
+                \texttt{PrepareReturnsExecutableObject}\\
+                \texttt{IndexedPlaceholderReused\ldots}}
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% ══════════════════════════════════════════════════════════
+\section{Верификация}
+% ══════════════════════════════════════════════════════════
+
+\begin{frame}{Верификационна стратегия}
+    \begin{columns}[T]
+        \begin{column}{0.50\textwidth}
+            \begin{block}{Тестова инфраструктура}
+                \textbf{214 теста} — 100\% преминаване\\
+                {\small Windows/MSVC и Linux/GCC\,13 в Docker}
+            \end{block}
+            \vspace{0.2em}
+            \textbf{Покритие:}
+            \begin{itemize}\small
+                \item Query IR изграждане и структура
+                \item Capability-базирано ограничаване
+                \item Подготвени заявки и placeholder-и
+                \item Schema миграции (\texttt{migrate<DB>})
+                \item Нишкова безопасност
+                \item Live integration тестове
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.47\textwidth}
+            \textbf{Нива на верификация:}
+            \begin{enumerate}\small
+                \item \textbf{Compile-time:} \texttt{static\_assert},
+                    concept constraints
+                \item \textbf{Unit:} изолирани компоненти
+                    с MockDB
+                \item \textbf{Integration:} SQL rendering,
+                    live бази данни
+                \item \textbf{Docker CI:} пълен suite на Linux
+            \end{enumerate}
+            \vspace{0.2em}
+            \begin{alertblock}{Ключов принцип}
+                {\small Не е достатъчно само „да има тестове“
+                или само compile-time checks.
+                Необходима е комбинация.}
+            \end{alertblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% ══════════════════════════════════════════════════════════
+\section{Приноси и заключение}
+% ══════════════════════════════════════════════════════════
+
+\begin{frame}{Научни и приложни приноси}
+    \begin{enumerate}\setlength{\itemsep}{0.35em}
+        \item \textbf{Практически приложим Compile-time ORM модел}\\
+            {\small без external codegen, без виртуален интерфейс,
+            в стандартен C++23}
+        \item \textbf{C++ entity описанието като единствен
+            логически носител на схемата}\\
+            {\small един модел → таблица / документ / key-value /
+            граф / wide-column ред}
+        \item \textbf{Формален connector contract за разширяемост}\\
+            {\small нов backend без промяна в query API;
+            capability tags правят ограниченията видими при компилация}
+        \item \textbf{Многостепенна верификационна стратегия}\\
+            {\small concept constraints + unit + integration + live}
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Заключение}
+    \begin{columns}[T]
+        \begin{column}{0.52\textwidth}
+            \textbf{Постигнато:}
+            \begin{itemize}\small
+                \item Query IR като \texttt{constexpr} обект —
+                    без низове, без runtime reflection
+                \item 7 backend-а: SQLite, PG, MySQL,
+                    MongoDB, Redis, Neo4j, Cassandra
+                \item 214 теста, Docker CI, два компилатора
+                \item Connector contract формализиран
+                    и демонстриран с реални конектори
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.45\textwidth}
+            \textbf{Бъдещо развитие:}
+            \begin{itemize}\small
+                \item C++26 static reflection →
+                    автом. entity описание
+                \item Distributed connection pools
+                \item Автом. migration за всички
+                    backend-и
+                \item Performance benchmarking
+            \end{itemize}
+            \vspace{0.15em}
+            \begin{block}{Основен извод}
+                {\small Между runtime ORM и driver-only
+                съществува жизнеспособна
+                арх. позиция:\\[0.1em]
+                \textbf{Compile-time ORM слой в C++.}}
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[plain]
+    \vfill
+    \centering
+    {\Large\color{tusofia} Благодаря за вниманието!}\\[0.6em]
+    {\large Въпроси?}
+    \vfill
+\end{frame}
+
+\end{document}

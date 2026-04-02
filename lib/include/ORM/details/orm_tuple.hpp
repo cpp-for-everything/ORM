@@ -40,8 +40,11 @@ namespace orm::detail {
     template <typename... As, typename... Bs>
     [[nodiscard]] constexpr auto tuple_cat(const orm_tuple<As...>& a, const orm_tuple<Bs...>& b)
     {
-        return orm_tuple<As..., Bs...>(
-            orm_tuple<As..., Bs...>(std::tuple_cat(a.storage_, b.storage_)));
+        return [&]<std::size_t... I, std::size_t... J>(
+            std::index_sequence<I...>, std::index_sequence<J...>)
+        {
+            return orm_tuple<As..., Bs...>(std::get<I>(a.storage_)..., std::get<J>(b.storage_)...);
+        }(std::index_sequence_for<As...>{}, std::index_sequence_for<Bs...>{});
     }
 
     template <typename Tuple, typename T>

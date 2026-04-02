@@ -63,7 +63,7 @@ Execution поведение & как се рендират заявки, пар
 
 Теоретичната основа и тук е релационният модел, но архитектурният интерес е различен: доколко един и същ query IR остава валиден при различни SQL диалекти и различни правила за bind на параметри. \code{PostgreSQLDB} и \code{PostgreSQLLiveDB} поддържат \code{supports\_joins}, \code{supports\_transactions} и \code{supports\_aggregation}, а тестовете в \path{tests/unit/test_postgresql_connector.cpp} и \path{tests/integration/test_postgresql_live.cpp} показват реално изпълнение срещу жива база данни.
 
-\code{MySQLDB} и \code{MySQLLiveDB} също декларират \code{supports\_joins} и \code{supports\_transactions}, но тук е важно различието в bind модела. Докато PostgreSQL може естествено да адресира параметри чрез \code{\$1}, \code{\$2}, \ldots{}, MySQL разчита на позиционни \code{?} placeholders. Това не нарушава общия IR, но показва, че logical portability не означава byte-for-byte идентична backend материализация.
+\code{MySQLDB} и \code{MySQLLiveDB} също декларират \code{supports\_joins} и \code{supports\_transactions}, но тук е важно различието в bind модела. Докато PostgreSQL може естествено да адресира параметри чрез \code{$1}, \code{$2}, \ldots{}, MySQL разчита на позиционни \code{?} placeholders. Това не нарушава общия IR, но показва, че logical portability не означава byte-for-byte идентична backend материализация.
 
 Тъкмо тези SQL family сценарии защитават по-силна теза от ``работи със SQL'': библиотеката демонстрира, че query IR-ът е достатъчно общ за повече от един диалект, а в същото време е достатъчно честен, за да остави нисконивовите различия на connector слоя.
 

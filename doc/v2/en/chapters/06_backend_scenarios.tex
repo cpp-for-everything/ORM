@@ -63,7 +63,7 @@ From an academic point of view, SQLite plays the role of relational baseline. If
 
 The theoretical basis here is again the relational model, but the architectural interest is different: to what extent one and the same query IR remains valid across different SQL dialects and different parameter-binding rules. \code{PostgreSQLDB} and \code{PostgreSQLLiveDB} support \code{supports\_joins}, \code{supports\_transactions}, and \code{supports\_aggregation}, while the tests in \path{tests/unit/test_postgresql_connector.cpp} and \path{tests/integration/test_postgresql_live.cpp} show real execution against a live database.
 
-\code{MySQLDB} and \code{MySQLLiveDB} also declare \code{supports\_joins} and \code{supports\_transactions}, but here the difference in binding model becomes important. While PostgreSQL can naturally address parameters through \code{\$1}, \code{\$2}, \ldots{}, MySQL relies on positional \code{?} placeholders. This does not break the shared IR, but it demonstrates that logical portability does not imply byte-for-byte identical backend materialisation.
+\code{MySQLDB} and \code{MySQLLiveDB} also declare \code{supports\_joins} and \code{supports\_transactions}, but here the difference in binding model becomes important. While PostgreSQL can naturally address parameters through \code{$1}, \code{$2}, \ldots{}, MySQL relies on positional \code{?} placeholders. This does not break the shared IR, but it demonstrates that logical portability does not imply byte-for-byte identical backend materialisation.
 
 These SQL family scenarios therefore defend a stronger thesis than ``the library works with SQL'': the query IR is general enough for more than one dialect, yet honest enough to leave low-level differences within the connector layer.
 

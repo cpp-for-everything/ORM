@@ -46,6 +46,16 @@ namespace orm {
             return {p.n, g.n};
         }
 
+        [[nodiscard]] constexpr Pagification operator&(per_page_helper p, page_helper g)
+        {
+            return {p.n, g.n};
+        }
+
+        [[nodiscard]] constexpr Pagification operator&(page_helper g, per_page_helper p)
+        {
+            return {p.n, g.n};
+        }
+
     } // namespace literals
 
 } // namespace orm

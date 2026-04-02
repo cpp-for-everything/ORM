@@ -111,9 +111,9 @@ auto res = db.execute(q, 42, 9.5);  // _1 → 42, _2 → 9.5
 
 ```cpp
 constexpr auto q = orm::select(orm::field<&User::id>, orm::field<&User::score>)
-    .order_by<orm::order::direction::desc, &User::score>()
-    .group_by<&User::id>()
-    .limit(10_per_page * 1_page);
+    .order_by<orm::order::direction::desc>(orm::field<&User::score>)
+    .group_by(orm::field<&User::id>)
+    .limit(10_per_page & 1_page);
 ```
 
 ### 6 — JOIN

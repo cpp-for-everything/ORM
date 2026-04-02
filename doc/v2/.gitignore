@@ -8,3 +8,6 @@
 .miktex/
 *.fls
 *.gz
+*.nav
+*.vrb
+*.snm

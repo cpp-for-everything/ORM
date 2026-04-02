@@ -262,6 +262,27 @@ RUN mkdir -p build && cd build \
 CMD ["bash", "-c", "cd build && ctest -R sqlite --output-on-failure"]
 
 # ══════════════════════════════════════════════════════════════════════════════
+# Unit + MockDB Test Stage (no external DB services required)
+# ══════════════════════════════════════════════════════════════════════════════
+
+FROM base-builder AS unit-test
+WORKDIR /workspace
+COPY . /workspace/
+RUN mkdir -p build && cd build \
+    && cmake .. \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_CXX_STANDARD=23 \
+        -DORM_ENABLE_POSTGRESQL=OFF \
+        -DORM_ENABLE_MYSQL=OFF \
+        -DORM_ENABLE_MONGODB=OFF \
+        -DORM_ENABLE_REDIS=OFF \
+        -DORM_ENABLE_CASSANDRA=OFF \
+        -DORM_ENABLE_NEO4J=OFF \
+        -DORM_ENABLE_SQLITE=OFF \
+    && cmake --build . -j$(nproc)
+CMD ["bash", "-c", "cd build && ctest --output-on-failure"]
+
+# ══════════════════════════════════════════════════════════════════════════════
 # Combined Runtime (All Drivers)
 # ══════════════════════════════════════════════════════════════════════════════
 
