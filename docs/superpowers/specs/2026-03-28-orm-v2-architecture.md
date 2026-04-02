@@ -238,7 +238,7 @@ select(field<&User::id>, field<&User::name>, field<&Post::body>)
 constexpr auto q = select(field<&User::id>, field<&Post::body>)
     .join<orm::join::inner, Post>(field<&User::id> == field<&Post::author_id>)
     .where(field<&User::status> == Placeholder<std::u8string>)
-    .order_by<orm::order::asc, &User::name>()
+    .order_by<orm::order::direction::asc>(field<&User::name>)
     .limit(10_per_page, 1_page);
 
 // INSERT

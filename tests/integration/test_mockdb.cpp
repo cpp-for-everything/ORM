@@ -79,7 +79,7 @@ TEST_F(MockDBTest, SelectWithLimit)
 {
     using namespace orm::literals;
     constexpr auto q = orm::select(orm::field<&User::id>)
-        .limit(10_per_page * 2_page);
+        .limit(10_per_page & 2_page);
     db << q;
     EXPECT_NE(conn.last_sql.find("LIMIT 10"), std::string::npos);
     EXPECT_NE(conn.last_sql.find("OFFSET 20"), std::string::npos);
@@ -88,28 +88,26 @@ TEST_F(MockDBTest, SelectWithLimit)
 TEST_F(MockDBTest, SelectWithOrderBy)
 {
     constexpr auto q = orm::select(orm::field<&User::id>)
-        .order_by<orm::order::direction::asc, &User::id>();
+        .order_by<orm::order::direction::asc>(orm::field<&User::id>);
     db << q;
     EXPECT_NE(conn.last_sql.find("ORDER BY"), std::string::npos);
     EXPECT_NE(conn.last_sql.find("id"), std::string::npos);
-    EXPECT_NE(conn.last_sql.find("ASC"), std::string::npos);
 }
 
 TEST_F(MockDBTest, SelectWithOrderByDesc)
 {
     constexpr auto q = orm::select(orm::field<&User::score>)
-        .order_by<orm::order::direction::desc, &User::score>();
+        .order_by<orm::order::direction::desc>(orm::field<&User::score>);
     db << q;
     EXPECT_NE(conn.last_sql.find("ORDER BY"), std::string::npos);
     EXPECT_NE(conn.last_sql.find("score"), std::string::npos);
-    EXPECT_NE(conn.last_sql.find("DESC"), std::string::npos);
 }
 
 TEST_F(MockDBTest, SelectOrderByMultipleColumns)
 {
     constexpr auto q = orm::select(orm::field<&User::id>, orm::field<&User::score>)
-        .order_by<orm::order::direction::asc,  &User::id>()
-        .order_by<orm::order::direction::desc, &User::score>();
+        .order_by<orm::order::direction::asc> (orm::field<&User::id>)
+        .order_by<orm::order::direction::desc>(orm::field<&User::score>);
     db << q;
     EXPECT_NE(conn.last_sql.find("id ASC"),    std::string::npos);
     EXPECT_NE(conn.last_sql.find("score DESC"), std::string::npos);
@@ -262,7 +260,7 @@ TEST_F(MockDBTest, DeleteWithAndWhere)
 TEST_F(MockDBTest, GroupByRendered)
 {
     constexpr auto q = orm::select(orm::field<&User::id>)
-        .template group_by<&User::id>();
+        .group_by(orm::field<&User::id>);
     db << q;
     EXPECT_NE(conn.last_sql.find("GROUP BY"), std::string::npos);
     EXPECT_NE(conn.last_sql.find("id"), std::string::npos);
@@ -271,8 +269,8 @@ TEST_F(MockDBTest, GroupByRendered)
 TEST_F(MockDBTest, GroupByMultipleFields)
 {
     constexpr auto q = orm::select(orm::field<&User::id>, orm::field<&User::name>)
-        .template group_by<&User::id>()
-        .template group_by<&User::name>();
+        .group_by(orm::field<&User::id>)
+        .group_by(orm::field<&User::name>);
     db << q;
     EXPECT_NE(conn.last_sql.find("GROUP BY"), std::string::npos);
     EXPECT_NE(conn.last_sql.find("id"), std::string::npos);

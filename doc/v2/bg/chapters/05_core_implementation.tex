@@ -49,6 +49,19 @@ Placeholder механизмът има две форми. \code{Placeholder<T>}
 
 Това позволява в тестовете да се проверява не само крайният резултат от рендирането, а и самата форма на междинното представяне --- например броят на \code{where} клаузите или типът на response tuple-а. В \path{tests/integration/test_mockdb.cpp} това се вижда в \code{SelectWithInnerJoin}, \code{SelectWithOrderByDesc}, \code{SelectWithLimit} и множество други сценарии, които валидират различни фази на query composition.
 
+Ключен имплементационен детайл е, че всички builder извиквания са \emph{константни изрази}. Вътрешният помощник \code{orm\_tuple::tuple\_cat} използва разгъване на пакет чрез индексни последователности вместо \code{std::tuple\_cat}, което прави целия builder chain constexpr-съвместим на всички поддържани компилатори, включително MSVC. Практическата последица е, че всеки query обект може да бъде деклариран \code{static constexpr}:
+
+\begin{lstlisting}[language=C++,caption={Query обект деклариран като compile-time константа},label={lst:constexpr_query}]
+using namespace orm::literals;
+static constexpr auto get_active =
+    orm::select(orm::field<&User::id>, orm::field<&User::name>)
+        .where(orm::field<&User::score> > 0.0)
+        .where(orm::field<&User::id> == orm::Placeholder<int>{})
+        .limit(10_per_page & 2_page);
+\end{lstlisting}
+
+Операторът \code{\&} комбинира помощниците \code{\_per\_page} и \code{\_page} за user-defined literals в произволен ред и произвежда \code{Pagification} обект, чиято структура е известна по време на компилация. Декларирането на заявка като \code{static constexpr} я превръща в константа с нулева цена за изпълнение: IR на заявката се конструира веднъж и никога не се преизгражда при многократно изпълнение.
+
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[node distance=1.35cm and 1.2cm]

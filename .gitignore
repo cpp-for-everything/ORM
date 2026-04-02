@@ -6,7 +6,6 @@ CMakeCache.txt
 CMakeFiles/
 Makefile
 mysql-connector-c++-1.1.13/
-cmake/
 out/
 .vs/
 .vscode/

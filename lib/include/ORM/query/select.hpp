@@ -72,9 +72,9 @@ namespace orm {
                 wheres_, limits_, groups_, orders_);
         }
 
-        // .group_by<Ptr>()
+        // .group_by(field<&T::m>)
         template <auto Ptr>
-        [[nodiscard]] constexpr auto group_by() const
+        [[nodiscard]] constexpr auto group_by(mem_ptr<Ptr> /*f*/) const
         {
             using GB = GroupBy<Ptr>;
             using NewGroups = detail::append_type_t<Groups, GB>;
@@ -84,9 +84,9 @@ namespace orm {
                 orders_);
         }
 
-        // .order_by<Dir, Ptr>()
+        // .order_by<Dir>(field<&T::m>)
         template <order::direction Dir, auto Ptr>
-        [[nodiscard]] constexpr auto order_by() const
+        [[nodiscard]] constexpr auto order_by(mem_ptr<Ptr> /*f*/) const
         {
             using OB = OrderBy<Dir, Ptr>;
             using NewOrders = detail::append_type_t<Orders, OB>;

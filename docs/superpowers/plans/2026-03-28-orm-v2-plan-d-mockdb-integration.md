@@ -536,7 +536,7 @@ TEST_F(MockDBSelectTest, SelectWithLimit) {
 
 TEST_F(MockDBSelectTest, SelectWithOrderByAsc) {
     constexpr auto q = orm::select(orm::field<&User::id>)
-        .order_by<orm::order::direction::asc, &User::id>();
+        .order_by<orm::order::direction::asc>(orm::field<&User::id>);
     db << q;
     EXPECT_NE(conn.last_sql.find("ORDER BY"), std::string::npos);
 }

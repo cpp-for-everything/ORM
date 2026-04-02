@@ -3,7 +3,10 @@
 > [!info] Header
 > `#include <ORM/connector/prepared_query.hpp>` (included automatically via `ORM/connector/db.hpp`)
 
-A query IR bound to a specific `db<DB>` instance. Created by [[db#prepare|`db::prepare()`]]. Enables the **construct-once, execute-many** pattern — ideal for `static const` locals in hot-path functions.
+A query IR bound to a specific `db<DB>` instance. Created by [[db#prepare|`db::prepare()`]]. Enables the **construct-once, execute-many** pattern — ideal for `static constexpr` locals in hot-path functions.
+
+> [!tip] Compile-time queries
+> As of the current version, every query builder call (`.where()`, `.limit()`, `.join()`, etc.) is a constant expression. Query objects can therefore be declared `static constexpr` directly, giving the compiler maximum opportunity to optimise the query structure.
 
 ## Synopsis
 
@@ -29,11 +32,13 @@ public:
 orm::SQLiteDB conn = orm::SQLiteDB::open("app.db");
 orm::db<orm::SQLiteDB> db{conn};
 
-// Construct once
-using namespace std::placeholders;
-static const auto pq = db.prepare(
+// Construct once — static constexpr query object
+static constexpr auto q =
     orm::select(orm::field<&User::id>, orm::field<&User::name>)
-        .where(orm::field<&User::id> == orm::ph<int, _1>));
+        .where(orm::field<&User::id> == orm::ph<int, _1>);
+
+using namespace std::placeholders;
+static const auto pq = db.prepare(q);
 ```
 
 ## Executing repeatedly

@@ -829,7 +829,7 @@ TEST(Select, WithJoin) {
 
 TEST(Select, WithOrderBy) {
     constexpr auto q = orm::select(orm::field<&User::id>)
-        .order_by<orm::order::direction::asc, &User::id>();
+        .order_by<orm::order::direction::asc>(orm::field<&User::id>);
     static_assert(decltype(q)::OrderBy::size == 1);
 }
 

@@ -10,51 +10,52 @@ It sits between expression creation and connector execution.
 
 The main inputs are:
 
-- the top-level `select<modes::..., ...>` entry point
-- selected member pointers such as `&User::id`
+- the top-level `select(field<&T::m>, ...)` factory
+- selected member pointers such as `field<&User::id>`
 - optional join rules, where rules, limits, grouping, and ordering
-- helper types such as `orm_tuple`, `result_t`, `get_properties`, and `get_placeholders`
+- helper types such as `orm_tuple`, `projected_type`
 
 ## What Happens
 
-`select<modes::..., args...>` creates a `CRUD::select_query<...>` object.
+`orm::select(field<&User::id>, ...)` creates a `select_query<Response, Joins, Wheres, Limits, Groups, Orders>` object.
 
-That object stores six logical parts:
+That object stores six logical parts in its type parameters:
 
-- selected properties
-- joins
-- filters
-- limits
-- groupings
-- ordering
+- selected properties (`Response`)
+- joins (`Joins`)
+- filters (`Wheres`)
+- limits (`Limits`)
+- groupings (`Groups`)
+- ordering (`Orders`)
 
-In `select.hpp`, the query type exposes aliases such as:
+The builder methods do not mutate in place. Each chained call builds a new `select_query` type with updated tuple state:
 
-- `Response`
-- `Joins`
-- `Wheres`
-- `Limitations`
-- `Groupings`
-- `OrderBy`
-
-The builder methods defined in `lib/src/ORM/CRUD/select.cpp` do not mutate in place. Each chained call builds a new `select_query` type with updated tuple state:
-
-- `.join<modes::..., Table>(...)`
-- `.where(...)`
-- `.limit(...)`
+- `.join<mode, Table>(...)`
+- `.where(rule)`
+- `.limit(pagification)`
 - `.group_by<...>(...)`
-- `.group_by<...>()`
 - `.order_by<...>()`
 
-The query's `properties` alias is computed from the placeholders that appear in joins, filters, and limits, so the runtime parameter list is derived from the stored query structure.
+All clause state is accumulated in `orm_tuple<...>` type lists. Because `orm_tuple::tuple_cat` uses index-sequence pack expansion (not `std::tuple_cat`), the entire builder chain is a constant expression and can be assigned to a `static constexpr` variable:
+
+```cpp
+using namespace orm::literals;
+static constexpr auto get_active_users =
+    orm::select(orm::field<&User::id>, orm::field<&User::name>)
+        .where(orm::field<&User::score> > 0.0)
+        .where(orm::field<&User::id> == orm::Placeholder<int>{})
+        .limit(10_per_page & 1_page);
+```
+
+The `&` operator combines `_per_page` and `_page` UDL helpers in either order.
 
 ## Output / Next Stage
 
 After this stage, the ORM has a fully typed select-query object that can be:
 
+- declared `static constexpr` (all builder calls are constant expressions)
 - passed to `db << query`
-- checked against runtime parameters through `params_match`
-- dispatched to `MockDB::execute_select(...)`
+- dispatched to any `connector_trait<DB>::execute(...)` overload
 
 ## Relevant Files
 

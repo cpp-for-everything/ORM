@@ -49,6 +49,19 @@ The factory functions \code{select}, \code{insert}, \code{update}, and \code{del
 
 This allows the tests to check not only the final rendering result, but the very shape of the intermediate representation --- for example, the presence of an \code{INNER JOIN}, the order clause, or the resulting response tuple type. In \path{tests/integration/test_mockdb.cpp}, this appears in \code{SelectWithInnerJoin}, \code{SelectWithOrderByDesc}, \code{SelectWithLimit}, and many other scenarios that validate different phases of query composition.
 
+A crucial implementation detail is that all builder calls are \emph{constant expressions}. The internal \code{orm\_tuple::tuple\_cat} helper uses index-sequence pack expansion rather than \code{std::tuple\_cat}, making the entire chain constexpr-safe on all supported compilers including MSVC. The practical consequence is that every query object can be declared \code{static constexpr}:
+
+\begin{lstlisting}[language=C++,caption={Query object declared as a compile-time constant},label={lst:constexpr_query}]
+using namespace orm::literals;
+static constexpr auto get_active =
+    orm::select(orm::field<&User::id>, orm::field<&User::name>)
+        .where(orm::field<&User::score> > 0.0)
+        .where(orm::field<&User::id> == orm::Placeholder<int>{})
+        .limit(10_per_page & 2_page);
+\end{lstlisting}
+
+The \code{\&} operator combines the \code{\_per\_page} and \code{\_page} user-defined literal helpers in either order, producing a \code{Pagification} object whose structure is known at compile time. Declaring a query \code{static constexpr} makes it a zero-cost global constant: the query IR is constructed once and never reconstructed on repeated execution calls.
+
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[node distance=1.35cm and 1.2cm]

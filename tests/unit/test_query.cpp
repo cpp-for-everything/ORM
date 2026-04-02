@@ -105,7 +105,15 @@ TEST(Rule, NullComparison)
 TEST(Pagification, UdlConstruction)
 {
     using namespace orm::literals;
-    constexpr auto p = 10_per_page * 2_page;
+    constexpr auto p = 10_per_page & 2_page;
+    static_assert(p.get_elements_per_page() == 10);
+    static_assert(p.get_number_of_page() == 2);
+}
+
+TEST(Pagification, UdlConstructionReverseOrder)
+{
+    using namespace orm::literals;
+    constexpr auto p = 2_page & 10_per_page;
     static_assert(p.get_elements_per_page() == 10);
     static_assert(p.get_number_of_page() == 2);
 }
@@ -142,7 +150,7 @@ TEST(SelectQuery, WithJoinAddsClause)
 TEST(SelectQuery, WithOrderByAddsClause)
 {
     constexpr auto q = orm::select(orm::field<&User::id>)
-        .order_by<orm::order::direction::asc, &User::id>();
+        .order_by<orm::order::direction::asc>(orm::field<&User::id>);
     static_assert(decltype(q.order_clauses())::size == 1);
 }
 
@@ -150,7 +158,7 @@ TEST(SelectQuery, WithLimitAddsClause)
 {
     using namespace orm::literals;
     constexpr auto q = orm::select(orm::field<&User::id>)
-        .limit(10_per_page * 1_page);
+        .limit(10_per_page & 1_page);
     static_assert(decltype(q.limit_clauses())::size == 1);
 }
 
@@ -210,6 +218,95 @@ TEST(DeleteQuery, WithWhereAddsClause)
     constexpr auto q = orm::deleteq<User>()
         .where(orm::field<&User::id> == orm::Placeholder<int>{});
     static_assert(decltype(q.wheres())::size == 1);
+}
+
+// ── static constexpr queries ────────────────────────────────────────────────
+
+TEST(SelectQuery, StaticConstexprWithWhere)
+{
+    static constexpr auto q = orm::select(orm::field<&User::id>)
+        .where(orm::field<&User::id> == orm::Placeholder<int>{});
+    static_assert(decltype(q.where_clauses())::size == 1);
+    static_assert(decltype(q.where_clauses())::template orm_type<0>::operation == "==");
+}
+
+TEST(SelectQuery, StaticConstexprWithLiteralWhere)
+{
+    static constexpr auto q = orm::select(orm::field<&User::id>)
+        .where(orm::field<&User::score> > 3.14);
+    static_assert(decltype(q.where_clauses())::size == 1);
+    static_assert(decltype(q.where_clauses())::template orm_type<0>::operation == ">");
+}
+
+TEST(SelectQuery, StaticConstexprWithLimit)
+{
+    using namespace orm::literals;
+    static constexpr auto q = orm::select(orm::field<&User::id>)
+        .limit(15_per_page & 5_page);
+    static_assert(decltype(q.limit_clauses())::size == 1);
+    static_assert(q.limit_clauses().template get<0>().get_elements_per_page() == 15);
+    static_assert(q.limit_clauses().template get<0>().get_number_of_page() == 5);
+}
+
+TEST(SelectQuery, StaticConstexprChained)
+{
+    using namespace orm::literals;
+    static constexpr auto q = orm::select(orm::field<&User::id>, orm::field<&User::name>)
+        .where(orm::field<&User::id> == orm::Placeholder<int>{})
+        .where(orm::field<&User::score> > 0.0)
+        .limit(10_per_page & 1_page);
+    static_assert(decltype(q.where_clauses())::size == 2);
+    static_assert(decltype(q.limit_clauses())::size == 1);
+}
+
+TEST(SelectQuery, StaticConstexprChainedLimits)
+{
+    using namespace orm::literals;
+    static constexpr auto q = orm::select(orm::field<&User::id>, orm::field<&User::name>)
+        .where(orm::field<&User::id> == orm::Placeholder<int>{})
+        .limit(15_per_page & 5_page)
+        .limit(5_page & 15_per_page);
+    static_assert(decltype(q.where_clauses())::size == 1);
+    static_assert(decltype(q.limit_clauses())::size == 2);
+    static_assert(q.limit_clauses().template get<0>().get_elements_per_page() == 15);
+    static_assert(q.limit_clauses().template get<0>().get_number_of_page() == 5);
+    static_assert(q.limit_clauses().template get<1>().get_elements_per_page() == 15);
+    static_assert(q.limit_clauses().template get<1>().get_number_of_page() == 5);
+}
+
+TEST(DeleteQuery, StaticConstexprWithWhere)
+{
+    static constexpr auto q = orm::deleteq<User>()
+        .where(orm::field<&User::id> == orm::Placeholder<int>{});
+    static_assert(decltype(q.wheres())::size == 1);
+    static_assert(decltype(q.wheres())::template orm_type<0>::operation == "==");
+}
+
+TEST(DeleteQuery, StaticConstexprChainedWheres)
+{
+    static constexpr auto q = orm::deleteq<User>()
+        .where(orm::field<&User::id> == orm::Placeholder<int>{})
+        .where(orm::field<&User::score> > 0.0);
+    static_assert(decltype(q.wheres())::size == 2);
+}
+
+TEST(InsertQuery, StaticConstexpr)
+{
+    static constexpr auto q = orm::insert(
+        orm::field<&User::id>,
+        orm::field<&User::name>,
+        orm::field<&User::score>);
+    static_assert(decltype(q)::properties::size == 3);
+}
+
+TEST(UpdateQuery, StaticConstexprWithPlaceholders)
+{
+    static constexpr auto q = orm::update<User>()
+        .set(orm::field<&User::name>,  orm::Placeholder<std::u8string>{})
+        .set(orm::field<&User::score>, orm::Placeholder<double>{})
+        .where(orm::field<&User::id> == orm::Placeholder<int>{});
+    static_assert(decltype(q.updates())::size == 2);
+    static_assert(decltype(q.wheres())::size  == 1);
 }
 
 // ── result ────────────────────────────────────────────────────────────────────
