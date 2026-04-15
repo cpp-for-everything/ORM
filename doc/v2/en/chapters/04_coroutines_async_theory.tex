@@ -1,0 +1,101 @@
+\section{Theory of Coroutines and Asynchronous Execution in C++}
+\label{sec:coroutines_async_theory}
+
+Coroutines are a language mechanism for describing suspendable computations whose execution can be paused and later resumed without losing local state. In standard C++, coroutine support enters the language proper with C++20 rather than as an external library-level emulation~\cite{cpp20standard,p0912r5,p1063r0}. This matters for the present work because it allows the asynchronous layer of the library to be built on compile-time defined rules for types, lifetime, and control flow instead of on an ad hoc callback structure.
+
+In this chapter coroutines are examined not merely as convenient syntax, but as an execution model positioned between purely synchronous blocking execution and heavyweight operating-system threads. The goal is not only to show how \code{co_await} and \code{co_return} are used, but also to explain why compiler lowering to a state machine makes this approach especially suitable for a library that already relies on static types, trait specialisations, and compile-time validation.
+
+This theoretical layer is necessary for one more reason. In the context of \ORMName{}, coroutines are not an isolated language experiment, but the foundation of a unified asynchronous interface over backends with very different operational characteristics. For such an architecture to be scientifically defensible, the language mechanism, the runtime infrastructure, and the concrete driver execution semantics must be kept distinct.
+
+\subsection{Processes, threads, tasks, and coroutines}
+
+A process is a protected address-space context provided by the operating system, a thread is a kernel-scheduled sequence of instructions, and a task is a more general software notion for a unit of work. A coroutine is neither a process nor a thread. It is a cooperative execution unit whose suspension and resumption are governed by the programming model and the generated runtime structure rather than directly by the operating-system scheduler.
+
+This distinction is essential because the library combines coroutines and \code{ThreadPool} without conflating the two abstractions. A thread is a comparatively expensive kernel resource associated with its own stack, scheduling, and synchronisation primitives. A coroutine is a much lighter logical unit that preserves only the state required to suspend and continue a concrete computation. Moving toward a coroutine-based model therefore does not mean “more threads”, but a more structured way of describing where a computation may wait for an external event.
+
+\begin{table}[H]
+\centering
+\caption{Comparison of the principal execution units}
+\label{tab:execution_units_comparison}
+\begin{tabularx}{\textwidth}{L{2.8cm}L{4.0cm}Y}
+\toprule
+\textbf{Unit} & \textbf{Nature} & \textbf{Significance for the library} \\
+\midrule
+Process & Isolated address-space context with operating-system resources & Not a direct ORM architectural unit, but the boundary of the runtime environment \\
+Thread & Kernel-scheduled execution flow with its own stack & Used by \code{ThreadPool} for offloading blocking operations \\
+Coroutine & Cooperatively suspendable computation with preserved local state & Provides the formal model for \code{Task<T>} and asynchronous composition \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Table~\ref{tab:execution_units_comparison} underlines that a coroutine is a logical rather than a kernel unit. That is exactly what allows many suspend/resume sequences to coexist within the same thread without each requiring its own stack and thread identity.
+
+\subsection{Syntax, awaitable protocol, and language bindings}
+
+The key language operators \code{co_await}, \code{co_return}, and \code{co_yield} mark that a function follows coroutine semantics. From the standpoint of the architecture, the most important one is \code{co_await}, because it describes the point at which the current computation may yield execution until an external operation --- for example a database call or scheduling to a thread pool --- becomes ready. In this way the user-facing syntax remains close to linear code while the execution model becomes asynchronous.
+
+For the purposes of the present thesis, it is important that this language form is not discovered dynamically at runtime, but is compiler-bound to the function's return type and to the \code{promise\_type} that \code{std::coroutine\_traits} derives for the concrete signature~\cite{cpp20standard,p0912r5}. This means that the way a coroutine produces a result, propagates an error, or stores its continuation can be formalised already at the level of the type system.
+
+In practice, \code{co_await} operates through the awaitable protocol. The object being awaited participates in a three-step scheme: \code{await\_ready()} determines whether suspension is needed at all, \code{await\_suspend()} receives the coroutine handle and decides how resumption should be organised, and \code{await\_resume()} returns the result or raises an error. It is precisely this triple that makes it possible for different sources of asynchrony --- thread-pool tasks, event-loop readiness, and driver callbacks --- to be unified under a common \code{co_await} syntax.
+
+\subsection{The coroutine as a state machine}
+
+The compiler does not perform “magic”, but lowers a coroutine function into a state machine with well-defined suspend points, resume transitions, and frame storage~\cite{p0912r5,p1063r0}. This transformation is especially important for the present thesis because it shows that the compile-time approach of the library does not stop at query modelling. The same language toolchain also makes it possible to formalise asynchronous control flow through types and static rules instead of through unstructured callback chains.
+
+Conceptually, a coroutine function passes through several clearly distinguishable phases: creation of the frame and \code{promise\_object}, initial execution, arrival at a suspend point, externally organised resumption, and final completion. This matters because correctness no longer depends only on “what the code does”, but also on when it is admissible to continue it and which component bears responsibility for that continuation.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.5cm and 1.8cm]
+    \node[ormblock, text width=3.1cm, align=center] (call) {Coroutine function call};
+    \node[ormblock, text width=3.4cm, align=center, right=of call] (frame) {Creation of coroutine frame and \code{promise\_object}};
+    \node[ormblock, text width=2.8cm, align=center, right=of frame] (run) {Initial body execution};
+
+    \node[ormaccent, text width=2.9cm, align=center, below=of frame] (await) {\code{co\_await} on an awaitable};
+    \node[ormblock, text width=3.0cm, align=center, right=of await] (suspend) {Suspended coroutine state};
+    \node[ormblock, text width=3.2cm, align=center, below=of suspend] (source) {Resume source:\\thread pool / event loop / driver callback};
+    \node[ormaccent, text width=2.8cm, align=center, left=of source] (resume) {Resumption via coroutine handle};
+
+    \node[ormblock, text width=2.9cm, align=center, left=of resume] (finish) {Continuation of the body and \code{co\_return}};
+    \node[ormblock, text width=3.0cm, align=center, below=of finish] (final) {\code{final\_suspend}, continuation, result/error};
+
+    \coordinate (run_suspend_mid) at ($(run)!0.5!(suspend)$);
+
+    \draw[ormline] (call) -- (frame);
+    \draw[ormline] (frame) -- (run);
+    \draw[ormline] (run) -- (run |- run_suspend_mid) -- (await |- run_suspend_mid) -- (await.north);
+    \draw[ormline] (await) -- (suspend);
+    \draw[ormline] (suspend) -- (source);
+    \draw[ormline] (source) -- (resume);
+    \draw[ormline] (resume) -- (finish);
+    \draw[ormline] (finish) -- (final);
+\end{tikzpicture}
+\caption{Conceptual coroutine lifecycle as frame, suspend points, and externally controlled resumption}
+\label{fig:coroutine_lifecycle}
+\end{figure}
+
+Figure~\ref{fig:coroutine_lifecycle} shows why the coroutine model is natural for a library with clearly separated layers. The user's logical code remains linear, while the actual control of execution passes through formal transitions that can be connected to concrete runtime mechanisms.
+
+\subsection{Coroutine frame, promise object, continuation, and safety}
+
+For each coroutine the compiler creates a coroutine frame that stores local variables, the current execution state, and the promise object through which the coroutine communicates a result, an error, or completion. This has a direct impact on safety: the lifetime of the frame, the ownership of the result, and the placement of the continuation are not secondary implementation details, but part of the correctness contract of the asynchronous layer.
+
+It must be emphasised that the coroutine frame is not an ordinary stack frame. It may outlive the current stack context and be resumed later from another thread or from event-loop infrastructure. Problems such as premature destruction of the frame, double resumption, incorrect propagation of exception state, or loss of continuation are therefore not mere low-level implementation details, but fundamental correctness risks.
+
+The promise object is precisely what organises value return, error propagation, and the behaviour at \code{initial\_suspend} and \code{final\_suspend}. From an architectural perspective, this is an important example of compile-time binding: the result type and completion semantics are not determined by a dynamic registry scheme, but encoded in the coroutine return type itself. That allows \code{Task<T>} to be designed as a formal abstraction rather than as an informal “future-like” object.
+
+\subsection{Coroutines, thread pools, and event-loop infrastructure}
+
+\code{ThreadPool} and coroutines solve different problems. \code{ThreadPool} provides a bounded set of worker threads and a scheduling policy for work, whereas coroutines describe how a logical task may be suspended and later resumed. Their combination allows blocking backends to be integrated in a universal way through offload, without forcing the user back into callback-oriented programming.
+
+On the other hand, with truly non-blocking drivers the coroutine may be resumed not by a worker thread, but by an event loop or a callback bridge. Reactor-like environments observe file-descriptor readiness through system mechanisms such as \code{kqueue} on macOS and BSD systems~\cite{kqueue_man}. The coroutine therefore does not itself “perform I/O”; rather, it provides a formal interface through which I/O readiness or a driver callback can be turned into a resume action.
+
+This is exactly where it becomes clear why coroutines should not be conflated with threads. The thread is the carrier of physical execution; the coroutine is the carrier of logical sequencing. One and the same asynchronous model may use a thread pool in one backend scenario and an event loop in another without changing the user-facing \code{co_await} syntax.
+
+\subsection{Significance for the Compile-time Object-Relational Mapping library}
+
+For \ORMName{}, this theoretical analysis has a direct architectural consequence. The compile-time modelled query IR and connector contract determine what is admissible to execute; the coroutine-based layer determines how that admissible computation may be executed asynchronously. In other words, a type-correct query and a correct execution path are distinct but mutually dependent layers.
+
+This distinction is especially important in a multi-backend library. PostgreSQL and MySQL provide native non-blocking client interfaces, but in different operational forms~\cite{libpq_async,mysql_capi_async}. \code{hiredis} uses a callback-based asynchronous layer~\cite{hiredis}, while the Cassandra driver operates through a future/callback mechanism~\cite{cassandra_futures}. In MongoDB the emphasis remains on safe pooling and multithreaded use of \code{libmongoc}~\cite{mongoc_client_pool}, whereas \code{libneo4j-client} follows a predominantly synchronous request/response model~\cite{libneo4j_client}. It is precisely this heterogeneity that justifies an asynchronous architecture with two strategies: a universal offload model and native async integration for drivers that permit it.
+
+Coroutines therefore do not automatically make every operation non-blocking and they do not remove the limitations of a given driver. They provide a formal model for asynchronously describing the computation; the actual performance effect depends on whether the backend library has a native non-blocking interface, whether work is offloaded to a thread pool, or whether the task remains synchronous. This is exactly why the following chapters consider separately the compile-time ORM architecture, the asynchronous layer of the framework, and the execution semantics of concrete backends.

@@ -103,7 +103,10 @@ add_subdirectory(src/ORM/db/connectors/ThreadSafety)
 # ── Wire-protocol optimisations ───────────────────────────────────────────
 add_subdirectory(src/ORM/db/connectors/WireProtocol)
 
-# ── Schema migration tool ─────────────────────────────────────────────────
+# ── Async infrastructure ─────────────────────────────────────────────────────
+add_subdirectory(src/ORM/async)
+
+# ── Schema migration tool ─────────────────────────────────────────────────────
 add_subdirectory(src/ORM/db/migration)
 
 # ── SQLite connector ──────────────────────────────────────────────────────

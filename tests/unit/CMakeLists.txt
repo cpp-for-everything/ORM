@@ -25,3 +25,23 @@ target_compile_options(test_unit PRIVATE
 )
 
 gtest_discover_tests(test_unit)
+
+# ── Async infrastructure tests ───────────────────────────────────────────────
+add_executable(test_async_unit
+    test_task.cpp
+    test_io_context.cpp
+    test_thread_pool.cpp
+    test_async_connector.cpp
+)
+
+target_link_libraries(test_async_unit PRIVATE
+    orm::async
+    GTest::gtest_main
+)
+
+target_compile_options(test_async_unit PRIVATE
+    $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -Wpedantic>
+    $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra -Wpedantic>
+)
+
+gtest_discover_tests(test_async_unit)

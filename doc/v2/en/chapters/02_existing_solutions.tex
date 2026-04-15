@@ -1,9 +1,9 @@
 \section{Review of Existing Solutions}
 \label{sec:existing_solutions}
 
-Reviewing existing solutions is necessary in order to evaluate whether the proposed architecture delivers a genuine contribution or merely reformulates already known practices. In the space of C++ database libraries, two orthogonal axes are especially useful: the level of abstraction and the stage at which queries are constructed and validated. The abstraction level ranges from almost direct use of a client C API to fully fledged ORM behaviour. The validation stage may be runtime, hybrid, or compile time.
+Reviewing existing solutions is necessary in order to evaluate whether the proposed architecture delivers a genuine contribution or merely reformulates already known practices. In the space of C++ database libraries, two principal axes and an additional execution perspective are especially useful: the level of abstraction, the stage at which queries are constructed and validated, and the execution model. The abstraction level ranges from almost direct use of a client C API to fully fledged ORM behaviour. The validation stage may be runtime, hybrid, or compile time. The execution model ranges from direct blocking API calls to backend-specific asynchronous state-machine interfaces and higher-level layers that attempt to unify them.
 
-These two axes are especially important in the context of the present thesis. If one observes only ``API convenience'', it is easy to miss the essential difference between a library that merely makes SQL strings more readable and a library that truly transfers structural correctness into the compiler. If, on the other hand, one looks only at when an error appears, one may underestimate the cost of abstraction, build-toolchain complexity, and suitability for more than one storage model.
+These axes are especially important in the context of the present thesis. If one observes only ``API convenience'', it is easy to miss the essential difference between a library that merely makes SQL strings more readable and a library that truly transfers structural correctness into the compiler. If, on the other hand, one looks only at when an error appears, one may underestimate the cost of abstraction, build-toolchain complexity, and suitability for more than one storage model. And if the execution model is ignored, it becomes easy to form the mistaken impression that ``asynchrony'' is a uniform capability regardless of whether one is dealing with a native non-blocking API, a callback layer over an event loop, or mere offload to a thread pool.
 
 \subsection{Classification of approaches}
 
@@ -58,7 +58,7 @@ Compile-time ORM & high & compile time for structure & early discovery of struct
 
 \subsection{Evaluation criteria}
 
-For the comparison to be academically complete, it is not enough to say that one library is ``more convenient'' while another is ``lower level''. In the present work, five criteria are used:
+For the comparison to be academically complete, it is not enough to say that one library is ``more convenient'' while another is ``lower level''. In the present work, six criteria are used:
 
 \begin{enumerate}[label=\arabic*.]
     \item \textbf{Level of logical abstraction} --- to what degree the library allows the data model to be described independently of the immediate backend syntax.
@@ -66,9 +66,10 @@ For the comparison to be academically complete, it is not enough to say that one
     \item \textbf{Portability across backends} --- whether the logical model can be adapted to more than one storage family.
     \item \textbf{Toolchain complexity} --- whether the library requires external code generation, extra preprocessing stages, or generated metadata.
     \item \textbf{Transparency of errors and execution} --- how clearly a developer can follow the link between the C++ source, the generated query, and the runtime behaviour.
+    \item \textbf{Execution model and asynchronous suitability} --- whether the library provides a unified and verifiable model for concurrent or non-blocking execution, or leaves that task entirely to the concrete driver and application code.
 \end{enumerate}
 
-These criteria are directly related to the objectives of the thesis. If the proposed library is to be both expressive and formally checkable, then it must improve on alternatives not only in convenience, but in the balance between these five dimensions.
+These criteria are directly related to the objectives of the thesis. If the proposed library is to be both expressive and formally checkable, then it must improve on alternatives not only in convenience, but in the balance between these six dimensions.
 
 \subsection{Native client libraries}
 
@@ -77,6 +78,12 @@ SQLite~\cite{sqlite}, \code{libpq}, and \code{MySQL Connector/C} are representat
 This becomes especially problematic when the same domain model must be connected to more than one class of database. In such cases the application accumulates conditional code paths, backend-specific SQL strings, and duplicated hydration logic. Beyond a certain system size, this weakens not only convenience but also confidence in correctness.
 
 The strength of the native-API approach lies in its honesty. It does not promise more abstraction than it actually provides. Precisely for that reason, it often serves as a control point against which higher-level abstractions may be judged.
+
+\subsection{Asynchrony in existing client stacks}
+
+An essential part of the present context is that native client libraries are not always purely synchronous. \code{libpq} offers a state machine for asynchronous query dispatch and result consumption~\cite{libpq_async}, MySQL Connector/C provides \code{\_start}/\code{\_cont} pairs for non-blocking operations~\cite{mysql_capi_async}, \code{hiredis} exposes a callback-based asynchronous layer~\cite{hiredis}, and the Cassandra driver relies on a future/callback mechanism~\cite{cassandra_futures}. Yet these capabilities remain strongly backend-specific both in interface and in execution semantics.
+
+This leads to an important conclusion: the presence of a native asynchronous API does not by itself solve the problem of a shared C++ abstraction. In each separate case, the application must know whether it is working with socket-readiness polling, callback registration, future polling, or driver-managed internal threads. In MongoDB the emphasis remains on pooling and safe multithreaded use of \code{libmongoc}~\cite{mongoc_client_pool}, while in \code{libneo4j-client} the dominant model remains synchronous request/response execution~\cite{libneo4j_client}. It is precisely this heterogeneity that motivates an intermediate asynchronous layer that is honest about backend differences and still unified enough for a user-facing API.
 
 \subsection{Runtime query builders}
 
@@ -122,12 +129,12 @@ Classical ORM & convenient object mapping for relational systems & dependence on
 
 \subsection{Positioning of the present work}
 
-The proposed library is positioned as a \ORMName{} solution that combines strong static typing, absence of external code generation, and a connector-driven model for transferring one logical abstraction across different backend families. Compared to the native API approach, it reduces duplication of logic and the risk of late-discovered structural errors. Compared to runtime query builders, it shifts structural validation into the compiler. Compared to classical ORM frameworks, it avoids external generators and puts explicit emphasis on the connector contract.
+The proposed library is positioned as a Compile-time Object-Relational Mapping solution that combines strong static typing, absence of external code generation, a connector-driven model for transferring one logical abstraction across different backend families, and a coroutine-based asynchronous execution layer. Compared to the native API approach, it reduces duplication of logic and the risk of late-discovered structural errors. Compared to runtime query builders, it shifts structural validation into the compiler. Compared to classical ORM frameworks, it avoids external generators and puts explicit emphasis on the connector contract. Compared to backend-specific asynchronous APIs, it offers a unified coroutine model without pretending that all drivers expose identical non-blocking capabilities.
 
-The key distinction, however, is deeper. The present work does not treat compile-time techniques merely as a way to build a ``smarter SQL builder''. It treats them as a way to formalise the logical model of data access itself. That is precisely what allows the following chapters to move from the theory of typed models toward architecture, connector contracts, and real multi-backend scenarios.
+The key distinction, however, is deeper. The present work does not treat compile-time techniques merely as a way to build a ``smarter SQL builder''. It treats them as a way to formalise the logical model of data access itself. Analogously, it does not treat asynchrony as a decorative wrapper, but as a separate architectural problem with its own constraints, lifecycle rules, and backend-specific execution paths. That is precisely what allows the following chapters to move from coroutine theory toward compile-time architecture, the async layer, connector contracts, and real multi-backend scenarios.
 
 \subsection{Conclusions from the comparative analysis}
 
-The comparison with existing solutions leads to three principal conclusions. First, the native-API approach remains indispensable as a baseline for control and performance, but does not provide a satisfactory level of logical abstraction. Second, runtime query builders and typed SQL DSL solutions improve work with SQL, but do not fully solve the problem of a backend-independent logical layer. Third, classical ORM frameworks offer high abstraction, but often at the price of tooling complexity and limited suitability outside the relational world.
+The comparison with existing solutions leads to four principal conclusions. First, the native-API approach remains indispensable as a baseline for control and performance, but does not provide a satisfactory level of logical abstraction. Second, runtime query builders and typed SQL DSL solutions improve work with Structured Query Language (SQL), but do not fully solve the problem of a backend-independent logical layer. Third, classical ORM frameworks offer high abstraction, but often at the price of tooling complexity and limited suitability outside the relational world. Fourth, native asynchronous client APIs are valuable, but they exhibit such different execution models that they do not by themselves provide a unified user abstraction.
 
-It is exactly this positioning that justifies the more detailed discussion in the next chapter of two separate but connected questions: which language and theoretical mechanisms make a compile-time ORM approach possible, and how one and the same logical model can be interpreted across relational and non-relational systems.
+It is exactly this positioning that justifies the more detailed discussion in the next chapter of a separate but crucial question: which language and theoretical mechanisms make a coroutine-based asynchronous architecture possible, on top of which the later compile-time ORM model and multi-backend execution layer are built.

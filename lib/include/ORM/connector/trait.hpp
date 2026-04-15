@@ -14,4 +14,12 @@ namespace orm {
         typename connector_trait<DB>::cursor_type;
     };
 
+    // ── is_async_connector<DB> concept ─────────────────────────────────────────
+    // An async connector must be a valid connector, declare the supports_async
+    // capability, and provide async_execute().
+    template <typename DB>
+    concept is_async_connector =
+        is_connector<DB> &&
+        has_capability<DB, cap::supports_async>;
+
 } // namespace orm

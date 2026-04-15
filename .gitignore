@@ -16,6 +16,10 @@ old/
 .worktrees/
 vcpkg_installed
 
+# Clangd / IDE
+compile_commands.json
+.clangd
+
 # Docker
 docker-logs.txt
 .docker/
