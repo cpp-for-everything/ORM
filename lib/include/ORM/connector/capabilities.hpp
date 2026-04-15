@@ -25,6 +25,7 @@ namespace orm {
         struct supports_embedding {};
         struct supports_upsert {};
         struct supports_bulk_insert {};
+        struct supports_async {};
 
     } // namespace cap
 
@@ -57,6 +58,10 @@ namespace orm {
         template <typename DB>
         struct capability_check<DB, cap::supports_bulk_insert>
             : std::bool_constant<requires { typename connector_trait<DB>::supports_bulk_insert; }> {};
+
+        template <typename DB>
+        struct capability_check<DB, cap::supports_async>
+            : std::bool_constant<requires { typename connector_trait<DB>::supports_async; }> {};
 
     } // namespace detail
 

@@ -19,12 +19,14 @@ add_subdirectory(lib)          # builds orm::orm (header-only interface)
 
 target_link_libraries(my_app PRIVATE
     orm::orm          # core ORM headers
+    orm::async        # async event loop, coroutines, thread pool
     orm::mockdb       # in-memory SQL renderer (testing)
     orm::sqlite       # SQLite3 connector (requires SQLite3 installed)
 )
 ```
 
 The `orm::sqlite` target is only created when `find_package(SQLite3)` succeeds.
+The `orm::async` target provides C++20 coroutine primitives (`Task<T>`, `IoContext`, `ThreadPool`).
 
 ## Quick start
 
@@ -175,13 +177,21 @@ if (opt)
 ## Architecture
 
 ```
-orm::db<DB>
-  ├── operator<< / execute / find_one
-  │     └── connector_trait<DB>::execute(conn, query_ir, params...)
-  │           ├── connector_trait<MockDB>   — renders SQL string, stores in MockDB::last_sql
-  │           └── connector_trait<SQLiteDB> — prepares + executes sqlite3 statement
-  └── prepare(query) → prepared_query<DB, Query>
-        └── .execute(params...)  — reuses stored IR, no reconstruction
+orm::db<DB>           (sync)         orm::async_db<DB>        (async)
+  ├── operator<<                       ├── operator<<  → Task<result<...>>
+  ├── execute(q, params...)            ├── async_execute(q, params...)
+  ├── find_one(q)                      └── sync_handle() → db<DB>&
+  └── prepare(q)
+        └── connector_trait<DB>::execute(conn, query_ir, params...)
+              ├── connector_trait<MockDB>   — renders SQL, stores in MockDB::last_sql
+              └── connector_trait<SQLiteDB> — prepares + executes sqlite3 statement
+
+orm::async primitives
+  ├── Task<T>              — C++20 coroutine task with sync_wait()
+  ├── IoContext            — cross-platform event loop (kqueue on macOS)
+  ├── ThreadPool           — fixed-size worker thread pool
+  ├── run_on_pool(pool, f) — offload blocking callable to pool, resume coroutine
+  └── CancellationToken    — cooperative cancellation with callbacks
 ```
 
 - **Query IR** — fully compile-time, all structure in template parameters. No runtime parsing.
@@ -189,13 +199,24 @@ orm::db<DB>
 - **`prepared_query<DB, Query>`** — returned by `db.prepare()`; stores the IR + connection ref; `execute()` is `const`-qualified for safe use in `static const` locals.
 - **Capability gating** — connectors declare `using supports_joins = void;` etc.; missing capability + usage = `static_assert` at the call site.
 - **`orm::result<Row, FieldTuple>`** — lazy range over `std::vector<Row>`; supports `get<I>()`, `get_field<&T::m>()`, `to_vector()`, range-for, `find_one()`.
+- **`async_db<DB>`** — wraps any sync connector; offloads queries to `ThreadPool` via `run_on_pool`; connectors declaring `supports_async` use native non-blocking I/O instead.
+- **`async_connection_pool<DB, N>`** — coroutine-aware pool; `acquire()` returns `Task<async_connection_guard<DB>>`.
+- **`async_transaction_guard<DB>`** — async RAII transaction with `co_await txn.commit()` / auto-rollback on destruction.
 
 ## Connectors
 
-| Connector | Header | CMake target | Status |
-|-----------|--------|--------------|--------|
-| MockDB    | `ORM/db/connectors/MockDB/mock_db.hpp` | `orm::mockdb` | Full — renders SQL for test inspection |
-| SQLite    | `ORM/db/connectors/SQLite/sqlite_db.hpp` | `orm::sqlite` | Full — SELECT/INSERT/UPDATE/DELETE with prepared statements |
+| Connector | Header | CMake target | Async | Status |
+|-----------|--------|--------------|-------|--------|
+| MockDB    | `MockDB/mock_db.hpp` | `orm::mockdb` | via `async_db` | Full — renders SQL for test inspection |
+| SQLite    | `SQLite/sqlite_db.hpp` | `orm::sqlite` | via `async_db` | Full — SELECT/INSERT/UPDATE/DELETE |
+| MySQL     | `MySQLDB/mysql_live.hpp` | `orm::mysql` | native `_start/_cont` | Integration — requires libmysqlclient |
+| PostgreSQL| `PostgreSQLDB/postgresql_live.hpp` | `orm::postgresql` | native libpq async | Integration — requires libpq |
+| Cassandra | `CassandraDB/cassandra_live.hpp` | `orm::cassandra` | native `CassFuture` bridge | Integration — requires DataStax driver |
+| Redis     | `RedisDB/redis_live.hpp` | `orm::redis` | native hiredis async | Integration — requires hiredis |
+| MongoDB   | `MongoDBLive/mongodb_live.hpp` | `orm::mongodb` | via `async_db` | Integration — requires libmongoc |
+| Neo4j     | `Neo4jDB/neo4j_live.hpp` | `orm::neo4j` | via `async_db` | Integration — requires libneo4j-client |
+
+All connectors automatically work with `async_db<DB>` (thread-pool offload). Connectors marked "native" additionally provide non-blocking I/O via `IoContext` for zero-copy event-driven async.
 
 ## Running tests
 
@@ -205,7 +226,7 @@ cmake --build build --parallel
 ctest --test-dir build --output-on-failure
 ```
 
-153 tests across unit + integration + SQLite suites, all passing.
+226 tests across unit + async + integration suites, all passing.
 
 ## Benefits
 
@@ -215,16 +236,44 @@ ctest --test-dir build --output-on-failure
 - **Prepared statement caching** — `db.prepare(q)` returns a `prepared_query` that can be stored as `static const` and executed repeatedly with different parameters at zero IR-reconstruction cost.
 - **Connector-agnostic IR** — the same fluent query compiles for any backend; NoSQL connectors translate the same IR to their wire format.
 - **Capability-gated** — using `.join()` on a connector that doesn't declare `supports_joins` is a `static_assert`, not a runtime error.
+- **Coroutine-native async** — `async_db<DB>` turns any sync connector into a coroutine-based async handle via `ThreadPool` + `run_on_pool`. Connectors with native non-blocking APIs (MySQL, PostgreSQL, Cassandra, Redis) use direct event-loop integration for maximum throughput.
+- **Cross-platform event loop** — `IoContext` with kqueue (macOS), io_uring (Linux, planned), IOCP (Windows, planned) backends.
+
+## Async quick start
+
+```cpp
+#include <ORM/connector/async_db.hpp>
+#include <ORM/async/thread_pool.hpp>
+
+orm::ThreadPool pool(4);
+orm::MockDB conn;
+orm::async_db<orm::MockDB> adb(conn, pool);
+
+auto task = [&]() -> orm::Task<void> {
+    constexpr auto q = orm::select(orm::field<&User::id>);
+    auto result = co_await (adb << q);
+    // result is ready, query ran on a pool thread
+    co_return;
+}();
+task.sync_wait();
+```
 
 ## Roadmap
 
-- MySQL connector
+- ~~MySQL connector~~ ✓ (sync + async)
+- ~~PostgreSQL connector~~ ✓ (sync + async)
+- ~~Cassandra connector~~ ✓ (sync + async)
+- ~~Redis connector~~ ✓ (sync + async)
 - MongoDB connector
+- io_uring backend (Linux)
+- IOCP backend (Windows)
 - HAVING clause
 - IN / NOT IN rules
 - COUNT(*) aggregate
 - Auto-migration tooling
 - C++26 reflection path (column names inferred, no string argument needed)
+- Pipeline mode for PostgreSQL (multi-query concurrency over single connection)
+- Benchmark infrastructure
 
 ## Socials
 

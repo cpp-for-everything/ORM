@@ -1,0 +1,132 @@
+\section{Асинхронна архитектура на изпълнението}
+\label{sec:async_execution_architecture}
+
+След като compile-time архитектурният модел е дефиниран, следващият въпрос е как библиотеката реализира асинхронното изпълнение като втора основна архитектурна ос. Настоящата глава разглежда основните building blocks на async слоя и ги проследява от \code{Task<T>} и \code{co\_await}-базираната композиция до \code{ThreadPool}, \code{async\_db<DB>}, \code{IoContext}, coroutine-aware connection pooling и интеграцията с backend-специфични execution path-ове.
+
+Тук фокусът вече не е върху query IR-а като compile-time структура, а върху реалната механика на suspend/resume изпълнението. Как синхронният connector API се повдига до асинхронен интерфейс? Къде offload към thread pool е правилната стратегия и къде native non-blocking API е по-точният модел? Как async слоят гарантира коректна употреба на връзките и транзакциите без връщане към callback-driven интерфейс? Отговорът на тези въпроси показва доколко библиотеката е завършена не само като типова, но и като изпълнителна система.
+
+\subsection{Архитектурна позиция на async слоя}
+
+Асинхронният слой е разположен над вече съществуващия синхронен модел \code{db<DB>} и \code{connector\_trait<DB>}. Това е важен архитектурен избор. Вместо да дублира query builder-а или да въвежда втори набор от query типове, async подсистемата приема compile-time конструирания query IR като готов вход и се занимава единствено с това \emph{как} да бъде изпълнен. По този начин първата архитектурна ос --- типово описание на данните и операциите --- остава отделена от втората ос --- управление на асинхронния lifecycle.
+
+От тази гледна точка async архитектурата има три основни отговорности. Първо, да осигури coroutine носител на execution state и continuation. Второ, да даде универсален механизъм за повдигане на blocking connector-и към \code{Task}-базиран интерфейс. Трето, да позволи native non-blocking backends да участват в същия потребителски синтаксис, без библиотеката да симулира фалшива еднородност там, където драйверите реално са различни.
+
+\subsection{\code{Task<T>} като носител на coroutine lifecycle}
+
+Основната потребителска абстракция е \code{Task<T>}. Нейната роля не се изчерпва с това да „върне бъдещ резултат“. Тя е контейнер за coroutine frame-а, promise object-а, continuation-а и политиката за завършване. Реализацията използва \code{initial\_suspend()} и \code{final\_suspend()} така, че корутината да бъде lazy по начало и да предава управлението обратно към continuation-а при завършване. Следователно \code{Task<T>} е едновременно execution handle и formal contract за това как резултат, exception и завършване се предават между coroutine контексти.
+
+От инженерна гледна точка са важни три свойства. Първо, \code{operator co\_await()} свързва текущата continuation към awaited задачата и позволява естествено вложено \code{co\_await} композиране. Второ, \code{sync\_wait()} осигурява мост към не-корутинен код, което е необходимо както за unit тестовете, така и за boundary сценарии, в които приложението още не работи изцяло coroutine-first. Трето, \code{detach()} и \code{start\_detached()} позволяват controlled fire-and-forget поведение, при което coroutine frame-ът се самоунищожава след \code{final\_suspend()}.
+
+Тази конструкция не е декоративна. Тя определя кога async операция е lazy, кога започва да се изпълнява, кой носи отговорност за lifetime-а на frame-а и как се propagated-ват exceptions. Именно поради това \code{Task<T>} стои в центъра на всички останали async компоненти: \code{run\_on\_pool()}, \code{async\_db<DB>}, \code{IoContext} awaitable-ите и transaction helper-ите работят през един и същ coroutine договор.
+
+\subsection{\code{ThreadPool} и \code{run\_on\_pool()}: универсалният execution path}
+
+Универсалната async стратегия е thread-pool offload. \code{ThreadPool} поддържа bounded набор от worker нишки и опашка от задачи. Върху него стъпва \code{run\_on\_pool()}, който приема callable, публикува го към опашката, спира текущата корутина и я възобновява, когато callable-ът завърши. По този начин synchronous connector API може да бъде използван през \code{co\_await}, без потребителският код да се връща към manual promise/future plumbing.
+
+Критичният детайл е, че \code{run\_on\_pool()} не е просто helper за „пусни нещо на друга нишка“. Неговият awaiter пази continuation, евентуалния exception и резултата от callable-а. След изпълнение върху worker нишката continuation-ът се resume-ва, а \code{await\_resume()} връща резултат или повдига грешка. Така offload path-ът остава подчинен на същите coroutine правила като native async path-а.
+
+Този универсален модел е особено важен за backend-и, които нямат естествен native non-blocking клиентски интерфейс или при които библиотеката съзнателно не претендира такъв. В тези случаи честният архитектурен избор е blocking операцията да бъде изолирана в \code{ThreadPool}, а потребителят да получи единен \code{Task}-базиран интерфейс. Точно това поведение се валидира от \code{RunOnPoolTest.*} и от \code{AsyncDbTest.AsyncSelectRunsOnPoolThread}, където се доказва, че реалното изпълнение се премества извън главната нишка.
+
+\subsection{\code{async\_db<DB>} и capability-gated dispatch}
+
+Най-важната външна async фасада е \code{async\_db<DB>}. Тя обгръща \code{db<DB>} и запазва familiar query syntax-а, но връща \code{Task<result<...>>}. Архитектурното значение на тази обвивка е, че тя не решава динамично какво да направи в runtime, а използва compile-time capability gating. При \code{operator<<} има \code{if constexpr} разклонение върху \code{has\_capability<DB, cap::supports\_async>}. Ако connector-ът декларира native async възможност, се извиква \code{connector\_trait<DB>::async\_execute()}. В противен случай синхронният \code{execute()} път се обгръща в \code{run\_on\_pool()}.
+
+\begin{lstlisting}[language=C++,caption={Централното capability-gated разклонение в \\code{async\_db<DB>}},label={lst:async_db_dispatch}]
+template <typename Query>
+[[nodiscard]] auto operator<<(Query q)
+    -> Task<decltype(std::declval<db<DB>>() << std::declval<Query>())>
+{
+    using ResultType = decltype(std::declval<db<DB>>() << std::declval<Query>());
+
+    if constexpr (has_capability<DB, cap::supports_async>)
+    {
+        co_return co_await connector_trait<DB>::async_execute(
+            db_.connection(), std::move(q));
+    }
+    else
+    {
+        co_return co_await run_on_pool(
+            *pool_, [this, q = std::move(q)]() mutable -> ResultType {
+                return db_ << std::move(q);
+            });
+    }
+}
+\end{lstlisting}
+
+Listing~\ref{lst:async_db_dispatch} е централен за цялата async архитектура. Той показва, че библиотеката не използва runtime registry или string-based dispatch, а compile-time проверка върху connector capability-та. По този начин потребителският API остава еднороден, докато вътрешният execution path остава верен на реалните възможности на дадения backend.
+
+Помощният метод \code{async\_execute(Query, Params...)} изпълнява сходна bridging роля за imperative сценарии с явни параметри, а \code{sync\_handle()} позволява controlled escape към синхронния интерфейс, когато такава граница е необходима. Следователно \code{async\_db<DB>} не е паралелна библиотека, а адаптационен слой между compile-time ORM ядрото и coroutine execution модела.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.4cm and 1.6cm]
+    \node[ormaccent, text width=3.6cm, align=center] (call) {Потребителска корутина\\\code{co\_await (adb << query)}};
+    \node[ormblock, below=of call, text width=3.2cm, align=center] (adb) {\code{async\_db<DB>}};
+    \node[ormblock, below=of adb, text width=4.3cm, align=center] (gate) {Compile-time разклонение\\\code{has\_capability<DB, cap::supports\_async>}};
+
+    \node[ormblock, below left=of gate, text width=3.0cm, align=center] (poolawait) {\code{run\_on\_pool()}};
+    \node[ormblock, below=of poolawait, text width=3.4cm, align=center] (syncpath) {\code{ThreadPool} +\\\code{db<DB>::execute}};
+
+    \node[ormblock, below right=of gate, text width=3.3cm, align=center] (native) {\code{connector\_trait<DB>::async\_execute}};
+    \node[ormblock, below=of native, text width=3.6cm, align=center] (iopath) {\code{IoContext} + native\\driver state machine};
+
+    \node[ormaccent, below=of $(syncpath)!0.5!(iopath)$, text width=3.3cm, align=center] (result) {\code{Task<result<...>>}\\continuation и резултат};
+
+    \draw[ormline] (call) -- (adb);
+    \draw[ormline] (adb) -- (gate);
+    \draw[ormline] (gate) -- (poolawait);
+    \draw[ormline] (poolawait) -- (syncpath);
+    \draw[ormline] (gate) -- (native);
+    \draw[ormline] (native) -- (iopath);
+    \draw[ormline] (syncpath) -- (result);
+    \draw[ormline] (iopath) -- (result);
+\end{tikzpicture}
+\caption{Двата execution пътя на \code{async\_db<DB>}: универсален offload и native async интеграция}
+\label{fig:async_dispatch_paths}
+\end{figure}
+
+Фигура~\ref{fig:async_dispatch_paths} показва най-важното архитектурно решение в async слоя. Външният интерфейс остава единен, но вътрешният execution path е capability-gated. Това е причината библиотеката едновременно да предлага удобен coroutine API и да избягва фалшивото твърдение, че всички драйвери са естествено неблокиращи.
+
+\subsection{\code{IoContext} и native non-blocking integration}
+
+За драйвери с истински native async интерфейс библиотеката не се ограничава до thread-pool offload. Тук влиза в действие \code{IoContext} --- абстракция за event loop, която предоставя \code{run()}, \code{run\_one()}, \code{stop()}, \code{post()}, \code{schedule()} и най-важното \code{watch\_readable(fd)} и \code{watch\_writable(fd)}. Тези awaitable-и не извършват входно-изходна операция сами по себе си. Те само спират корутината и я възобновяват, когато file descriptor-ът стане готов за четене или запис.
+
+Точно това разделение между readiness и самото I/O действие е решаващо. \code{IoContext} не се опитва да „скрие“ драйвера, а предоставя coroutine-friendly reactor интерфейс, върху който native клиентската библиотека може да стъпи. В реализацията на \code{AsyncPostgreSQLDB} това се вижда особено ясно. Асинхронното свързване използва \code{PQconnectPoll()}, а корутината последователно await-ва \code{watch\_writable()} или \code{watch\_readable()} според състоянието на \code{libpq} state machine-а. При изпълнение на заявка \code{PQsendQueryParams()}, \code{PQflush()}, \code{PQisBusy()} и \code{PQconsumeInput()} се комбинират със същия \code{IoContext} механизъм.
+
+Следователно native async пътят не е „по-бърз thread pool“, а qualitatively различен execution модел. Worker нишката не блокира в очакване на мрежова готовност; корутината се suspend-ва, а възобновяването се управлява от event loop наблюдение. Това е precisely архитектурният модел, който следващата глава развива по backend-и: PostgreSQL, MySQL, Redis и Cassandra могат да предложат native async интеграция с различни operational форми, докато други драйвери остават честно описани като blocking и следователно се обслужват от универсалния offload path.
+
+\subsection{Coroutine-aware connection pooling и transaction helpers}
+
+Async архитектурата не приключва с единичното изпълнение на заявка. Реалното приложение трябва да управлява връзки и транзакции при конкурентен достъп. Именно затова библиотеката предоставя \code{async\_connection\_pool<DB, N>}, \code{async\_connection\_guard<DB>}, \code{async\_transaction\_guard<DB>} и factory coroutine-а \code{async\_begin\_transaction()}.
+
+\code{async\_connection\_pool<DB, N>} е coroutine-aware продължение на синхронния pooling слой. Неговият \code{acquire()} метод връща \code{Task<async\_connection\_guard<DB>>}. Вътрешно той използва \code{run\_on\_pool()} и condition variable, за да изчака connection slot със състояние \code{Idle}, без calling coroutine-ата да бъде изложена на blocking interface. Полученият guard следва идиомата Resource Acquisition Is Initialization (RAII): при разрушаване той връща състоянието на връзката към \code{Idle} и уведомява чакащите.
+
+От своя страна \code{async\_connection\_guard<DB>::get()} не връща сурова връзка, а нов \code{async\_db<DB>} handle. Това е важен архитектурен детайл. Дори след придобиване на конкретна connection resource потребителят остава в същия coroutine execution модел и не пада обратно към низко ниво API.
+
+Сходна логика се вижда и при транзакциите. \code{async\_begin\_transaction()} first offload-ва \code{BEGIN} към pool-а, а след това връща \code{async\_transaction\_guard<DB>}. Методите \code{commit()} и \code{rollback()} са \code{Task<void>} операции, а деструкторът на guard-а изпълнява защитен \code{ROLLBACK}, ако транзакцията не е финализирана изрично. Този дизайн е едновременно удобен и консервативен: success path-ът е coroutine-friendly, а cleanup path-ът остава deterministic.
+
+Точно тези свойства се валидират от \code{AsyncConnectionPoolTest.ConcurrentAcquires}, \code{AsyncTransactionTest.BeginAndCommit}, \code{AsyncTransactionTest.RollbackOnDestruction} и \code{AsyncTransactionTest.ExplicitRollback}. Следователно pooling и transaction helper-ите не са периферни удобства, а важна част от цялостната execution архитектура.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Основни async подсистеми и тяхната кодова и тестова опора}
+\label{tab:async_subsystem_evidence}
+\begin{tabularx}{\textwidth}{L{2.9cm}L{4.3cm}Z}
+\toprule
+\textbf{Подсистема} & \textbf{Архитектурна роля} & \textbf{Основни файлове и тестове} \\
+\midrule
+\code{Task<T>} & coroutine lifecycle, continuation, \code{sync\_wait()}, detach semantics & \path{lib/include/ORM/async/task.hpp}, \path{tests/unit/test_task.cpp} \\
+\code{ThreadPool} и \code{run\_on\_pool()} & универсален offload path за blocking операции & \path{lib/include/ORM/async/thread_pool.hpp}, \path{tests/unit/test_thread_pool.cpp} \\
+\code{async\_db<DB>} & capability-gated async dispatch над \code{db<DB>} & \path{lib/include/ORM/connector/async_db.hpp}, \path{tests/unit/test_async_connector.cpp} \\
+\code{IoContext} и native async connectors & reactor-style fd readiness и native non-blocking интеграция & \path{lib/include/ORM/async/io_context.hpp}, \path{lib/include/ORM/db/connectors/PostgreSQLDB/postgresql_async.hpp}, \path{tests/unit/test_io_context.cpp} \\
+Pooling и транзакции & coroutine-aware connection ownership и transactional safety & \path{lib/include/ORM/db/connectors/ThreadSafety/async_thread_safety.hpp}, \path{tests/unit/test_async_connector.cpp} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Архитектурен извод за async слоя}
+
+Асинхронната архитектура на библиотеката не е просто добавен coroutine wrapper около синхронното ORM ядро. Тя е самостоятелен слой с ясно разграничени отговорности: \code{Task<T>} моделира lifecycle-а на корутината, \code{run\_on\_pool()} осигурява универсален offload механизъм, \code{async\_db<DB>} реализира capability-gated dispatch, \code{IoContext} предоставя native readiness integration, а pooling и transaction helper-ите разширяват модела към practically relevant многозадачни сценарии.
+
+Следователно втората архитектурна ос на дипломната работа не се свежда до това „да има async API“. Тя показва как compile-time формализираният access model може да бъде изпълняван през два честно разграничени asynchronous execution path-а --- универсален и native --- без библиотеката да губи типова дисциплина, lifecycle безопасност или connector transparency. Именно този слой прави възможен следващия анализ на backend изпълнителните модели.

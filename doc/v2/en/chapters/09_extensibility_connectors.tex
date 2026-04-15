@@ -1,9 +1,9 @@
-\section{Verification and Extensibility Through New Connectors}
+\section{Extensibility Through New Connectors}
 \label{sec:verification_extensibility}
 
-One of the central claims of the project is that the library is both verifiable and extensible. This requires not merely the presence of tests, but a clearly defined connector contract that allows a new backend to be added without changing the query API and without breaking compile-time guarantees.
+One of the central claims of the project is that the library is extensible without compromising its compile-time guarantees. This requires not merely the presence of tests, but a clearly defined connector contract that allows a new backend to be added without changing the query API and without breaking type discipline, capability constraints, and architectural invariants.
 
-The previous chapters showed that the library already works across relational and non-relational backends. The present chapter formalises how this is possible and how the next backend should be introduced. In other words, extensibility ceases here to be a general quality of the design and becomes a methodology with concrete requirements, signatures, testing criteria, and levels of completeness.
+The previous chapters showed that the library already works across relational and non-relational backends, and that the async layer can be realised differently depending on the native capabilities of a given driver. The present chapter formalises how this is possible and how the next backend should be introduced. In other words, extensibility ceases here to be a general quality of the design and becomes a methodology with concrete requirements, signatures, capability declarations, async obligations, and completeness criteria.
 
 \subsection{Formal contract of the connector layer}
 

@@ -188,6 +188,7 @@
 \newcolumntype{Y}{>{\ORMTableCellStyle\arraybackslash}X}
 \newcolumntype{Q}[1]{>{\collectcell\ORMSlashTableCell}p{#1}<{\endcollectcell}}
 \newcolumntype{Z}{>{\collectcell\ORMSlashTableCell}X<{\endcollectcell}}
+\setlength{\extrarowheight}{0.45em}
 \tikzset{
     ormblock/.style={draw, rounded corners, fill=blue!5, align=center, font=\small,
         minimum width=3.2cm, minimum height=1.05cm, inner sep=6pt},
@@ -343,57 +344,62 @@
 \newpage
 
 % ============================================================================
-% Глава 4: Архитектура на библиотеката
+% Глава 4: Теория на корутините и асинхронното изпълнение
 % ============================================================================
-\input{chapters/04_orm_architecture.tex}
+\input{chapters/04_coroutines_async_theory.tex}
 
 \newpage
 
 % ============================================================================
-% Глава 5: Реализация на основните подсистеми
+% Глава 5: Compile-time ORM архитектура
 % ============================================================================
-\input{chapters/05_core_implementation.tex}
+\input{chapters/05_compile_time_orm_architecture.tex}
 
 \newpage
 
 % ============================================================================
-% Глава 6: Backend сценарии
+% Глава 6: Асинхронна архитектура на изпълнението
 % ============================================================================
-\input{chapters/06_backend_scenarios.tex}
+\input{chapters/06_async_execution_architecture.tex}
 
 \newpage
 
 % ============================================================================
-% Глава 7: Верификация и надграждаемост
+% Глава 7: Backend изпълнителни модели
 % ============================================================================
-\input{chapters/07_verification_extensibility.tex}
+\input{chapters/07_backend_execution_models.tex}
 
 \newpage
 
 % ============================================================================
-% Глава 8: Ограничения и бъдещо развитие
+% Глава 8: Верификация и емпирична оценка
 % ============================================================================
-\input{chapters/08_future_work.tex}
+\input{chapters/08_verification_evaluation.tex}
 
 \newpage
 
 % ============================================================================
-% Глава 9: Заключение
+% Глава 9: Надграждаемост чрез нови конектори
 % ============================================================================
-\input{chapters/09_conclusion.tex}
+\input{chapters/09_extensibility_connectors.tex}
 
 \newpage
 
-\bibliographystyle{plain}
+% ============================================================================
+% Глава 10: Ограничения и бъдещо развитие
+% ============================================================================
+\input{chapters/10_future_work.tex}
+
+\newpage
+
+% ============================================================================
+% Глава 11: Заключение
+% ============================================================================
+\input{chapters/11_conclusion.tex}
+
+\newpage
+
+\bibliographystyle{ieeetr}
 \bibliography{../../references}
-
-\newpage
-\input{chapters/10_glossary.tex}
-
-\newpage
-\input{chapters/11_verification_appendix.tex}
-
-\newpage
-\input{chapters/12_capability_atlas.tex}
 
 \end{document}

@@ -1,9 +1,9 @@
-\section{Backend Scenarios Across Relational and Non-relational Databases}
+\section{Backend Execution Models and Native Client Libraries}
 \label{sec:backend_scenarios}
 
-This chapter examines how one and the same C++ abstraction is materialised across different backends. The scenario analysis has two goals. First, it demonstrates that the library is not restricted to a purely SQL interpretation. Second, it clarifies the boundaries of the shared abstraction and the points at which backend-specific constraints must remain explicit.
+This chapter examines not only how one and the same C++ abstraction is materialised across different backends, but also how it is executed through the concrete native client libraries. The analysis has two goals. First, it demonstrates that the library is not restricted to a purely SQL interpretation. Second, it clarifies where asynchronous integration can follow a native non-blocking model and where the honest architectural choice remains thread-pool offload over a synchronous driver.
 
-After the theoretical framework of Chapter~\ref{sec:theoretical_background}, the question is no longer whether the different storage models are equivalent. Instead, the question is whether one and the same logical ORM form can be adapted to them in a controlled way, without the library beginning to promise operations that a given backend cannot naturally execute. It is precisely here that the value of the capability-based connector contract becomes visible.
+After the theoretical framework of Chapter~\ref{sec:theoretical_background} and the explanation of the async layer in Chapter~\ref{sec:async_execution_architecture}, the question is no longer whether the different storage models are equivalent. Instead, the question is whether one and the same logical ORM form can be adapted to them in a controlled way, without the library promising execution semantics that a given backend cannot naturally provide. It is precisely here that the value of the capability-based connector contract and of the distinction between a universal async interface and a backend-specific implementation becomes visible.
 
 \subsection{Methodology of the analysis}
 
@@ -122,6 +122,32 @@ For that reason, Cassandra is the best example that the extensibility of the lib
 \end{figure}
 
 Figure~\ref{fig:backend_capability_spectrum} synthesises one of the most important observations of the chapter: the library does not impose the same capability profile on every backend. On the contrary, the differences are used as first-class architectural information.
+
+\subsection{Synthesised capability matrix}
+
+To keep the comparison not only qualitative but also tabularly traceable, Figure~\ref{fig:backend_capability_spectrum} can be reduced to a compact capability matrix. It should not be read as a universal truth about the database systems themselves, but as a description of the concrete architectural position of the library toward them in the examined repository revision.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Capability profiles of the principal backends according to the available tests and connector specialisations}
+\label{tab:backend_capability_matrix}
+\begin{tabularx}{\textwidth}{L{2.0cm}L{1.45cm}L{1.55cm}L{1.5cm}L{1.35cm}L{1.55cm}Y}
+\toprule
+\textbf{Backend} & \textbf{Joins} & \shortstack{\textbf{Transac-}\\\textbf{tions}} & \shortstack{\textbf{Aggre-}\\\textbf{gation}} & \textbf{Upsert} & \shortstack{\textbf{Bulk}\\\textbf{insert}} & \textbf{Short comment} \\
+\midrule
+SQLite & present & present & present & limited & limited & the closest full relational reference path in the repository \\
+PostgreSQL & present & present & present & specific & possible & strong relational contract with live execution evidence \\
+MySQL & present & present & present & specific & possible & the operational path is available, but binding and dialect details remain connector-specific \\
+MongoDB & absent & absent & absent & analog. & not central & strong document model without an SQL-style capability profile \\
+Redis & absent & absent & absent & analog. & limited & key-value semantics with a minimalist but honest contract profile \\
+Neo4j & analog. & present & absent & not central & not central & graph backend with transaction focus rather than an SQL join/aggregation layer \\
+Cassandra & absent & present & absent & not central & possible & wide-column backend with a restricted but formally defined capability set \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Table~\ref{tab:backend_capability_matrix} makes it easier to see where the library comes closest to classical ORM behaviour and where it deliberately works with a partial contract. Relational backends concentrate the richer capability profile, whereas document, graph, and key-value variants are evaluated through other criteria. It is exactly this controlled non-uniformity that makes the multi-backend design engineering-honest.
 
 \subsection{Comparison between test evidence and backend contract}
 

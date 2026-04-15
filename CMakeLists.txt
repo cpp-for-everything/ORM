@@ -4,6 +4,7 @@ project(ORM VERSION 2.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Add custom CMake modules directory
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -24,3 +25,8 @@ enable_testing()
 
 add_subdirectory(lib)
 add_subdirectory(tests)
+
+option(ORM_ENABLE_BENCHMARKS "Build benchmark executables (requires Google Benchmark)" OFF)
+if(ORM_ENABLE_BENCHMARKS)
+    add_subdirectory(benchmarks)
+endif()
