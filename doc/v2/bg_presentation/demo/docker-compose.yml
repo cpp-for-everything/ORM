@@ -1,0 +1,70 @@
+# ============================================================================
+#  docker-compose.yml — Самостоятелна среда за демото от защитата
+# ============================================================================
+#  Употреба от свеж clone:
+#
+#    git clone <repo>
+#    cd <repo>/doc/v2/bg_presentation/demo
+#    docker compose up               # пуска всичко "out of the box"
+#
+#  За интерактивна работа (по време на защитата):
+#
+#    docker compose run --rm demo bash
+#    # вече вътре в контейнера:
+#    bash run_demo_a.sh
+#    bash run_demo_b.sh
+#
+#  Тегли само GCC + сглобяване еднократно при първи `up`; всеки следващ
+#  start ползва кешираните слоеве и приключва за секунди.
+# ============================================================================
+
+services:
+  mariadb:
+    image: mariadb:10.11
+    environment:
+      MARIADB_ROOT_PASSWORD: orm_test_password
+      MARIADB_DATABASE: orm_test
+      MARIADB_USER: orm_test
+      MARIADB_PASSWORD: orm_test_password
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+    # Без публикуван порт --- контейнерът на демото комуникира през
+    # вътрешната Docker мрежа.
+
+  demo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      # Bind mount на цялото хранилище. `:cached` намалява latency-то на
+      # macOS bind mount-овете (без него Docker Desktop synchronizира
+      # всеки write синхронно).
+      - ../../../..:/work:cached
+    working_dir: /work
+    environment:
+      ORM_ROOT: /work
+      # Кеш каталог за изграждане --- лежи на bind mount-а, така че
+      # се запазва между `docker compose run` извиквания.
+      BUILD_DIR: /work/build-docker
+      # MariaDB пробата сочи към сайдкара чрез вътрешното име.
+      ORM_TEST_MYSQL_LIVE: "1"
+      ORM_MYSQL_HOST: mariadb
+      ORM_MYSQL_PORT: "3306"
+      ORM_MYSQL_USER: orm_test
+      ORM_MYSQL_PASSWORD: orm_test_password
+      ORM_MYSQL_DATABASE: orm_test
+      # run_demo_a.sh търси Boost.PFR на този path вместо в build-wsl-uring.
+      PFR_INC: /opt/boost_pfr/include
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    # При `docker compose up` се изпълнява docker-entrypoint.sh, който прави
+    # пълния auto-run на двете демонстрации. За интерактивна работа ползвай
+    # `docker compose run --rm demo bash`.
+    command: ["bash", "/work/doc/v2/bg_presentation/demo/docker-entrypoint.sh"]
+    stdin_open: true
+    tty: true

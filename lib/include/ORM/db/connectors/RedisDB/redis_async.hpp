@@ -20,6 +20,14 @@ namespace orm {
 
     // ── Redis event loop adapter ───────────────────────────────────────────────
     // Bridges hiredis' async event callbacks to our IoContext reactor.
+    //
+    // hiredis invokes addRead/addWrite whenever it wants to be notified of fd
+    // readiness; the registration is one-shot (hiredis re-calls add* on every
+    // future read/write of interest). We map each such request to a detached
+    // coroutine that suspends on IoContext::watch_readable/watch_writable and,
+    // on resume, dispatches back into hiredis. del* are no-ops because the
+    // one-shot semantics already cover cancellation of "already fulfilled"
+    // registrations.
     namespace redis_adapter {
 
         struct AdapterState
@@ -28,12 +36,32 @@ namespace orm {
             IoContext* ctx;
         };
 
+        namespace detail {
+
+            inline auto wait_then_read(
+                IoContext* ctx, int fd, redisAsyncContext* ac) -> Task<void>
+            {
+                co_await ctx->watch_readable(fd);
+                redisAsyncHandleRead(ac);
+                co_return;
+            }
+
+            inline auto wait_then_write(
+                IoContext* ctx, int fd, redisAsyncContext* ac) -> Task<void>
+            {
+                co_await ctx->watch_writable(fd);
+                redisAsyncHandleWrite(ac);
+                co_return;
+            }
+
+        } // namespace detail
+
         inline void add_read(void* privdata)
         {
             auto* state = static_cast<AdapterState*>(privdata);
-            state->ctx->watch_readable(state->ac->c.fd, [ac = state->ac]() {
-                redisAsyncHandleRead(ac);
-            });
+            auto task = detail::wait_then_read(
+                state->ctx, state->ac->c.fd, state->ac);
+            task.start_detached();
         }
 
         inline void del_read(void* /*privdata*/) {}
@@ -41,9 +69,9 @@ namespace orm {
         inline void add_write(void* privdata)
         {
             auto* state = static_cast<AdapterState*>(privdata);
-            state->ctx->watch_writable(state->ac->c.fd, [ac = state->ac]() {
-                redisAsyncHandleWrite(ac);
-            });
+            auto task = detail::wait_then_write(
+                state->ctx, state->ac->c.fd, state->ac);
+            task.start_detached();
         }
 
         inline void del_write(void* /*privdata*/) {}

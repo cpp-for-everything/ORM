@@ -46,7 +46,8 @@
 
 \lstset{
     language=C++,
-    basicstyle=\fontsize{6}{7.5}\ttfamily,
+    % Шрифт оптимизиран за прожекция: ~10.5 pt вместо предишните 6 pt.
+    basicstyle=\fontsize{10}{12}\ttfamily,
     keywordstyle=\color{cppblue}\bfseries,
     stringstyle=\color{cppred},
     commentstyle=\color{cppgreen}\itshape,
@@ -62,6 +63,8 @@
     rulecolor=\color{cppgray},
     xleftmargin=0.4em,
     xrightmargin=0.2em,
+    aboveskip=0.3em,
+    belowskip=0.3em,
     morekeywords={constexpr,requires,concept,auto,nullptr,noexcept,
                   select,insert,update,deleteq,where,order_by,group_by,
                   limit,prepare,execute,field,Placeholder,ph,
@@ -95,7 +98,7 @@
 \subtitle{Дипломна работа}
 \author[Алекс Цветанов]{%
     Алекс Цветанов, фак.~№~121222225\\[0.3em]
-    {\footnotesize Научен ръководител: доц.~д-р~инж.~Галя Павлова}}
+    {\footnotesize Научен ръководител: проф.~д-р~инж.~Румен Трифонов}}
 \institute[ТУ--София]{%
     Технически университет~--~София\\
     Факултет „Компютърни системи и технологии"\\
@@ -116,16 +119,16 @@
 \section{Мотивация}
 % ══════════════════════════════════════════════════════════
 
-\begin{frame}{Проблемът с runtime заявките}
+\begin{frame}{Проблемът със заявките, проверявани при изпълнение}
     \begin{columns}[T]
         \begin{column}{0.54\textwidth}
             \textbf{Традиционен подход:}
             \begin{itemize}\small
                 \item Заявките се описват като \alert{низове}
                 \item Валидиране едва при изпълнение
-                \item Грешни имена на полета → runtime crash
-                \item Несъвместими типове → late discovery
-                \item Смяна на backend → \alert{пълно пренаписване}
+                \item Грешни имена на полета → срив при изпълнение
+                \item Несъвместими типове → късно откриване
+                \item Смяна на хранилището → \alert{пълно пренаписване}
             \end{itemize}
             \vspace{0.15em}
             \textbf{Изследователски въпрос:}\\
@@ -136,13 +139,13 @@
             \small
             \begin{tabularx}{\linewidth}{@{}XX@{}}
                 \toprule
-                \textbf{Runtime} & \textbf{Compile-time}\\
+                \textbf{При изпълнение} & \textbf{При компилация}\\
                 \midrule
-                Низ заявки &
-                    \texttt{constexpr} IR\\
+                Низови заявки &
+                    \texttt{constexpr} междинно представяне\\
                 {Грешка при\newline изпълнение} & {Грешка при\newline \alert{компилация}}\\
-                Late discovery &
-                    Early detection\\
+                Късно откриване &
+                    Ранно откриване\\
                 \bottomrule
             \end{tabularx}
             \vspace{0.15em}
@@ -159,30 +162,29 @@
     \small
     \begin{columns}[T]
         \begin{column}{0.52\textwidth}
-            \small
-            \begin{tabularx}{\linewidth}{@{}llX@{}}
+            \footnotesize
+            \begin{tabular}{@{}p{1.6cm}p{2.6cm}p{2.9cm}@{}}
                 \toprule
                 \textbf{Решение} & \textbf{Подход} & \textbf{Ограничение}\\
                 \midrule
-                SOCI      & runtime bind & низ-базирани заявки\\
-                ODB       & codegen      & external compiler\\
-                sqlpp11   & EDSL         & главно SQL сценарии\\
-                Hiberlite & ORM          & само SQLite\\
+                SOCI      & при изпълнение     & низови заявки\\
+                ODB       & кодогенерация      & външен генератор\\
+                sqlpp11   & вграден DSL        & главно за SQL\\
+                Hiberlite & ORM                & само за SQLite\\
                 \bottomrule
-            \end{tabularx}
+            \end{tabular}
         \end{column}
         \begin{column}{0.45\textwidth}
             \begin{block}{Цел на разработката}
-                \begin{itemize}\scriptsize
-                    \setlength{\itemsep}{0.15em}
-                    \item \texttt{constexpr} query IR без codegen
-                    \item Connector contract и capability ограничения
-                    \item 7 backend-а и coroutine async слой
+                \begin{itemize}\footnotesize
+                    \setlength{\itemsep}{0.1em}
+                    \item \texttt{constexpr} междинно представяне
+                    \item Договор на конектора и способности
+                    \item 7 системи + корутинен async слой
                 \end{itemize}
             \end{block}
             \begin{alertblock}{Основна теза}
-                {\scriptsize Един C++ модел може да бъде compile-time валидиран,
-                multi-backend разширяем и practically useful при async натоварвания.}
+                {\footnotesize Един C++ модел, валидиран при компилация, разширяем към много системи и практически приложим при асинхронни натоварвания.}
             \end{alertblock}
         \end{column}
     \end{columns}
@@ -220,20 +222,15 @@
         \end{column}
         \begin{column}{0.55\textwidth}
             \textbf{Ключови архитектурни принципа:}
-            \begin{itemize}\small
-                \item Никакъв виртуален интерфейс\\
-                    {\footnotesize trait-базиран, не наследствен contract}
-                \item Query IR е \texttt{constexpr}\\
-                    {\footnotesize значима валидация при компилация}
-                \item Capability tags ограничават\\
-                    неподдържаните операции
-                \item Смяна на backend = смяна само на\\
-                    типа на конектора
+            \begin{itemize}\footnotesize
+                \setlength{\itemsep}{0.15em}
+                \item Без виртуален интерфейс --- признаков (trait-based) договор
+                \item \texttt{constexpr} междинно представяне на заявката --- ранна валидация
+                \item Маркери за способности (capability tags) ограничават неподдържаните операции
+                \item Смяна на системата за съхранение = смяна само на типа
             \end{itemize}
-            \vspace{0.05em}
             \begin{alertblock}{Централен инвариант}
-                Приложният код не комуникира директно с драйвера —
-                работи само с C++ типове.
+                {\footnotesize Приложният код не комуникира директно с драйвера --- работи само с C++ типове.}
             \end{alertblock}
         \end{column}
     \end{columns}
@@ -274,10 +271,10 @@ static constexpr auto q =
     \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{Connector trait и Capability механизъм}
+\begin{frame}[fragile]{Договор на конектора и механизъм на способностите}
     \begin{columns}[T]
         \begin{column}{0.52\textwidth}
-            \textbf{Минимален connector contract:}
+            \textbf{Минимален договор на конектора:}
 \begin{lstlisting}
 template<>
 struct orm::connector_trait<MyDB> {
@@ -295,11 +292,11 @@ struct orm::connector_trait<MyDB> {
         \begin{column}{0.45\textwidth}
             \begin{itemize}\small
                 \item \texttt{is\_connector<DB>} валидира интерфейса при компилация
-                \item Capability таговете ограничават неподдържани операции
-                \item Смяната на backend е смяна на типа, а не на query API
+                \item Маркерите за способности ограничават неподдържаните операции
+                \item Смяната на системата за съхранение е смяна на типа, а не на интерфейса за заявки
             \end{itemize}
             \vspace{0.15em}
-            \begin{block}{Демонстрирани backend-и}
+            \begin{block}{Демонстрирани системи за съхранение}
                 {\small SQLite, PostgreSQL, MySQL, MongoDB, Redis, Neo4j, Cassandra}
             \end{block}
         \end{column}
@@ -310,13 +307,13 @@ struct orm::connector_trait<MyDB> {
 \section{Backend сценарии}
 % ══════════════════════════════════════════════════════════
 
-\begin{frame}{Multi-backend материализация}
+\begin{frame}{Един модел, много системи за съхранение}
     \begin{columns}[T]
         \begin{column}{0.50\textwidth}
-            {\small Един Query IR → различни backend-и:}
+            {\small Едно междинно представяне → различни системи:}
             \begin{tabularx}{\linewidth}{@{}lX@{}}
                 \toprule
-                \textbf{Backend}  & \textbf{Материализация}\\
+                \textbf{Система}  & \textbf{Материализация}\\
                 \midrule
                 SQLite      & \texttt{WHERE id = ?}\\
                 PostgreSQL  & \texttt{WHERE id = \$1}\\
@@ -341,7 +338,7 @@ struct orm::connector_trait<MyDB> {
             \begin{alertblock}{Принцип}
                 {\small C++ моделът е единственият
                 \emph{логически} носител на схемата.
-                Backend-ът определя физическата
+                Системата за съхранение определя физическата
                 материализация.}
             \end{alertblock}
         \end{column}
@@ -354,14 +351,14 @@ struct orm::connector_trait<MyDB> {
             \centering
             \resizebox{0.92\linewidth}{!}{%
             \begin{tikzpicture}[node distance=0.40cm and 0.35cm]
-                \node[layerbox, font=\scriptsize, minimum width=3.0cm, text width=2.6cm] (api)
+                \node[layerbox, font=\footnotesize, minimum width=3.2cm, text width=2.8cm] (api)
                     {\textbf{\texttt{async\_db<DB>}}\\ Task<T>\\ фасада};
-                \node[layerbox, font=\scriptsize, minimum width=2.5cm, text width=2.1cm, below=of api] (task)
-                    {\textbf{Coroutine}\\ suspend\\ resume};
-                \node[layerbox, font=\scriptsize, minimum width=2.2cm, text width=1.9cm, below left=of task] (io)
-                    {\textbf{IoContext}\\ timers\\ I/O};
-                \node[layerbox, font=\scriptsize, minimum width=2.2cm, text width=1.9cm, below right=of task] (pool)
-                    {\textbf{Thread}\\ \textbf{Pool}\\ offload\\ resume};
+                \node[layerbox, font=\footnotesize, minimum width=2.7cm, text width=2.3cm, below=of api] (task)
+                    {\textbf{Корутина}\\ suspend\\ resume};
+                \node[layerbox, font=\footnotesize, minimum width=2.6cm, text width=2.3cm, below left=of task] (io)
+                    {\textbf{\texttt{IoContext}}\\ kqueue / io\_uring\\ epoll / WSAPoll};
+                \node[layerbox, font=\footnotesize, minimum width=2.4cm, text width=2.1cm, below right=of task] (pool)
+                    {\textbf{\texttt{ThreadPool}}\\ за драйвери без\\ неблокиращ API};
                 \draw[ormline] (api) -- (task);
                 \draw[ormline] (task) -- (io);
                 \draw[ormline] (task) -- (pool);
@@ -371,15 +368,14 @@ struct orm::connector_trait<MyDB> {
             }
         \end{column}
         \begin{column}{0.44\textwidth}
-            \begin{itemize}\scriptsize
-                \item При waiting фаза worker нишката не блокира, а корутината се suspend-ва
-                \item Синхронен connector може да се повдигне чрез offload към pool
-                \item Native async path остава възможен чрез awaitable слой
-                \item Пулове и транзакции запазват RAII семантиката
+            \begin{itemize}\footnotesize
+                \setlength{\itemsep}{0.1em}
+                \item Работната нишка не блокира; корутината се преустановява и продължава при готовност
+                \item \textbf{Неблокиращ път}: PostgreSQL, MySQL/MariaDB, Cassandra, Redis
+                \item \textbf{Обединителен път}: SQLite, MongoDB, Neo4j
             \end{itemize}
-            \vspace{0.05em}
             \begin{alertblock}{Ключов извод}
-                {\scriptsize Async слоят е втора архитектурна ос на библиотеката, а не ad-hoc wrapper.}
+                {\footnotesize Асинхронният слой е втора архитектурна ос, а не обвивка за удобство.}
             \end{alertblock}
         \end{column}
     \end{columns}
@@ -393,25 +389,26 @@ struct orm::connector_trait<MyDB> {
     \begin{columns}[T]
         \begin{column}{0.46\textwidth}
             \begin{block}{Доказателствена база}
-                \textbf{271 теста} — 100\% преминаване\\
-                {\small Compile-time + unit + integration + live backend проверки}
+                \textbf{271 теста} --- 100\% преминаване\\
+                {\footnotesize при компилация + единични + интеграционни + срещу живи системи}
             \end{block}
-            \begin{itemize}\scriptsize
-                \item Query IR, capability ограничения, миграции и нишкова безопасност
-                \item Async инфраструктура: \texttt{Task<T>}, \texttt{ThreadPool}, \texttt{IoContext}, \texttt{async\_db<DB>}
-                \item Benchmark suite в \texttt{bench\_async.cpp} за synchronous vs async throughput
+            \begin{itemize}\footnotesize
+                \setlength{\itemsep}{0.1em}
+                \item Междинно представяне, способности, миграции, нишкова безопасност
+                \item Асинхронна инфраструктура: \texttt{Task<T>}, \texttt{ThreadPool}, \texttt{IoContext}
+                \item Емпирични измервания в \texttt{bench\_async.cpp}
             \end{itemize}
         \end{column}
         \begin{column}{0.50\textwidth}
             \centering
-            \begin{tikzpicture}[x=1.0cm,y=0.155cm]
-                \draw[->, thick] (0,0) -- (0,25.5) node[above] {\small ускорение async/sync};
+            \begin{tikzpicture}[x=1.0cm,y=0.18cm]
+                \draw[->, thick] (0,0) -- (0,26.5) node[above] {\footnotesize ускорение async/sync};
                 \draw[->, thick] (0,0) -- (5.3,0);
 
                 \foreach \y in {5,10,15,20,25}
                 {
                     \draw[gray!35] (0,\y) -- (5.0,\y);
-                    \node[left] at (0,\y) {\scriptsize \y};
+                    \node[left] at (0,\y) {\footnotesize \y};
                 }
 
                 \foreach \x/\h/\labeltext/\valuetext in {
@@ -421,12 +418,11 @@ struct orm::connector_trait<MyDB> {
                     4.3/23.36/{1000~$\mu$s}/23.36}
                 {
                     \fill[green!28, draw=black] (\x-0.25,0) rectangle (\x+0.25,\h);
-                    \node[font=\scriptsize, align=center, above] at (\x,\h) {\valuetext$\times$};
-                    \node[font=\scriptsize, align=center, below=6pt] at (\x,0) {\labeltext};
+                    \node[font=\footnotesize, align=center, above] at (\x,\h) {\valuetext$\times$};
+                    \node[font=\footnotesize, align=center, below=6pt] at (\x,0) {\labeltext};
                 }
-            \end{tikzpicture}
-            \vspace{0.05em}
-            {\tiny 4 нишки / 100 задачи. При 0ns ефектът е малък; при доминираща waiting фаза async печели силно.}
+            \end{tikzpicture}\\[-0.8em]
+            {\scriptsize 4 нишки, 100 задачи --- ефектът расте с изчакването}
         \end{column}
     \end{columns}
 \end{frame}
@@ -439,22 +435,22 @@ struct orm::connector_trait<MyDB> {
     \begin{columns}[T]
         \begin{column}{0.54\textwidth}
             \begin{enumerate}\small
-                \item Compile-time ORM модел в стандартен C++23 без external codegen
-                \item Един C++ entity модел за 7 backend-а
-                \item Формален connector contract и capability-базирана разширяемост
-                \item Async слой с измерима полза при I/O-dominated натоварвания
-                \item Многостепенна верификация: 271 теста + live backend + benchmark evidence
+                \item ORM модел с проверка при компилация в стандартен C++23, без външна кодогенерация
+                \item Един C++ обектен модел за 7 системи за съхранение
+                \item Формален договор на конектора и разширяемост чрез способности
+                \item Асинхронен слой с измерима полза при натоварвания, ограничени от вход-изход
+                \item Многостепенна верификация: 271 теста + проверки срещу живи системи + емпирични измервания
             \end{enumerate}
         \end{column}
         \begin{column}{0.42\textwidth}
             \begin{block}{Основен извод}
-                {\small Между runtime ORM и driver-only достъп съществува жизнеспособна архитектурна позиция: compile-time ORM слой с формални contracts и coroutine-базирано изпълнение.}
+                {\footnotesize Освен ORM с проверка при изпълнение (удобство, но късно откриване на грешки) и прекия достъп през драйвера (контрол, но без абстракция), е възможна \textbf{трета алтернатива}: договор на конектора, валидиран от компилатора, плюс корутинно изпълнение.}
             \end{block}
             \textbf{Бъдещо развитие:}
-            \begin{itemize}\small
-                \item C++26 static reflection
-                \item native async конектори
-                \item по-пълна migration автоматизация
+            \begin{itemize}\footnotesize
+                \setlength{\itemsep}{0.1em}
+                \item Отражение (reflection) от C++26
+                \item Измервания срещу мрежови сървъри
             \end{itemize}
         \end{column}
     \end{columns}

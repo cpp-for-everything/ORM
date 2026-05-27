@@ -367,6 +367,26 @@ namespace orm {
             }
         };
 
+        // Hydrate a single row from a raw MYSQL_ROW (used by both the
+        // synchronous trait and the asynchronous trait — extracted here so
+        // both implementations can share the same row-materialisation code
+        // without one declaring a friendship to the other.
+        template <typename Row, std::size_t... Is>
+        inline auto hydrate_impl(MYSQL_ROW row, unsigned long* lengths,
+                                 std::index_sequence<Is...>) -> Row
+        {
+            return Row{ convert_field<std::tuple_element_t<Is, Row>>(
+                row[Is], lengths[Is])... };
+        }
+
+        template <typename Row>
+        inline auto hydrate_row(MYSQL_ROW row, unsigned long* lengths) -> Row
+        {
+            return hydrate_impl<Row>(
+                row, lengths,
+                std::make_index_sequence<std::tuple_size_v<Row>>{});
+        }
+
     } // namespace mysql_live_detail
 
     // ── connector_trait<MySQLLiveDB> specialisation ───────────────────────────
@@ -496,16 +516,12 @@ namespace orm {
             return result<Row, Response>{ std::move(rows) };
         }
 
+        // Backwards-compat thin wrappers around the now-free helpers in
+        // mysql_live_detail; kept so the rest of the trait reads naturally.
         template <typename Row>
         static auto hydrate_row(MYSQL_ROW row, unsigned long* lengths) -> Row
         {
-            return hydrate_impl<Row>(row, lengths, std::make_index_sequence<std::tuple_size_v<Row>>{});
-        }
-
-        template <typename Row, std::size_t... Is>
-        static auto hydrate_impl(MYSQL_ROW row, unsigned long* lengths, std::index_sequence<Is...>) -> Row
-        {
-            return Row{ mysql_live_detail::convert_field<std::tuple_element_t<Is, Row>>(row[Is], lengths[Is])... };
+            return mysql_live_detail::hydrate_row<Row>(row, lengths);
         }
 
         // Execute prepared statement for SELECT queries
@@ -576,7 +592,13 @@ namespace orm {
                 result_binds[i].buffer = buffers[i].data();
                 result_binds[i].buffer_length = buffers[i].size();
                 result_binds[i].length = &lengths[i];
-                result_binds[i].is_null = reinterpret_cast<bool*>(&is_nulls[i]);
+                // is_null is bool* in Oracle MySQL Connector/C headers but
+                // my_bool* (== char*) in MariaDB Connector/C; both are 1-byte
+                // and the storage backing is_nulls[i] is a `char`. The cast
+                // target matches whichever type MYSQL_BIND::is_null happens
+                // to be at the call site.
+                result_binds[i].is_null =
+                    reinterpret_cast<decltype(result_binds[i].is_null)>(&is_nulls[i]);
             }
             
             if (mysql_stmt_bind_result(stmt, result_binds.data()) != 0)

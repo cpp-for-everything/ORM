@@ -20,6 +20,27 @@ services:
     networks:
       - orm-network
 
+  # Plain (non-TLS) MariaDB instance used by the empirical
+  # AsyncMySQLDB coroutine probe (test_mysql_async_coroutine_probe).
+  # Exposed on a distinct host port so it does not collide with the
+  # MySQL 8.0 service above.
+  mariadb:
+    image: mariadb:10.11
+    environment:
+      MARIADB_ROOT_PASSWORD: orm_test_password
+      MARIADB_DATABASE: orm_test
+      MARIADB_USER: orm_test
+      MARIADB_PASSWORD: orm_test_password
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - orm-network
+
   postgresql:
     image: postgres:15
     environment:

@@ -1,0 +1,7 @@
+# Build артефакти (генерирани от CMake/ninja)
+/build/
+/compile_commands.json
+/.cache/
+
+# clangd индекс кеш
+/.clangd-index/
