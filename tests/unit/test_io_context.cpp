@@ -3,7 +3,101 @@
 #include "ORM/async/task.hpp"
 #include <atomic>
 #include <thread>
+
+#if defined(_WIN32)
+#include <winsock2.h>
+#include <ws2tcpip.h>
+namespace {
+    // Connected loopback TCP pair as a portable substitute for POSIX pipes
+    // when running tests against the Windows reactor (WSAPoll only accepts
+    // sockets — not anonymous pipes — so the test must use sockets too).
+    inline bool make_pipe_pair(int& read_fd, int& write_fd)
+    {
+        SOCKET listener = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+        if (listener == INVALID_SOCKET) return false;
+
+        sockaddr_in addr{};
+        addr.sin_family = AF_INET;
+        addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+        addr.sin_port = 0;
+        if (::bind(listener, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) != 0)
+        {
+            ::closesocket(listener);
+            return false;
+        }
+        int alen = sizeof(addr);
+        if (::getsockname(listener, reinterpret_cast<sockaddr*>(&addr), &alen) != 0)
+        {
+            ::closesocket(listener);
+            return false;
+        }
+        if (::listen(listener, 1) != 0)
+        {
+            ::closesocket(listener);
+            return false;
+        }
+
+        SOCKET writer = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+        if (writer == INVALID_SOCKET)
+        {
+            ::closesocket(listener);
+            return false;
+        }
+        if (::connect(writer, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) != 0)
+        {
+            ::closesocket(listener);
+            ::closesocket(writer);
+            return false;
+        }
+
+        SOCKET reader = ::accept(listener, nullptr, nullptr);
+        ::closesocket(listener);
+        if (reader == INVALID_SOCKET)
+        {
+            ::closesocket(writer);
+            return false;
+        }
+
+        read_fd = static_cast<int>(reader);
+        write_fd = static_cast<int>(writer);
+        return true;
+    }
+
+    inline void close_fd(int fd) { ::closesocket(static_cast<SOCKET>(fd)); }
+    inline int write_one(int fd, char b)
+    {
+        return ::send(static_cast<SOCKET>(fd), &b, 1, 0);
+    }
+
+    struct WinsockGuard
+    {
+        WinsockGuard()
+        {
+            WSADATA d{};
+            ::WSAStartup(MAKEWORD(2, 2), &d);
+        }
+        ~WinsockGuard() { ::WSACleanup(); }
+    };
+    WinsockGuard g_winsock_guard;
+}
+#else
 #include <unistd.h>
+namespace {
+    inline bool make_pipe_pair(int& read_fd, int& write_fd)
+    {
+        int pfd[2];
+        if (::pipe(pfd) != 0) return false;
+        read_fd = pfd[0];
+        write_fd = pfd[1];
+        return true;
+    }
+    inline void close_fd(int fd) { ::close(fd); }
+    inline int write_one(int fd, char b)
+    {
+        return static_cast<int>(::write(fd, &b, 1));
+    }
+}
+#endif
 
 TEST(IoContextTest, CreateSucceeds)
 {
@@ -48,13 +142,13 @@ TEST(IoContextTest, RunOneProcessesSingleCallback)
 TEST(IoContextTest, WatchReadableWithPipe)
 {
     auto ctx = orm::IoContext::create(1);
-    int pipefd[2];
-    ASSERT_EQ(pipe(pipefd), 0);
+    int read_fd = -1, write_fd = -1;
+    ASSERT_TRUE(make_pipe_pair(read_fd, write_fd));
 
     std::atomic<bool> ready{false};
 
     auto coro = [&]() -> orm::Task<void> {
-        co_await ctx->watch_readable(pipefd[0]);
+        co_await ctx->watch_readable(read_fd);
         ready.store(true, std::memory_order_release);
         ctx->stop();
         co_return;
@@ -62,29 +156,26 @@ TEST(IoContextTest, WatchReadableWithPipe)
     coro.start_detached();
 
     // Write to pipe after a short delay to make read end readable
-    ctx->post([&] {
-        char buf = 'x';
-        [[maybe_unused]] auto written = write(pipefd[1], &buf, 1);
-    });
+    ctx->post([&] { (void)write_one(write_fd, 'x'); });
 
     ctx->run();
 
     EXPECT_TRUE(ready.load());
-    close(pipefd[0]);
-    close(pipefd[1]);
+    close_fd(read_fd);
+    close_fd(write_fd);
 }
 
 TEST(IoContextTest, WatchWritableWithPipe)
 {
     auto ctx = orm::IoContext::create(1);
-    int pipefd[2];
-    ASSERT_EQ(pipe(pipefd), 0);
+    int read_fd = -1, write_fd = -1;
+    ASSERT_TRUE(make_pipe_pair(read_fd, write_fd));
 
     std::atomic<bool> ready{false};
 
-    // Pipes are typically writable immediately
+    // Both endpoints of an empty TCP / pipe pair are immediately writable.
     auto coro = [&]() -> orm::Task<void> {
-        co_await ctx->watch_writable(pipefd[1]);
+        co_await ctx->watch_writable(write_fd);
         ready.store(true, std::memory_order_release);
         ctx->stop();
         co_return;
@@ -94,29 +185,28 @@ TEST(IoContextTest, WatchWritableWithPipe)
     ctx->run();
 
     EXPECT_TRUE(ready.load());
-    close(pipefd[0]);
-    close(pipefd[1]);
+    close_fd(read_fd);
+    close_fd(write_fd);
 }
 
 TEST(IoContextTest, MultipleWatchesSequential)
 {
     auto ctx = orm::IoContext::create(1);
-    int pipefd[2];
-    ASSERT_EQ(pipe(pipefd), 0);
+    int read_fd = -1, write_fd = -1;
+    ASSERT_TRUE(make_pipe_pair(read_fd, write_fd));
 
     std::atomic<int> step{0};
 
     auto coro = [&]() -> orm::Task<void> {
-        // First watch: writable (pipe write end is immediately writable)
-        co_await ctx->watch_writable(pipefd[1]);
+        // First watch: writable
+        co_await ctx->watch_writable(write_fd);
         step.store(1, std::memory_order_release);
 
         // Write something so read end becomes readable
-        char buf = 'y';
-        [[maybe_unused]] auto written = write(pipefd[1], &buf, 1);
+        (void)write_one(write_fd, 'y');
 
         // Second watch: readable
-        co_await ctx->watch_readable(pipefd[0]);
+        co_await ctx->watch_readable(read_fd);
         step.store(2, std::memory_order_release);
 
         ctx->stop();
@@ -127,8 +217,8 @@ TEST(IoContextTest, MultipleWatchesSequential)
     ctx->run();
 
     EXPECT_EQ(step.load(), 2);
-    close(pipefd[0]);
-    close(pipefd[1]);
+    close_fd(read_fd);
+    close_fd(write_fd);
 }
 
 TEST(IoContextTest, ScheduleDelayedCallback)

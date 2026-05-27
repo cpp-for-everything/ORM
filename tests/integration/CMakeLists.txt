@@ -47,6 +47,23 @@ if(TARGET orm::mysql_live AND ORM_MYSQL_LIVE_ENABLED)
     # Direct test for docker-compose environment (uses existing services)
     add_test(NAME MySQLLive COMMAND test_mysql_live)
     set_tests_properties(MySQLLive PROPERTIES TIMEOUT 60)
+
+    # Empirical probe for the native _start/_cont path driven by
+    # stackless C++20 coroutines. Gated by ORM_TEST_MYSQL_LIVE=1 at
+    # runtime; the executable always builds so CI signals link errors
+    # immediately.
+    if(TARGET orm::async)
+        add_executable(test_mysql_async_coroutine_probe
+            test_mysql_async_coroutine_probe.cpp)
+        target_link_libraries(test_mysql_async_coroutine_probe PRIVATE
+            orm::mysql_live orm::async GTest::gtest_main)
+        target_compile_options(test_mysql_async_coroutine_probe PRIVATE
+            $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -Wpedantic>
+        )
+        add_test(NAME MySQLAsyncCoroutineProbe
+            COMMAND test_mysql_async_coroutine_probe)
+        set_tests_properties(MySQLAsyncCoroutineProbe PROPERTIES TIMEOUT 120)
+    endif()
 endif()
 
 # ── PostgreSQL live integration tests ─────────────────────────────────────────

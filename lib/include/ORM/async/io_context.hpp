@@ -24,17 +24,51 @@ namespace orm {
         explicit PollOperation(PollInterest pi) noexcept : interest(pi) {}
     };
 
-    // ── Awaiter for watch_readable / watch_writable ─────────────────────────
-    struct PollAwaiter
+    class IoContext;
+
+    // ── Awaitable returned by watch_readable / watch_writable ───────────────
+    //
+    // The PollOperation is heap-allocated and owned by the awaitable, which
+    // is itself owned by the caller's coroutine frame for the duration of
+    // the co_await expression. The reason for the heap allocation is subtle
+    // and worth recording: an earlier design embedded PollOperation directly
+    // as a value member, and GCC at -O2 and above could speculate the
+    // awaitable's address into a register rather than into the coroutine
+    // frame, leaving `&op` (which we pass into register_poll) dangling once
+    // await_suspend returned. The heap allocation forces a stable address
+    // that survives any optimisation of the awaitable's storage.
+    //
+    // Ordering inside await_suspend: continuation is assigned BEFORE the
+    // reactor sees the registration. A reactor that fires immediately (e.g.
+    // a socket already writable) and races on another thread must always
+    // observe a valid continuation handle, otherwise the wake-up would be
+    // dropped.
+    class PollAwaitable
     {
-        PollOperation& op;
+    public:
+        IoContext* ctx;
+        int fd;
+        std::unique_ptr<PollOperation> op;
+
+        PollAwaitable(IoContext* c, int f, PollInterest interest)
+            : ctx(c), fd(f), op(std::make_unique<PollOperation>(interest))
+        {
+        }
+
+        PollAwaitable(const PollAwaitable&) = delete;
+        PollAwaitable& operator=(const PollAwaitable&) = delete;
+        PollAwaitable(PollAwaitable&&) = default;
+        PollAwaitable& operator=(PollAwaitable&&) = default;
+
+#if defined(__GNUC__) && !defined(__clang__)
+#define ORM_AWAITER_NOINLINE __attribute__((noinline))
+#else
+#define ORM_AWAITER_NOINLINE
+#endif
 
         bool await_ready() const noexcept { return false; }
 
-        void await_suspend(std::coroutine_handle<> h) noexcept
-        {
-            op.continuation = h;
-        }
+        ORM_AWAITER_NOINLINE void await_suspend(std::coroutine_handle<> h) noexcept;
 
         void await_resume() const noexcept {}
     };
@@ -71,26 +105,30 @@ namespace orm {
         // resumption.
         virtual void register_poll(int fd, PollOperation* op) = 0;
 
-        // Convenience coroutine wrappers
-        [[nodiscard]] auto watch_readable(int fd) -> Task<void>
+        // Awaitable wrappers. Returning PollAwaitable by value keeps the
+        // awaiter object in the caller's coroutine frame for the duration
+        // of the co_await expression — exactly the lifetime semantics the
+        // language already guarantees, with no inner coroutine.
+        [[nodiscard]] PollAwaitable watch_readable(int fd) noexcept
         {
-            PollOperation op{PollInterest::Read};
-            register_poll(fd, &op);
-            co_await PollAwaiter{op};
-            co_return;
+            return PollAwaitable{this, fd, PollInterest::Read};
         }
 
-        [[nodiscard]] auto watch_writable(int fd) -> Task<void>
+        [[nodiscard]] PollAwaitable watch_writable(int fd) noexcept
         {
-            PollOperation op{PollInterest::Write};
-            register_poll(fd, &op);
-            co_await PollAwaiter{op};
-            co_return;
+            return PollAwaitable{this, fd, PollInterest::Write};
         }
 
         // Factory — creates platform-appropriate context
         [[nodiscard]] static auto create(size_t thread_count = 1)
             -> std::unique_ptr<IoContext>;
     };
+
+    ORM_AWAITER_NOINLINE inline void
+    PollAwaitable::await_suspend(std::coroutine_handle<> h) noexcept
+    {
+        op->continuation = h;
+        ctx->register_poll(fd, op.get());
+    }
 
 } // namespace orm

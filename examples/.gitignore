@@ -1,0 +1,5 @@
+# Build артефакти
+/build/
+/compile_commands.json
+/.cache/
+/.clangd-index/

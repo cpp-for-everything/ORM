@@ -317,21 +317,16 @@
 \end{titlepage}
 
 \newpage
-\pagenumbering{roman}
+\pagestyle{empty}
+\setcounter{tocdepth}{2}
 \tableofcontents
 \newpage
 
+\pagestyle{fancy}
 \pagenumbering{arabic}
 
 % ============================================================================
-% Резюме
-% ============================================================================
-\input{chapters/00_abstract.tex}
-
-\newpage
-
-% ============================================================================
-% Глава 1: Въведение
+% Увод (без номер)
 % ============================================================================
 \input{chapters/01_introduction.tex}
 
