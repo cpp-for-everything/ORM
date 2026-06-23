@@ -8,10 +8,10 @@
 #    cmake -G Ninja -B build
 #    ninja -C build
 #  За да изпробваш конкретен пример:
-#    ./build/01_capability_gating
-#    ./build/02_query_anatomy
-#    ./build/03_relationships
-#    ./build/04_async_task
+#    ./build/01_capability_gating   ./build/04_param_arity
+#    ./build/02_query_anatomy       ./build/05_backend_shape
+#    ./build/03_type_safety         ./build/06_relationships   ./build/08_async_task
+#  (07_live_relationships е живо демо през docker — виж run_demos.sh / run_live.sh)
 #
 #  Някои примери са умишлено „провалящи се при компилация" (демонстрация
 #  на compile-time gating). Те са изключени по подразбиране от ninja и
@@ -69,10 +69,17 @@ else()
 endif()
 
 # ── Общи флагове ──────────────────────────────────────────────────────────
+# std::chrono::utc_clock е наличен на libstdc++ (Linux/g++) но не на libc++ (macOS).
+if(APPLE)
+    set(_orm_has_utc 0)
+else()
+    set(_orm_has_utc 1)
+endif()
+
 function(_orm_example_setup target)
     target_compile_definitions(${target} PRIVATE
         ORM_HAS_REFLECTION=0
-        ORM_HAS_UTC_CLOCK=1)
+        ORM_HAS_UTC_CLOCK=${_orm_has_utc})
     target_include_directories(${target} PRIVATE
         "${ORM_ROOT}/lib/include")
     target_link_libraries(${target} PRIVATE orm_examples_pfr)
@@ -88,11 +95,20 @@ list(SORT ORM_EXAMPLE_SOURCES)
 
 foreach(src ${ORM_EXAMPLE_SOURCES})
     get_filename_component(name "${src}" NAME_WE)
+
+    # 07_live_relationships е ЖИВО демо: нужни са клиентски библиотеки (libpq /
+    # libmariadb / libmongoc), вдигната база и backend макрос (-DORM_DEMO_*).
+    # Строи се само през docker-compose (виж 07_live_relationships/run_live.sh
+    # или examples/run_demos.sh 7), не през този CMake.
+    if(name STREQUAL "07_live_relationships")
+        continue()
+    endif()
+
     add_executable(${name} "${src}")
     _orm_example_setup(${name})
 
-    # 01_capability_gating има допълнителен SQLite зависимост (in-memory
-    # отваря sqlite3*; всички други примери не пипат база).
+    # 01_capability_gating отваря in-memory SQLite (sqlite3*); другите примери
+    # 02–06 не пипат база и са изцяло header-only.
     if(name STREQUAL "01_capability_gating")
         target_link_libraries(${name} PRIVATE sqlite3)
     endif()
