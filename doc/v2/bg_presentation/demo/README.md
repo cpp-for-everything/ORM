@@ -12,7 +12,12 @@
 > | `03_type_safety` | тип поле↔стойност при компилация | `compiler-output.txt` |
 > | `04_param_arity` | брой/тип на параметрите при компилация | `compiler-output.txt` |
 > | `05_backend_shape` | Redis само по първичен ключ | `compiler-output.txt` |
-> | `06_relationships` | embed vs reference — една материализация | `program-output.txt` |
+> | `06_relationships` | relationship движи заявката (авто-JOIN) — рендериран SQL през MockDB | `program-output.txt` |
+>
+> **Живо (по желание, нужен Docker):** `07_live_relationships` — същата релационна заявка,
+> изпълнена срещу **живи** SQLite / PostgreSQL / MySQL / MongoDB през `docker compose`
+> (SQL `INNER JOIN` × Mongo `$lookup`, идентичен `joined_row`). Стартиране:
+> `bash 07_live_relationships/run_live.sh`. Доказва „един модел, много хранилища" на живо.
 >
 > **Стратегията за устната защита на уникалността е в** [`UNIQUENESS_GUIDE.md`](UNIQUENESS_GUIDE.md)
 > (теза, матрица срещу конкурентите, изговорени версии 30 s / 2 min / 5 min, Q&A).
