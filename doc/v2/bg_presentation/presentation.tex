@@ -358,17 +358,17 @@ struct orm::connector_trait<MyDB> {
         \begin{column}{0.47\textwidth}
             \textbf{Абстракция на връзките:}\\[0.1em]
             \begin{tabularx}{\linewidth}{@{}lX@{}}
+                \texttt{reference} & SQL: \texttt{JOIN}\quad MongoDB: \texttt{\$lookup}\\
                 \texttt{embed}     & MongoDB вложен документ\\
-                \texttt{reference} & SQL foreign key / JOIN\\
-                                   & Redis: key prefix\\
-                                   & Neo4j: edge\\
             \end{tabularx}
-            \vspace{0.1em}
+            \vspace{0.15em}
+            {\footnotesize Избор на поле от свързана таблица $\rightarrow$ JOIN-ът се
+            \textbf{извежда при компилация} и връща \texttt{joined\_row}; еднакво за SQL и
+            NoSQL --- \textbf{живо в Демо 7}.}
+            \vspace{0.15em}
             \begin{alertblock}{Принцип}
-                {\small C++ моделът е единственият
-                \emph{логически} носител на схемата.
-                Системата за съхранение определя физическата
-                материализация.}
+                {\small Един C++ модел е \emph{логическата} схема; хранилището определя
+                материализацията. Едно приложение --- \textbf{macOS / Linux / Windows}.}
             \end{alertblock}
         \end{column}
     \end{columns}
@@ -466,10 +466,11 @@ struct orm::connector_trait<MyDB> {
             \begin{enumerate}\footnotesize
                 \setlength{\itemsep}{0.15em}
                 \item ORM модел с проверка при компилация в стандартен C++23, без външна кодогенерация
-                \item Един C++ обектен модел за 7 системи за съхранение
+                \item Един C++ обектен модел за 7 системи за съхранение (SQL и NoSQL)
+                \item \textbf{Релационно-осъзнати заявки}: авто-JOIN, изведен при компилация; една заявка $\rightarrow$ SQL \texttt{JOIN} / Mongo \texttt{\$lookup}, жив \texttt{joined\_row} от 4 бази
                 \item Формален договор на конектора и разширяемост чрез способности
                 \item Асинхронен слой с измерима полза при натоварвания, ограничени от вход-изход
-                \item Многостепенна верификация: 271 теста + проверки срещу живи системи + емпирични измервания
+                \item Многостепенна верификация: тестове $+$ проверки срещу живи системи $+$ емпирични измервания
             \end{enumerate}
         \end{column}
         \begin{column}{0.42\textwidth}
@@ -479,6 +480,8 @@ struct orm::connector_trait<MyDB> {
                 конектора, валидиран от компилатора, плюс корутинно изпълнение.
                 \textbf{\color{tusofia}Тази комбинация не съществува в друга C++ библиотека.}}
             \end{block}
+            {\footnotesize Един и същ код --- \textbf{macOS / Linux / Windows}, релационни и
+            документни бази; демонстрациите вървят „out of the box" през Docker.}
             \textbf{Бъдещо развитие:}
             \begin{itemize}\footnotesize
                 \setlength{\itemsep}{0.1em}
@@ -494,8 +497,8 @@ struct orm::connector_trait<MyDB> {
 % ══════════════════════════════════════════════════════════
 
 \begin{frame}{Демонстрации — компилаторът като първи валидатор}
-    {\footnotesize Шест самостоятелни примера; за всеки --- реален \emph{уловен} изход на
-    компилатора (без жива компилация на сцената).}
+    {\footnotesize Седем демонстрации: шест с предварително \emph{уловен} изход (без жива
+    компилация на сцената) $+$ едно \emph{живо} multi-store изпълнение през Docker.}
     \vspace{0.3em}
     \footnotesize
     \renewcommand{\arraystretch}{1.3}
@@ -508,7 +511,8 @@ struct orm::connector_trait<MyDB> {
         Демо 3 & Несъвместим тип поле\,↔\,стойност\\
         Демо 4 & Грешен брой/тип на параметрите\\
         Демо 5 & Redis: само по първичен ключ\\
-        Демо 6 & Един модел, две материализации\\
+        Демо 6 & relationship движи заявката (авто-JOIN, MockDB)\\
+        Демо 7 & \textbf{Една заявка, четири живи бази} (SQL\,$\times$\,NoSQL)\\
         \bottomrule
     \end{tabularx}
     \vspace{0.3em}
@@ -601,6 +605,28 @@ SELECT posts.id, user.name
 \end{lstlisting}
     {\scriptsize \texttt{optional\_field} $\rightarrow$ LEFT / RIGHT / FULL (матрица 2$\times$2);
     многозвенно Comment\,$\rightarrow$\,Post\,$\rightarrow$\,User се извежда автоматично.}
+\end{frame}
+
+% ── Демо 7 (live, multi-store) ─────────────────────────────────────────────
+\begin{frame}[fragile]{Демо 7 — Една заявка, четири живи бази (SQL\,$\times$\,NoSQL)}
+    {\footnotesize Демо 6 показа \emph{рендерирането}; тук същата заявка се \emph{изпълнява}
+    срещу живи бази през \texttt{docker compose} --- релационни \emph{и} документна:}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+constexpr auto q =
+    select(field<&Book::title>, field<&Author::name>);
+auto rows = (db << q).to_vector();  // vector<joined_row<Book,Author>>
+\end{lstlisting}
+    {\scriptsize $\rightarrow$ изпълнено срещу всяко хранилище (един и същ C++):}
+\begin{lstlisting}[basicstyle=\scriptsize\ttfamily,breaklines=true,keywordstyle=\color{black},stringstyle=\color{black},commentstyle=\color{cppgray}]
+SQLite / PostgreSQL / MySQL : INNER JOIN authors ON books.author_id = authors.id
+MongoDB                     : $lookup { from: authors, localField: author_id,
+                                        foreignField: id } + $unwind
+all four -> joined_row{ "The Hobbit"->Tolkien,
+                        "A Wizard of Earthsea"->Le Guin }
+\end{lstlisting}
+    {\scriptsize Един модел, една заявка $\rightarrow$ SQL JOIN \emph{и} \texttt{\$lookup},
+    идентичен \texttt{joined\_row}. „Out of the box" през Docker --- еднакво на
+    macOS / Linux / Windows.}
 \end{frame}
 
 \begin{frame}[plain]
