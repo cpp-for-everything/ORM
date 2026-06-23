@@ -92,10 +92,15 @@ TEST(TaskTest, MoveAssignment)
 TEST(TaskTest, StartDetached)
 {
     std::atomic<bool> done{false};
-    auto task = [&]() -> orm::Task<void> {
+    // Hold the coroutine lambda's closure alive: an immediately-invoked coroutine
+    // lambda destroys its closure at the end of the full expression, but a
+    // suspended coroutine still references that closure (its captures live there)
+    // when start_detached() later resumes the body. Storing it keeps captures valid.
+    auto coro = [&]() -> orm::Task<void> {
         done.store(true, std::memory_order_release);
         co_return;
-    }();
+    };
+    auto task = coro();
     task.start_detached();
     EXPECT_TRUE(done.load(std::memory_order_acquire));
 }

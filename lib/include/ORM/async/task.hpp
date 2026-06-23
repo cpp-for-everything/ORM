@@ -30,8 +30,13 @@ namespace orm {
             {
                 static bool await_ready() noexcept { return false; }
 
+                // NOTE: must NOT be inlined into the coroutine's final-suspend ramp.
+                // This awaiter calls h.destroy() to free the (detached) coroutine
+                // frame; if inlined, Apple clang / libc++ keeps live references to the
+                // just-freed frame across the symmetric-transfer tail call → crash.
+                // Forcing a real call makes destroy() operate on its own stack frame.
                 template <typename Promise>
-                static std::coroutine_handle<> await_suspend(
+                __attribute__((noinline)) static std::coroutine_handle<> await_suspend(
                     std::coroutine_handle<Promise> h) noexcept
                 {
                     auto& promise = h.promise();
@@ -219,10 +224,14 @@ namespace orm {
 
             handle_.promise().on_complete_ = [&]
             {
-                {
-                    std::lock_guard<std::mutex> lock(mtx);
-                    finished = true;
-                }
+                // Notify WHILE holding the lock. If notify_one() ran after the
+                // unlock, the woken waiter could return from sync_wait and destroy
+                // `cv`/`mtx` (stack locals) before notify_one() touched `cv` — a use-
+                // after-free of the condition_variable (crashes on libc++/macOS where
+                // the waiter wins the race; latent on glibc). Holding the lock blocks
+                // the waiter from re-acquiring `mtx` to leave cv.wait until we unlock.
+                std::lock_guard<std::mutex> lock(mtx);
+                finished = true;
                 cv.notify_one();
             };
 

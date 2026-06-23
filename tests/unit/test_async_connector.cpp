@@ -112,11 +112,14 @@ TEST(AsyncConnectionPoolTest, AcquireReturnsGuard)
     orm::ThreadPool pool(2);
     orm::async_connection_pool<orm::MockDB, 2> apool(pool);
 
-    auto task = [&]() -> orm::Task<void> {
+    // keep the coroutine-lambda closure alive across sync_wait() (an immediately-
+    // invoked [&]{...}() frees its closure before the coroutine is resumed → UAF).
+    auto coro = [&]() -> orm::Task<void> {
         auto guard = co_await apool.acquire();
         auto adb = guard.get();
         co_return;
-    }();
+    };
+    auto task = coro();
     task.sync_wait();
 }
 
@@ -135,7 +138,7 @@ TEST(AsyncConnectionPoolTest, GuardReleasesOnDestruction)
     orm::ThreadPool pool(2);
     orm::async_connection_pool<orm::MockDB, 1> apool(pool);
 
-    auto task = [&]() -> orm::Task<void> {
+    auto coro = [&]() -> orm::Task<void> {     // keep closure alive across sync_wait()
         {
             auto guard = co_await apool.acquire();
             (void)guard;
@@ -146,7 +149,8 @@ TEST(AsyncConnectionPoolTest, GuardReleasesOnDestruction)
             (void)guard2;
         }
         co_return;
-    }();
+    };
+    auto task = coro();
     task.sync_wait();
 }
 
@@ -191,7 +195,7 @@ TEST(AsyncTransactionTest, BeginAndCommit)
     orm::ThreadPool pool(2);
     orm::MockDB conn;
 
-    auto task = [&]() -> orm::Task<void> {
+    auto coro = [&]() -> orm::Task<void> {     // keep closure alive across sync_wait()
         auto txn = co_await orm::async_begin_transaction(conn, pool);
         EXPECT_EQ(conn.last_sql, "BEGIN");
 
@@ -199,7 +203,8 @@ TEST(AsyncTransactionTest, BeginAndCommit)
         EXPECT_EQ(conn.last_sql, "COMMIT");
         EXPECT_TRUE(txn.is_committed());
         co_return;
-    }();
+    };
+    auto task = coro();
     task.sync_wait();
 }
 
@@ -208,7 +213,7 @@ TEST(AsyncTransactionTest, RollbackOnDestruction)
     orm::ThreadPool pool(2);
     orm::MockDB conn;
 
-    auto task = [&]() -> orm::Task<void> {
+    auto coro = [&]() -> orm::Task<void> {     // keep closure alive across sync_wait()
         {
             auto txn = co_await orm::async_begin_transaction(conn, pool);
             EXPECT_EQ(conn.last_sql, "BEGIN");
@@ -216,7 +221,8 @@ TEST(AsyncTransactionTest, RollbackOnDestruction)
         }
         EXPECT_EQ(conn.last_sql, "ROLLBACK");
         co_return;
-    }();
+    };
+    auto task = coro();
     task.sync_wait();
 }
 
@@ -225,13 +231,14 @@ TEST(AsyncTransactionTest, ExplicitRollback)
     orm::ThreadPool pool(2);
     orm::MockDB conn;
 
-    auto task = [&]() -> orm::Task<void> {
+    auto coro = [&]() -> orm::Task<void> {     // keep closure alive across sync_wait()
         auto txn = co_await orm::async_begin_transaction(conn, pool);
         co_await txn.rollback();
         EXPECT_EQ(conn.last_sql, "ROLLBACK");
         EXPECT_TRUE(txn.is_committed());
         co_return;
-    }();
+    };
+    auto task = coro();
     task.sync_wait();
 }
 
