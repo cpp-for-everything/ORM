@@ -132,6 +132,26 @@ services:
     networks:
       - orm-network
 
+  test-mysql:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: mysql-test
+    # Uses the MariaDB service: the live MySQL connector links MariaDB Connector/C,
+    # and the mariadb image's healthcheck is reliable. (MySQL 8.0's caching_sha2
+    # auth is awkward for the MariaDB client.)
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      ORM_MYSQL_HOST: mariadb
+      ORM_MYSQL_PORT: 3306
+      ORM_MYSQL_USER: root
+      ORM_MYSQL_PASSWORD: orm_test_password
+      ORM_MYSQL_DATABASE: orm_test
+    networks:
+      - orm-network
+
   test-mongodb:
     build:
       context: ..

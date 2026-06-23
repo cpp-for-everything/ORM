@@ -18,11 +18,17 @@ namespace orm {
         using value_type = typename detail::i_mem_ptr<Ptr>::value_type;
         using ptr_t      = typename detail::i_mem_ptr<Ptr>::ptr_t;
 
+        // Whether selecting this field allows its row to be absent (drives LEFT/RIGHT/FULL).
+        static constexpr bool optional = false;
+
         [[nodiscard]] static constexpr ptr_t get() noexcept { return Ptr; }
 
+        // The member's column name. Works for both `property<T,Name>` and the
+        // reference form of `relationship<>` (which doubles as an FK column);
+        // both expose a static `column_name()`.
         [[nodiscard]] static constexpr std::string_view column_name() noexcept
         {
-            if constexpr (is_property_v<value_type>)
+            if constexpr (requires { value_type::column_name(); })
                 return value_type::column_name();
             else
                 return {};
@@ -33,6 +39,18 @@ namespace orm {
     // Usage: field<&User::id>
     template <auto Ptr>
     inline constexpr mem_ptr<Ptr> field{};
+
+    // ── optional_field<&T::m> — same column, marked optional ───────────────────
+    // A table all of whose selected columns are optional may be absent in a join
+    // (→ LEFT/RIGHT/FULL); see query/join_infer.hpp.
+    template <auto Ptr>
+    struct opt_mem_ptr : mem_ptr<Ptr>
+    {
+        static constexpr bool optional = true;
+    };
+
+    template <auto Ptr>
+    inline constexpr opt_mem_ptr<Ptr> optional_field{};
 
     // ── is_field concept ───────────────────────────────────────────────────────
     template <typename T>

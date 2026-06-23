@@ -1,0 +1,11 @@
+$ c++ -std=c++23 -I lib/include -DDEMO_REJECT capability_gating.cpp
+
+In file included from capability_gating.cpp:17:
+In file included from lib/include/ORM/ORM.hpp:30:
+lib/include/ORM/connector/db.hpp:35:35: error: static assertion failed due to requirement 'has_capability<orm::MongoDB, orm::cap::supports_joins>': orm::db: this connector does not support JOIN operations. Remove .join() clauses, use store_as::reference relationships, or switch to a connector that declares `using supports_joins = void;`.
+   35 |                     static_assert(has_capability<DB, cap::supports_joins>,
+      |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+capability_gating.cpp:54:22: note: in instantiation of function template specialization 'orm::db<orm::MongoDB>::operator<<<orm::select_query<orm::detail::orm_tuple<orm::mem_ptr<&User::id>, orm::mem_ptr<&User::name>, orm::mem_ptr<&Post::body>>, orm::detail::orm_tuple<orm::JoinRule<orm::join::mode::inner, Post, orm::Rule<orm::property<int, detail::string_literal<3>{"id"}> User::*, detail::string_literal<3>{"=="}, orm::property<int, detail::string_literal<10>{"author_id"}> Post::*>>>>>' requested here
+   54 |     auto result = db << q;            // <-- compile error: no supports_joins
+      |                      ^
+1 error generated.

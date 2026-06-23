@@ -1,0 +1,18 @@
+$ c++ -std=c++23 -I lib/include -DDEMO_REJECT type_safety.cpp
+
+In file included from type_safety.cpp:16:
+In file included from lib/include/ORM/ORM.hpp:18:
+lib/include/ORM/query/rules.hpp:121:5: error: static assertion failed due to requirement 'detail::comparable_value_types<int, std::u8string>': orm: incompatible operand types in a field comparison. The right-hand value's C++ type is not convertible to (or from) the column's C++ type. Check the literal/placeholder type against the property<> declaration of the field.
+  121 |     ORM_FIELD_OP(==, "==")
+      |     ^~~~~~~~~~~~~~~~~~~~~~
+lib/include/ORM/query/rules.hpp:108:13: note: expanded from macro 'ORM_FIELD_OP'
+  108 |             detail::comparable_value_types<                                         \
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  109 |                 detail::operand_value_type_t<mem_ptr<P>>,                           \
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  110 |                 detail::operand_value_type_t<T>>,                                   \
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+type_safety.cpp:38:31: note: in instantiation of function template specialization 'orm::operator==<&User::id, std::u8string>' requested here
+   38 |         orm::field<&User::id> == std::u8string{u8"not-an-int"};   // <-- compile error
+      |                               ^
+1 error generated.

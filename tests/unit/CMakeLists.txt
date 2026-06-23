@@ -2,6 +2,7 @@ add_executable(test_unit
     test_types.cpp
     test_property.cpp
     test_relationship.cpp
+    test_join_infer.cpp
     test_query.cpp
     test_mysql_connector.cpp
     test_postgresql_connector.cpp
