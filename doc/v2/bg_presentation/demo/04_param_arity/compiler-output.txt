@@ -1,0 +1,19 @@
+$ c++ -std=c++23 -I lib/include -DDEMO_REJECT param_arity.cpp
+
+In file included from param_arity.cpp:19:
+In file included from lib/include/ORM/ORM.hpp:30:
+In file included from lib/include/ORM/connector/db.hpp:4:
+In file included from lib/include/ORM/connector/prepared_query.hpp:3:
+lib/include/ORM/connector/param_check.hpp:202:21: error: static assertion failed due to requirement 'n_ph == sizeof...(Params)': orm: wrong number of runtime parameters passed to execute(). The argument count does not match the number of anonymous placeholders (orm::Placeholder<T>) in the query's clauses. Note: queries with no placeholders should be executed via `db << query`, and indexed placeholders (orm::ph<T,_N>) are validated by the connector.
+  202 |                     n_ph == sizeof...(Params),
+      |                     ^~~~~~~~~~~~~~~~~~~~~~~~~
+lib/include/ORM/connector/db.hpp:48:21: note: in instantiation of function template specialization 'orm::detail::check_query_params<orm::select_query<orm::detail::orm_tuple<orm::mem_ptr<&User::id>>, orm::detail::orm_tuple<>, orm::detail::orm_tuple<orm::Rule<orm::Rule<orm::property<int, detail::string_literal<3>{"id"}> User::*, detail::string_literal<3>{"=="}, orm::Placeholder<int>>, detail::string_literal<3>{"&&"}, orm::Rule<orm::property<double, detail::string_literal<6>{"score"}> User::*, detail::string_literal<2>{">"}, orm::Placeholder<double>>>>>, int>' requested here
+   48 |             detail::check_query_params<Query, Params...>();
+      |                     ^
+param_arity.cpp:46:8: note: in instantiation of function template specialization 'orm::db<orm::MockDB>::execute<orm::select_query<orm::detail::orm_tuple<orm::mem_ptr<&User::id>>, orm::detail::orm_tuple<>, orm::detail::orm_tuple<orm::Rule<orm::Rule<orm::property<int, detail::string_literal<3>{"id"}> User::*, detail::string_literal<3>{"=="}, orm::Placeholder<int>>, detail::string_literal<3>{"&&"}, orm::Rule<orm::property<double, detail::string_literal<6>{"score"}> User::*, detail::string_literal<2>{">"}, orm::Placeholder<double>>>>>, int>' requested here
+   46 |     db.execute(q, 7);            // <-- compile error: 1 arg, needs 2
+      |        ^
+lib/include/ORM/connector/param_check.hpp:202:26: note: expression evaluates to '2 == 1'
+  202 |                     n_ph == sizeof...(Params),
+      |                     ~~~~~^~~~~~~~~~~~~~~~~~~~
+1 error generated.

@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <string>
 #include <format>
+#include <map>
 
 // ── Test entity ───────────────────────────────────────────────────────────────
 
@@ -14,6 +15,19 @@ struct Item
     orm::property<double, "price">     price;
 };
 
+// ── related entities for the relationship-aware (auto-JOIN) tests ──────────────
+struct Author
+{
+    orm::property<int, "id">           id;
+    orm::property<std::string, "name"> name;
+};
+struct Book
+{
+    orm::property<int, "id">            id;
+    orm::property<std::string, "title"> title;
+    orm::relationship<orm::store_as::reference<&Author::id>, "author_id"> author_id;
+};
+
 namespace orm
 {
     template <>
@@ -21,6 +35,8 @@ namespace orm
     {
         static constexpr std::string_view value = "items";
     };
+    template <> struct table_name_trait<Author> { static constexpr std::string_view value = "authors"; };
+    template <> struct table_name_trait<Book>   { static constexpr std::string_view value = "books"; };
 } // namespace orm
 
 // ── Connection helper ─────────────────────────────────────────────────────────
@@ -168,4 +184,61 @@ TEST_F(PostgreSQLLiveTest, SelectPriceColumn)
     const auto rows = dbc.execute(q, 1).to_vector();
     ASSERT_EQ(rows.size(), 1u);
     EXPECT_NEAR(std::get<1>(rows[0]), 0.99, 0.001);
+}
+
+// ── relationship-aware queries (auto-inferred JOIN → joined_row) ───────────────
+
+class PostgreSQLJoinTest : public ::testing::Test
+{
+protected:
+    orm::PostgreSQLLiveDB conn;
+    orm::db<orm::PostgreSQLLiveDB> dbc{conn};
+
+    void exec(const char* sql) { PGresult* r = PQexec(conn.native(), sql); PQclear(r); }
+
+    void SetUp() override
+    {
+        conn = make_connection();
+        dbc.rebind(conn);
+        exec("DROP TABLE IF EXISTS books");
+        exec("DROP TABLE IF EXISTS authors");
+        exec("CREATE TABLE authors (id INTEGER PRIMARY KEY, name TEXT NOT NULL)");
+        exec("CREATE TABLE books (id INTEGER PRIMARY KEY, title TEXT NOT NULL, author_id INTEGER)");
+        exec("INSERT INTO authors VALUES (1,'Tolkien'),(2,'Le Guin')");
+        exec("INSERT INTO books   VALUES (10,'The Hobbit',1),(11,'A Wizard of Earthsea',2)");
+    }
+
+    void TearDown() override
+    {
+        exec("DROP TABLE IF EXISTS books");
+        exec("DROP TABLE IF EXISTS authors");
+    }
+};
+
+TEST_F(PostgreSQLJoinTest, AutoJoinResultTypeIsJoinedRow)
+{
+    constexpr auto q = orm::select(orm::field<&Book::title>, orm::field<&Author::name>);
+    auto res = dbc << q;
+    static_assert(std::is_same_v<decltype(res)::value_type, orm::joined_row<Book, Author>>);
+    EXPECT_EQ(res.size(), 2u);
+}
+
+TEST_F(PostgreSQLJoinTest, AutoJoinHydratesPartialEntities)
+{
+    // book column + author column → INNER JOIN books→authors inferred; each row is a
+    // joined_row with partial Book and Author entities.
+    constexpr auto q = orm::select(orm::field<&Book::title>, orm::field<&Author::name>);
+    auto rows = (dbc << q).to_vector();
+    ASSERT_EQ(rows.size(), 2u);
+
+    std::map<std::string, std::string> title_to_author;
+    for (const auto& r : rows)
+    {
+        EXPECT_TRUE(r.get<Book>().title.has_value());
+        EXPECT_TRUE(r.get<Author>().name.has_value());
+        EXPECT_FALSE(r.get<Book>().id.has_value());   // id not selected → unset
+        title_to_author[r.get<Book>().title.value] = r.get<Author>().name.value;
+    }
+    EXPECT_EQ(title_to_author["The Hobbit"],           "Tolkien");
+    EXPECT_EQ(title_to_author["A Wizard of Earthsea"], "Le Guin");
 }

@@ -7,6 +7,7 @@
 #include "ORM/query/delete.hpp"
 #include "ORM/query/field.hpp"
 #include "ORM/query/placeholders.hpp"
+#include "ORM/result/joined_row.hpp"        // joined_row_for / hydrate_joined (pulls join_infer)
 #include "ORM/entity/table.hpp"
 #include "ORM/details/member_pointer.hpp"
 
@@ -387,6 +388,58 @@ namespace orm {
                 std::make_index_sequence<std::tuple_size_v<Row>>{});
         }
 
+        // ── relationship-aware SQL rendering (connector-local) ────────────────
+        // The ORM core hands us the compile-time join plan; turning it into SQL
+        // text — including which dialect keyword join::mode maps to — is the
+        // connector's job, so this lives here rather than in the ORM core.
+        [[nodiscard]] inline std::string_view join_kind_sql(orm::join::mode m) noexcept
+        {
+            switch (m)
+            {
+                case orm::join::mode::inner: return "INNER JOIN";
+                case orm::join::mode::left:  return "LEFT JOIN";
+                case orm::join::mode::right: return "RIGHT JOIN";
+                default:                     return "FULL JOIN";
+            }
+        }
+
+        template <typename... Fields>
+        [[nodiscard]] std::string qualified_columns_impl(orm::detail::orm_tuple<Fields...>*)
+        {
+            std::string out;
+            bool first = true;
+            (((out += (first ? std::string{} : std::string{", "})
+                 + std::string(orm::table_name<typename Fields::table_type>()) + "."
+                 + std::string(Fields::column_name())),
+              first = false),
+             ...);
+            return out;
+        }
+        template <typename Response>
+        [[nodiscard]] std::string render_qualified_columns()
+        {
+            return qualified_columns_impl(static_cast<Response*>(nullptr));
+        }
+
+        template <typename... Steps>
+        [[nodiscard]] std::string inferred_joins_impl(orm::detail::tl<Steps...>*)
+        {
+            std::string out;
+            ((out += " " + std::string(join_kind_sql(Steps::mode)) + " "
+                   + std::string(orm::table_name<typename Steps::to>()) + " ON "
+                   + std::string(orm::table_name<typename Steps::from>()) + "."
+                   + std::string(Steps::rel::column_name()) + " = "
+                   + std::string(orm::table_name<typename Steps::to>()) + "."
+                   + std::string(Steps::rel::target_column())),
+             ...);
+            return out;
+        }
+        template <typename Response>
+        [[nodiscard]] std::string render_inferred_joins()
+        {
+            return inferred_joins_impl(static_cast<orm::detail::join_plan_t<Response>*>(nullptr));
+        }
+
     } // namespace mysql_live_detail
 
     // ── connector_trait<MySQLLiveDB> specialisation ───────────────────────────
@@ -411,17 +464,10 @@ namespace orm {
         static auto execute(
             MySQLLiveDB& db,
             select_query<Response, Joins, Wheres, Limits, Groups, Orders> q)
-            -> result<projected_type<Response>, Response>
         {
-            using Row = projected_type<Response>;
-            using Entity = typename Response::template orm_type<0>::table_type;
-            const std::string sql = std::format("SELECT {} FROM {}{}{}{}",
-                mysql_live_detail::render_columns(q.selected_properties()),
-                table_name<Entity>(),
-                mysql_live_detail::render_wheres(q.where_clauses()),
-                mysql_live_detail::render_order_by(q.order_clauses()),
-                mysql_live_detail::render_limits(q.limit_clauses()));
-            return exec_select<Row, Response>(db, sql);
+            constexpr bool inferred = orm::detail::is_multi_table<Response> && Joins::size == 0;
+            const std::string sql = build_select_sql<Response, inferred>(q);
+            return exec_select<Response, inferred>(db, sql);
         }
 
         // ── SELECT (with runtime params) ──────────────────────────────────────
@@ -432,20 +478,11 @@ namespace orm {
             MySQLLiveDB& db,
             select_query<Response, Joins, Wheres, Limits, Groups, Orders> q,
             Params&&... params)
-            -> result<projected_type<Response>, Response>
         {
-            using Row = projected_type<Response>;
-            using Entity = typename Response::template orm_type<0>::table_type;
-            
+            constexpr bool inferred = orm::detail::is_multi_table<Response> && Joins::size == 0;
             // Build SQL with ? placeholders for prepared statement
-            const std::string sql = std::format("SELECT {} FROM {}{}{}{}",
-                mysql_live_detail::render_columns(q.selected_properties()),
-                table_name<Entity>(),
-                mysql_live_detail::render_wheres(q.where_clauses()),
-                mysql_live_detail::render_order_by(q.order_clauses()),
-                mysql_live_detail::render_limits(q.limit_clauses()));
-            
-            return exec_select_prepared<Row, Response>(db, sql, std::forward<Params>(params)...);
+            const std::string sql = build_select_sql<Response, inferred>(q);
+            return exec_select_prepared<Response, inferred>(db, sql, std::forward<Params>(params)...);
         }
 
         // ── INSERT (with runtime params) ──────────────────────────────────────
@@ -491,27 +528,75 @@ namespace orm {
         }
 
     private:
-        template <typename Row, typename Response>
-        static auto exec_select(MySQLLiveDB& db, const std::string& sql)
-            -> result<Row, Response>
+        // Build the SELECT SQL. Inferred = multi-table relationship query with no
+        // explicit .join(): table-qualified columns + the inferred JOIN chain (shared
+        // renderer). Otherwise the bare single-table form.
+        template <typename Response, bool Inferred, typename Query>
+        static std::string build_select_sql(const Query& q)
         {
+            if constexpr (Inferred)
+            {
+                using Base = orm::detail::base_table_t<Response>;
+                return std::format("SELECT {} FROM {}{}{}{}{}",
+                    mysql_live_detail::render_qualified_columns<Response>(),
+                    std::string(table_name<Base>()),
+                    mysql_live_detail::render_inferred_joins<Response>(),
+                    mysql_live_detail::render_wheres(q.where_clauses()),
+                    mysql_live_detail::render_order_by(q.order_clauses()),
+                    mysql_live_detail::render_limits(q.limit_clauses()));
+            }
+            else
+            {
+                using Entity = typename Response::template orm_type<0>::table_type;
+                return std::format("SELECT {} FROM {}{}{}{}",
+                    mysql_live_detail::render_columns(q.selected_properties()),
+                    std::string(table_name<Entity>()),
+                    mysql_live_detail::render_wheres(q.where_clauses()),
+                    mysql_live_detail::render_order_by(q.order_clauses()),
+                    mysql_live_detail::render_limits(q.limit_clauses()));
+            }
+        }
+
+        // Result row type + hydration: Inferred → partial entities in a
+        // joined_row_for<Response>; otherwise a flat projected_type<Response> tuple.
+        template <typename Response, bool Inferred>
+        using select_row_t = std::conditional_t<Inferred,
+                                                 joined_row_for<Response>,
+                                                 projected_type<Response>>;
+
+        template <typename Response, bool Inferred>
+        static auto hydrate_select_row(MYSQL_ROW row, unsigned long* lengths)
+            -> select_row_t<Response, Inferred>
+        {
+            auto flat = mysql_live_detail::hydrate_row<projected_type<Response>>(row, lengths);
+            if constexpr (Inferred)
+                return orm::hydrate_joined<Response>(flat);
+            else
+                return flat;
+        }
+
+        template <typename Response, bool Inferred>
+        static auto exec_select(MySQLLiveDB& db, const std::string& sql)
+            -> result<select_row_t<Response, Inferred>, Response>
+        {
+            using Row = select_row_t<Response, Inferred>;
             if (mysql_query(db.native(), sql.c_str()) != 0)
                 throw std::runtime_error(std::format("MySQL query failed: {}", mysql_error(db.native())));
-            
+
             MYSQL_RES* res = mysql_store_result(db.native());
             if (!res)
                 throw std::runtime_error(std::format("MySQL store_result failed: {}", mysql_error(db.native())));
-            
+
             std::vector<Row> rows;
             MYSQL_ROW row;
             unsigned long* lengths = mysql_fetch_lengths(res);
-            
+
             while ((row = mysql_fetch_row(res)))
             {
                 lengths = mysql_fetch_lengths(res);
-                rows.push_back(hydrate_row<Row>(row, lengths));
+                rows.push_back(hydrate_select_row<Response, Inferred>(row, lengths));
             }
-            
+
             mysql_free_result(res);
             return result<Row, Response>{ std::move(rows) };
         }
@@ -525,10 +610,11 @@ namespace orm {
         }
 
         // Execute prepared statement for SELECT queries
-        template <typename Row, typename Response, typename... Params>
+        template <typename Response, bool Inferred, typename... Params>
         static auto exec_select_prepared(MySQLLiveDB& db, const std::string& sql, Params&&... params)
-            -> result<Row, Response>
+            -> result<select_row_t<Response, Inferred>, Response>
         {
+            using Row = select_row_t<Response, Inferred>;
             MYSQL_STMT* stmt = mysql_stmt_init(db.native());
             if (!stmt)
                 throw std::runtime_error("MySQL stmt_init failed");
@@ -617,7 +703,7 @@ namespace orm {
                 for (unsigned int i = 0; i < num_fields; ++i)
                     row_data[i] = is_nulls[i] ? nullptr : buffers[i].data();
                 
-                rows.push_back(hydrate_row<Row>(row_data, lengths.data()));
+                rows.push_back(hydrate_select_row<Response, Inferred>(row_data, lengths.data()));
                 delete[] row_data;
             }
             

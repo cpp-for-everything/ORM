@@ -21,10 +21,24 @@ namespace orm {
             return Name.view();
         }
 
-        T value{};
+        // Storage. `engaged` distinguishes "a value was set" from "unset" so that
+        // partial result hydration can leave unselected columns empty (relationship-
+        // aware SELECT returns partial entities). Constructing with a value engages it;
+        // a default-constructed property is unset. `value` stays public for the
+        // existing direct-access call sites.
+        T    value{};
+        bool engaged = false;
 
         constexpr property() = default;
-        explicit constexpr property(T v) : value(std::move(v)) {}
+        explicit constexpr property(T v) : value(std::move(v)), engaged(true) {}
+
+        // ── std::optional-like API (no nested std::optional needed) ────────────
+        [[nodiscard]] constexpr bool has_value() const noexcept { return engaged; }
+        constexpr explicit operator bool() const noexcept { return engaged; }
+        constexpr void reset() noexcept { value = T{}; engaged = false; }
+        constexpr property& set(T v) { value = std::move(v); engaged = true; return *this; }
+        [[nodiscard]] constexpr const T& get() const noexcept { return value; }
+        [[nodiscard]] constexpr T&       get()       noexcept { return value; }
 
         constexpr bool operator==(const property&) const noexcept = default;
     };

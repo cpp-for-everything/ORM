@@ -1,0 +1,4 @@
+$ c++ -std=c++23 -I lib/include -DDEMO_REJECT type_safety.cpp
+
+lib/include/ORM/query/rules.hpp:121:5: error: static assertion failed due to requirement 'detail::comparable_value_types<int, std::u8string>': orm: incompatible operand types in a field comparison. The right-hand value's C++ type is not convertible to (or from) the column's C++ type. Check the literal/placeholder type against the property<> declaration of the field.
+1 error generated.

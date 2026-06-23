@@ -4,9 +4,24 @@ target_link_libraries(orm_mysql INTERFACE orm::orm)
 
 if(ORM_ENABLE_MYSQL)
     if(ORM_USE_SYSTEM_LIBS)
-        # Use system-installed MySQL client library
+        # Use system-installed MySQL/MariaDB client library. Different distros
+        # ship the .pc file under different names: Oracle MySQL provides
+        # mysqlclient, libmariadb-dev on Debian/Ubuntu provides libmariadb
+        # (and an older mariadb alias).
         find_package(PkgConfig REQUIRED)
-        pkg_check_modules(MYSQL REQUIRED mysqlclient)
+        pkg_check_modules(MYSQL mysqlclient)
+        if(NOT MYSQL_FOUND)
+            pkg_check_modules(MYSQL libmariadb)
+        endif()
+        if(NOT MYSQL_FOUND)
+            pkg_check_modules(MYSQL mariadb)
+        endif()
+        if(NOT MYSQL_FOUND)
+            message(FATAL_ERROR
+                "ORM_ENABLE_MYSQL=ON but pkg-config could not find any of "
+                "mysqlclient / libmariadb / mariadb. Install libmysqlclient-dev "
+                "or libmariadb-dev.")
+        endif()
     else()
         # Use submodule or fetch from GitHub
         message(FATAL_ERROR "MySQL client library submodule build not yet implemented")

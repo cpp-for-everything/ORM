@@ -1,0 +1,4 @@
+$ c++ -std=c++23 -I lib/include -DDEMO_REJECT backend_shape.cpp
+
+lib/include/ORM/db/connectors/RedisDB/redis_db.hpp:107:27: error: static assertion failed due to requirement 'redis_detail::is_pk_only_where()': RedisDB connector supports only primary-key equality WHERE predicates
+1 error generated.

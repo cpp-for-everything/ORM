@@ -93,8 +93,7 @@
 
 % ── Метаданни ──────────────────────────────────────────────
 \title[Compile-time ORM за C++]{%
-    Compile-time Object-Relational Mapping\\[0.2em]
-    библиотека на C++}
+    Разработка на библиотека за обектно-релационно картографиране по време на компилация}
 \subtitle{Дипломна работа}
 \author[Алекс Цветанов]{%
     Алекс Цветанов, фак.~№~121222225\\[0.3em]
@@ -186,6 +185,36 @@
             \begin{alertblock}{Основна теза}
                 {\footnotesize Един C++ модел, валидиран при компилация, разширяем към много системи и практически приложим при асинхронни натоварвания.}
             \end{alertblock}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Защо тази комбинация е уникална}
+    \begin{columns}[T]
+        \begin{column}{0.57\textwidth}
+            \footnotesize
+            \begin{tabularx}{\linewidth}{@{}p{3.45cm}X@{}}
+                \toprule
+                \textbf{Отличителна ос} & \textbf{Какво липсва другаде}\\
+                \midrule
+                \texttt{constexpr} IR, валидиран при компилация & sqlpp11: само SQL\\
+                Без външна кодогенерация & ODB: външен генератор\\
+                Един модел: рел.\,+\,нерел. (7 системи) & Hiberlite: само SQLite\\
+                Договор за способности (gating при компилация) & никой\\
+                Корутинна async ос & никой\\
+                \bottomrule
+            \end{tabularx}
+        \end{column}
+        \begin{column}{0.40\textwidth}
+            \begin{alertblock}{Приносът}
+                {\footnotesize Всяка ос съществува някъде \emph{поотделно}.
+                Комбинацията от петте не съществува в нито една C++ библиотека за
+                достъп до данни.}
+            \end{alertblock}
+            \begin{block}{Видяно на живо (Демо 1)}
+                {\footnotesize Една заявка с \texttt{.join()}: релационен конектор я
+                приема, документен я \emph{отказва при компилация}.}
+            \end{block}
         \end{column}
     \end{columns}
 \end{frame}
@@ -434,7 +463,8 @@ struct orm::connector_trait<MyDB> {
 \begin{frame}{Основни резултати и извод}
     \begin{columns}[T]
         \begin{column}{0.54\textwidth}
-            \begin{enumerate}\small
+            \begin{enumerate}\footnotesize
+                \setlength{\itemsep}{0.15em}
                 \item ORM модел с проверка при компилация в стандартен C++23, без външна кодогенерация
                 \item Един C++ обектен модел за 7 системи за съхранение
                 \item Формален договор на конектора и разширяемост чрез способности
@@ -444,7 +474,10 @@ struct orm::connector_trait<MyDB> {
         \end{column}
         \begin{column}{0.42\textwidth}
             \begin{block}{Основен извод}
-                {\footnotesize Освен ORM с проверка при изпълнение (удобство, но късно откриване на грешки) и прекия достъп през драйвера (контрол, но без абстракция), е възможна \textbf{трета алтернатива}: договор на конектора, валидиран от компилатора, плюс корутинно изпълнение.}
+                {\footnotesize \textbf{Трета алтернатива} освен ORM при изпълнение (късно
+                откриване) и пряк достъп през драйвера (без абстракция): договор на
+                конектора, валидиран от компилатора, плюс корутинно изпълнение.
+                \textbf{\color{tusofia}Тази комбинация не съществува в друга C++ библиотека.}}
             \end{block}
             \textbf{Бъдещо развитие:}
             \begin{itemize}\footnotesize
@@ -456,12 +489,220 @@ struct orm::connector_trait<MyDB> {
     \end{columns}
 \end{frame}
 
+% ══════════════════════════════════════════════════════════
+\section{Демонстрации}
+% ══════════════════════════════════════════════════════════
+
+\begin{frame}{Демонстрации — компилаторът като първи валидатор}
+    {\footnotesize Шест самостоятелни примера; за всеки --- реален \emph{уловен} изход на
+    компилатора (без жива компилация на сцената).}
+    \vspace{0.3em}
+    \footnotesize
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabularx}{\linewidth}{@{}p{1.3cm}X@{}}
+        \toprule
+        & \textbf{Демонстрира}\\
+        \midrule
+        Демо 1 & MySQL приема, MongoDB отказва JOIN\\
+        Демо 2 & Заявката е \texttt{constexpr} стойност, не низ\\
+        Демо 3 & Несъвместим тип поле\,↔\,стойност\\
+        Демо 4 & Грешен брой/тип на параметрите\\
+        Демо 5 & Redis: само по първичен ключ\\
+        Демо 6 & Един модел, две материализации\\
+        \bottomrule
+    \end{tabularx}
+    \vspace{0.3em}
+
+    {\footnotesize\itshape Обща нишка: грешки, които другаде се проявяват при изпълнение,
+    тук са отказ на компилатора.}
+\end{frame}
+
+% ── Демо 1 (compile-time) ──────────────────────────────────────────────────
+\begin{frame}[fragile]{Демо 1 — Един модел: MySQL приема, MongoDB отказва}
+    {\footnotesize Една и съща SELECT\,…\,JOIN заявка срещу два конектора:}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+auto q = select(field<&User::id>, field<&Post::body>)
+   .join<inner, Post>(field<&User::id> == field<&Post::author_id>);
+
+db<MySQLDB>{conn} << q;   // relational -> compiles
+db<MongoDB>{conn} << q;   // document   -> REJECTED
+\end{lstlisting}
+    \lstinputlisting[basicstyle=\scriptsize\ttfamily,breaklines=true,keywordstyle=\color{black},stringstyle=\color{black},commentstyle=\color{cppgray}]{demo/01_capability_gating/compiler-output-slide.txt}
+\end{frame}
+
+% ── Демо 2 (positive) ──────────────────────────────────────────────────────
+\begin{frame}[fragile]{Демо 2 — Заявката е constexpr стойност, не низ}
+    {\footnotesize Структурата е в типа и се проверява при компилация --- нищо не се
+    изпълнява.}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+constexpr auto q = select(field<&User::id>, field<&User::name>)
+                      .where(field<&User::score> > 0.0);
+
+static_assert(decltype(q)::response_type::size == 2);
+static_assert(decltype(q.where_clauses())::size == 1);
+\end{lstlisting}
+    {\scriptsize Имена на колони, проекция и клаузи --- проверени без изпълнение. (SOCI гради низ при изпълнение.)}
+\end{frame}
+
+% ── Демо 3 (compile-time) ──────────────────────────────────────────────────
+\begin{frame}[fragile]{Демо 3 — Несъвместим тип поле↔стойност}
+    {\footnotesize Операторите сверяват C++ типа на колоната и на стойността:}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+field<&User::score> > 0;                     // double vs int -> OK
+field<&User::id>    == std::u8string{u8"x"};  // int vs string -> REJECTED
+\end{lstlisting}
+    \lstinputlisting[basicstyle=\scriptsize\ttfamily,breaklines=true,keywordstyle=\color{black},stringstyle=\color{black},commentstyle=\color{cppgray}]{demo/03_type_safety/compiler-output-slide.txt}
+\end{frame}
+
+% ── Демо 4 (compile-time) ──────────────────────────────────────────────────
+\begin{frame}[fragile]{Демо 4 — Брой и тип на параметрите}
+    {\footnotesize Заявка с два анонимни placeholder-а, извикана с грешен брой аргументи:}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+auto q = select(field<&User::id>)
+   .where( (field<&User::id>    == Placeholder<int>{}) &&
+           (field<&User::score> >  Placeholder<double>{}) );
+
+db.execute(q, 7, 3.5);   // 2 args -> OK
+db.execute(q, 7);        // 1 arg  -> REJECTED
+\end{lstlisting}
+    \lstinputlisting[basicstyle=\scriptsize\ttfamily,breaklines=true,keywordstyle=\color{black},stringstyle=\color{black},commentstyle=\color{cppgray}]{demo/04_param_arity/compiler-output-slide.txt}
+\end{frame}
+
+% ── Демо 5 (compile-time) ──────────────────────────────────────────────────
+\begin{frame}[fragile]{Демо 5 — Redis: само по първичен ключ}
+    {\footnotesize Заявка с не-PK предикат срещу Redis конектора:}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+select(field<&Session::token>)
+   .where(field<&Session::id> == Placeholder<int>{});       // PK -> OK
+
+select(field<&Session::token>)
+   .where(field<&Session::id>    == Placeholder<int>{})
+   .where(field<&Session::token> == Placeholder<u8string>{}); // non-PK -> REJECTED
+\end{lstlisting}
+    \lstinputlisting[basicstyle=\scriptsize\ttfamily,breaklines=true,keywordstyle=\color{black},stringstyle=\color{black},commentstyle=\color{cppgray}]{demo/05_backend_shape/compiler-output-slide.txt}
+\end{frame}
+
+% ── Демо 6 (positive) ──────────────────────────────────────────────────────
+\begin{frame}[fragile]{Демо 6 — relationship движи заявката (автоматичен JOIN)}
+    {\footnotesize \texttt{relationship<reference<\&User::id>, "user\_id">} е истинска
+    FK колона; избор на поле от свързана таблица извежда JOIN-а при компилация:}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+struct Post {
+  property<int,"id"> id;  property<u8string,"body"> body;
+  relationship<store_as::reference<&User::id>, "user_id"> user_id;
+};
+
+db << select(field<&Post::id>, field<&User::name>);
+\end{lstlisting}
+    {\scriptsize $\rightarrow$ изведен и проверен при компилация SQL:}
+\begin{lstlisting}[basicstyle=\scriptsize\ttfamily,keywordstyle=\color{black}]
+SELECT posts.id, user.name
+  FROM posts INNER JOIN user ON posts.user_id = user.id
+\end{lstlisting}
+    {\scriptsize \texttt{optional\_field} $\rightarrow$ LEFT / RIGHT / FULL (матрица 2$\times$2);
+    многозвенно Comment\,$\rightarrow$\,Post\,$\rightarrow$\,User се извежда автоматично.}
+\end{frame}
+
 \begin{frame}[plain]
     \vfill
     \centering
     {\Large\color{tusofia} Благодаря за вниманието!}\\[0.6em]
     {\large Въпроси?}
     \vfill
+\end{frame}
+
+% ══════════════════════════════════════════════════════════
+%  РЕЗЕРВНИ СЛАЙДОВЕ — Отговори на въпросите от рецензията
+%  (доц. д-р Г. Павлова). Показват се само при запитване.
+% ══════════════════════════════════════════════════════════
+\appendix
+
+\begin{frame}[fragile]{Какво още може да се провери при компилация}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \textbf{Вече се проверява:}
+            \begin{itemize}\footnotesize
+                \setlength{\itemsep}{0.05em}
+                \item Договор и способности на конектора
+                \item Тип на заявката и видове клаузи
+                \item Обвързване поле\,↔\,таблица\,↔\,колона
+                \item Консистентност на проекцията
+                \item Валидност на placeholder-ите
+                \item Структурна форма за конкретния backend
+                \item \textbf{Съвместимост поле\,↔\,стойност по тип}
+                \item \textbf{Брой/тип на параметрите} (анонимни)
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Архитектурно възможно (надграждане):}
+            \begin{itemize}\footnotesize
+                \setlength{\itemsep}{0.05em}
+                \item Аритет при \emph{индексирани} параметри \\ --- по дефиниция договор на конектора
+                \item Compile-time валидиране на \texttt{enum\_t}/\texttt{set\_t}
+                \item Референтна цялост на заявката
+                \item Деривиране на схемата чрез C++26 reflection
+            \end{itemize}
+        \end{column}
+    \end{columns}
+    \vspace{0.05em}
+    {\scriptsize Две скорошни проверки --- всяка е отказ при компилация:}
+\begin{lstlisting}
+field<&User::id> == std::u8string{u8"x"};  // incompatible type
+db.execute(query_with_2_placeholders, 5);  // wrong arg count
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Грешки, уловени при компилация}
+    \scriptsize
+    \setlength{\tabcolsep}{4pt}
+    \renewcommand{\arraystretch}{1.0}
+    \begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{6.9cm}>{\raggedright\arraybackslash}X@{}}
+        \toprule
+        \textbf{Клас грешка} & \textbf{Уловена при компилация чрез}\\
+        \midrule
+        Неподдържана операция за backend (JOIN срещу MongoDB)
+            & \texttt{static\_assert} за липсваща \texttt{supports\_joins}\\
+        Несъществуващо / грешно име на колона
+            & поле = член-указател \texttt{\&T::m}; име от \texttt{property<T,"..">}\\
+        Достъп до неселектирана колона
+            & \texttt{static\_assert}: „field not found in projection"\\
+        Малформирана заявка
+            & concepts \texttt{is\_field} / \texttt{is\_rule}\\
+        Несъвместим тип на сравнение (\texttt{int} колона vs \texttt{string})
+            & \texttt{static\_assert}: „incompatible operand types"\\
+        Невалиден индекс на placeholder
+            & \texttt{requires std::is\_placeholder<...>}\\
+        Нарушена форма за backend (Redis / Cassandra)
+            & \texttt{consteval} + \texttt{static\_assert}\\
+        Неспециализиран конектор
+            & \texttt{static\_assert} в \texttt{connector\_trait<DB>}\\
+        \bottomrule
+    \end{tabularx}
+    \vspace{0.15em}
+
+    {\scriptsize\itshape Всяка от тези грешки в традиционните ORM библиотеки би била
+    изключение или SQL грешка при изпълнение; тук е отказ на компилатора.}
+\end{frame}
+
+\begin{frame}{Матрица на диференциация (уникалност)}
+    \scriptsize
+    \setlength{\tabcolsep}{3pt}
+    \renewcommand{\arraystretch}{1.1}
+    \begin{tabularx}{\linewidth}{@{}p{3.3cm}*{6}{>{\centering\arraybackslash}X}@{}}
+        \toprule
+        \textbf{Ос} & SOCI & sqlpp11 & ODB & Hiberlite & Diesel & \textbf{ТАЗИ}\\
+        \midrule
+        \texttt{constexpr} IR при компилация & не & част. & част. & не & част. & \textbf{да}\\
+        Без външна кодогенерация & да & да & не & да & не & \textbf{да}\\
+        Един модел: рел.\,+\,нерел. & не & не & не & не & не & \textbf{да}\\
+        Договор за способности (gating) & не & не & не & не & не & \textbf{да}\\
+        Корутинна async ос & не & не & не & не & част. & \textbf{да}\\
+        \bottomrule
+    \end{tabularx}
+    \vspace{0.4em}
+
+    {\scriptsize\itshape Всеки конкурент има поне една „да" клетка; никой няма пълния ред
+    --- това е приносът. (Diesel е Rust; Hibernate/SQLAlchemy --- в ръководството.)}
 \end{frame}
 
 \end{document}

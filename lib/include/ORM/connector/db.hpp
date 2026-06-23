@@ -2,6 +2,7 @@
 #include "ORM/connector/trait.hpp"
 #include "ORM/connector/capabilities.hpp"
 #include "ORM/connector/prepared_query.hpp"
+#include "ORM/connector/param_check.hpp"
 #include "ORM/result/result.hpp"
 #include "ORM/query/select.hpp"
 #include "ORM/query/insert.hpp"
@@ -44,6 +45,7 @@ namespace orm {
         template <typename Query, typename... Params>
         auto execute(Query q, Params&&... params)
         {
+            detail::check_query_params<Query, Params...>();
             return connector_trait<DB>::execute(
                 *conn_, std::move(q), std::forward<Params>(params)...);
         }

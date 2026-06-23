@@ -1,19 +1,26 @@
 #include <gtest/gtest.h>
 #include "ORM/ORM.hpp"
 #include <list>
+#include <vector>
 
-struct Post
+namespace
 {
-    orm::property<int, "id">             id;
-    orm::property<std::u8string, "body"> body;
-};
+    struct User
+    {
+        orm::property<int, "id">             id;
+        orm::property<std::u8string, "name"> name;
+    };
 
-// ── store_as enum ─────────────────────────────────────────────────────────────
-
-TEST(StoreAs, ValuesAreDifferent)
-{
-    static_assert(orm::store_as::reference != orm::store_as::embed);
-}
+    struct Post
+    {
+        orm::property<int, "id">             id;
+        orm::property<std::u8string, "body"> body;
+        // FK column: Post.user_id references User.id.
+        orm::relationship<orm::store_as::reference<&User::id>, "user_id"> user_id;
+        // embedded collection.
+        orm::relationship<orm::store_as::embed, "tags", std::vector<int>>  tags;
+    };
+} // namespace
 
 // ── inferred_kind ─────────────────────────────────────────────────────────────
 
@@ -32,63 +39,56 @@ TEST(InferredRelationship, ListIsOneToMany)
     static_assert(orm::infer_relationship_v<std::list<Post>> == orm::inferred_kind::one_to_many);
 }
 
-TEST(InferredRelationship, IntIsOneToOne)
+// ── reference relationship (acts as the FK column) ─────────────────────────────
+
+TEST(Relationship, ReferenceIsReferenceNotEmbed)
 {
-    static_assert(orm::infer_relationship_v<int> == orm::inferred_kind::one_to_one);
+    using R = decltype(Post::user_id);
+    static_assert(orm::is_relationship_v<R>);
+    static_assert(orm::is_reference_relationship_v<R>);
+    static_assert(!orm::is_embed_relationship_v<R>);
+    static_assert(R::is_reference && !R::is_embed);
 }
 
-// ── relationship<> ────────────────────────────────────────────────────────────
-
-TEST(Relationship, StoreAsReferenceStrategy)
+TEST(Relationship, ReferenceFkColumnMetadata)
 {
-    using R = orm::relationship<orm::store_as::reference, Post, "posts">;
-    static_assert(R::strategy == orm::store_as::reference);
+    using R = decltype(Post::user_id);
+    EXPECT_EQ(R::column_name(), "user_id");      // the FK column on Post
+    EXPECT_EQ(R::target_column(), "id");         // the PK column on User
+    static_assert(std::is_same_v<R::target_table, User>);
+    static_assert(std::is_same_v<R::value_type, int>);   // FK C++ type
 }
 
-TEST(Relationship, StoreAsEmbedStrategy)
+TEST(Relationship, ReferenceUsableAsSelectField)
 {
-    using R = orm::relationship<orm::store_as::embed, Post, "archived">;
-    static_assert(R::strategy == orm::store_as::embed);
+    // field<&Post::user_id> resolves to the FK column name + type.
+    static_assert(orm::is_field<orm::mem_ptr<&Post::user_id>>);
+    EXPECT_EQ(orm::mem_ptr<&Post::user_id>::column_name(), "user_id");
+    static_assert(std::is_same_v<
+        orm::detail::field_cpp_type<orm::mem_ptr<&Post::user_id>>::type, int>);
 }
 
-TEST(Relationship, FieldName)
-{
-    using R = orm::relationship<orm::store_as::reference, Post, "posts">;
-    EXPECT_EQ(R::field_name(), "posts");
-}
+// ── embed relationship ─────────────────────────────────────────────────────────
 
-TEST(Relationship, RelatedType)
+TEST(Relationship, EmbedMetadata)
 {
-    using R = orm::relationship<orm::store_as::reference, Post, "posts">;
-    static_assert(std::is_same_v<R::related_type, Post>);
-}
-
-TEST(Relationship, ElementTypeForSingle)
-{
-    using R = orm::relationship<orm::store_as::reference, Post, "posts">;
-    static_assert(std::is_same_v<R::element_type, Post>);
-}
-
-TEST(Relationship, IsCollectionFalseForSingle)
-{
-    using R = orm::relationship<orm::store_as::reference, Post, "posts">;
-    static_assert(!R::is_collection);
-}
-
-TEST(Relationship, OneToManyVectorCollection)
-{
-    using R = orm::relationship<orm::store_as::reference, std::vector<Post>, "likes">;
+    using R = decltype(Post::tags);
+    static_assert(orm::is_embed_relationship_v<R>);
+    static_assert(!orm::is_reference_relationship_v<R>);
+    static_assert(R::is_embed && !R::is_reference);
     static_assert(R::is_collection);
-    static_assert(std::is_same_v<R::element_type, Post>);
+    static_assert(std::is_same_v<R::element_type, int>);
+    EXPECT_EQ(R::field_name(), "tags");
+}
+
+TEST(Relationship, EmbedSingleIsNotCollection)
+{
+    using R = orm::relationship<orm::store_as::embed, "addr", User>;
+    static_assert(!R::is_collection);
+    static_assert(std::is_same_v<R::element_type, User>);
 }
 
 // ── is_relationship trait ─────────────────────────────────────────────────────
-
-TEST(Relationship, IsRelationshipTrue)
-{
-    using R = orm::relationship<orm::store_as::reference, Post, "posts">;
-    static_assert(orm::is_relationship_v<R>);
-}
 
 TEST(Relationship, IsRelationshipFalseForInt)
 {

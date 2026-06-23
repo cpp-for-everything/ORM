@@ -3,12 +3,26 @@
 #include "ORM/connector/trait.hpp"
 #include "ORM/db/connectors/SQLite/sqlite_db.hpp"
 #include <filesystem>
+#include <map>
 
 struct Item
 {
     orm::property<int, "id">          id;
     orm::property<std::string, "name"> name;
     orm::property<double, "price">    price;
+};
+
+// ── related entities for the relationship-aware (auto-JOIN) tests ──────────────
+struct Author
+{
+    orm::property<int, "id">           id;
+    orm::property<std::string, "name"> name;
+};
+struct Book
+{
+    orm::property<int, "id">            id;
+    orm::property<std::string, "title"> title;
+    orm::relationship<orm::store_as::reference<&Author::id>, "author_id"> author_id;
 };
 
 namespace orm
@@ -18,6 +32,8 @@ namespace orm
     {
         static constexpr std::string_view value = "items";
     };
+    template <> struct table_name_trait<Author> { static constexpr std::string_view value = "authors"; };
+    template <> struct table_name_trait<Book>   { static constexpr std::string_view value = "books"; };
 } // namespace orm
 
 class SQLiteTest : public ::testing::Test
@@ -283,4 +299,64 @@ TEST_F(SQLiteTest, IndexedPlaceholderTwoDistinctArgsFilter)
     ASSERT_EQ(rows.size(), 1u);
     EXPECT_EQ(std::get<0>(rows[0]), 1);
     EXPECT_DOUBLE_EQ(std::get<1>(rows[0]), 0.99);
+}
+
+// ── relationship-aware queries (auto-inferred JOIN → joined_row) ───────────────
+
+class SQLiteJoinTest : public ::testing::Test
+{
+protected:
+    orm::SQLiteDB conn;
+    orm::db<orm::SQLiteDB> db{conn};
+
+    void exec(const char* sql) { sqlite3_exec(conn.handle, sql, nullptr, nullptr, nullptr); }
+
+    void SetUp() override
+    {
+        conn = orm::SQLiteDB::open(":memory:");
+        exec("CREATE TABLE authors (id INTEGER PRIMARY KEY, name TEXT);");
+        exec("CREATE TABLE books (id INTEGER PRIMARY KEY, title TEXT, author_id INTEGER);");
+        exec("INSERT INTO authors VALUES (1,'Tolkien'),(2,'Le Guin');");
+        exec("INSERT INTO books   VALUES (10,'The Hobbit',1),(11,'A Wizard of Earthsea',2);");
+    }
+};
+
+TEST_F(SQLiteJoinTest, AutoJoinResultTypeIsJoinedRow)
+{
+    constexpr auto q = orm::select(orm::field<&Book::title>, orm::field<&Author::name>);
+    auto res = db << q;
+    static_assert(std::is_same_v<decltype(res)::value_type, orm::joined_row<Book, Author>>);
+    EXPECT_EQ(res.size(), 2u);
+}
+
+TEST_F(SQLiteJoinTest, AutoJoinHydratesPartialEntities)
+{
+    // select a book column + an author column → INNER JOIN books→authors is inferred,
+    // each row is a joined_row with partial Book and Author entities.
+    constexpr auto q = orm::select(orm::field<&Book::title>, orm::field<&Author::name>);
+    auto rows = (db << q).to_vector();
+    ASSERT_EQ(rows.size(), 2u);
+
+    std::map<std::string, std::string> title_to_author;
+    for (const auto& r : rows)
+    {
+        EXPECT_TRUE(r.get<Book>().title.has_value());
+        EXPECT_TRUE(r.get<Author>().name.has_value());
+        EXPECT_FALSE(r.get<Book>().id.has_value());   // id not selected → unset
+        EXPECT_FALSE(r.get<Author>().id.has_value());
+        title_to_author[r.get<Book>().title.value] = r.get<Author>().name.value;
+    }
+    EXPECT_EQ(title_to_author["The Hobbit"],           "Tolkien");
+    EXPECT_EQ(title_to_author["A Wizard of Earthsea"], "Le Guin");
+}
+
+TEST_F(SQLiteJoinTest, SingleTableStillReturnsTuple)
+{
+    // a single-table select over a related entity keeps the flat-tuple behaviour
+    constexpr auto q = orm::select(orm::field<&Book::id>, orm::field<&Book::title>);
+    auto res = db << q;
+    static_assert(std::is_same_v<decltype(res)::value_type, std::tuple<int, std::string>>);
+    auto rows = res.to_vector();
+    ASSERT_EQ(rows.size(), 2u);
+    EXPECT_EQ(std::get<0>(rows[0]), 10);
 }

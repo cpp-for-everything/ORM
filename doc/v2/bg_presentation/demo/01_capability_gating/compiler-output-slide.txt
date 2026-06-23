@@ -1,0 +1,4 @@
+$ c++ -std=c++23 -I lib/include -DDEMO_REJECT capability_gating.cpp
+
+lib/include/ORM/connector/db.hpp:35:35: error: static assertion failed due to requirement 'has_capability<orm::MongoDB, orm::cap::supports_joins>': orm::db: this connector does not support JOIN operations. Remove .join() clauses, use store_as::reference relationships, or switch to a connector that declares `using supports_joins = void;`.
+1 error generated.

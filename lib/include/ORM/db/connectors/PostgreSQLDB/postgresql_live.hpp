@@ -7,6 +7,7 @@
 #include "ORM/query/delete.hpp"
 #include "ORM/query/field.hpp"
 #include "ORM/query/placeholders.hpp"
+#include "ORM/result/joined_row.hpp"        // joined_row_for / hydrate_joined (pulls join_infer)
 #include "ORM/entity/table.hpp"
 #include "ORM/details/member_pointer.hpp"
 
@@ -310,6 +311,58 @@ namespace orm {
                 return T{};
         }
 
+        // ── relationship-aware SQL rendering (connector-local) ────────────────
+        // The ORM core hands us the compile-time join plan; turning it into SQL
+        // text — including which dialect keyword join::mode maps to — is the
+        // connector's job, so this lives here rather than in the ORM core.
+        [[nodiscard]] inline std::string_view join_kind_sql(orm::join::mode m) noexcept
+        {
+            switch (m)
+            {
+                case orm::join::mode::inner: return "INNER JOIN";
+                case orm::join::mode::left:  return "LEFT JOIN";
+                case orm::join::mode::right: return "RIGHT JOIN";
+                default:                     return "FULL JOIN";
+            }
+        }
+
+        template <typename... Fields>
+        [[nodiscard]] std::string qualified_columns_impl(orm::detail::orm_tuple<Fields...>*)
+        {
+            std::string out;
+            bool first = true;
+            (((out += (first ? std::string{} : std::string{", "})
+                 + std::string(orm::table_name<typename Fields::table_type>()) + "."
+                 + std::string(Fields::column_name())),
+              first = false),
+             ...);
+            return out;
+        }
+        template <typename Response>
+        [[nodiscard]] std::string render_qualified_columns()
+        {
+            return qualified_columns_impl(static_cast<Response*>(nullptr));
+        }
+
+        template <typename... Steps>
+        [[nodiscard]] std::string inferred_joins_impl(orm::detail::tl<Steps...>*)
+        {
+            std::string out;
+            ((out += " " + std::string(join_kind_sql(Steps::mode)) + " "
+                   + std::string(orm::table_name<typename Steps::to>()) + " ON "
+                   + std::string(orm::table_name<typename Steps::from>()) + "."
+                   + std::string(Steps::rel::column_name()) + " = "
+                   + std::string(orm::table_name<typename Steps::to>()) + "."
+                   + std::string(Steps::rel::target_column())),
+             ...);
+            return out;
+        }
+        template <typename Response>
+        [[nodiscard]] std::string render_inferred_joins()
+        {
+            return inferred_joins_impl(static_cast<orm::detail::join_plan_t<Response>*>(nullptr));
+        }
+
     } // namespace pg_live_detail
 
     // ── connector_trait<PostgreSQLLiveDB> specialisation ──────────────────────
@@ -334,18 +387,11 @@ namespace orm {
         static auto execute(
             PostgreSQLLiveDB& db,
             select_query<Response, Joins, Wheres, Limits, Groups, Orders> q)
-            -> result<projected_type<Response>, Response>
         {
-            using Row = projected_type<Response>;
-            using Entity = typename Response::template orm_type<0>::table_type;
+            constexpr bool inferred = orm::detail::is_multi_table<Response> && Joins::size == 0;
             pg_live_detail::RenderCtx ctx;
-            const std::string sql = std::format("SELECT {} FROM {}{}{}{}",
-                pg_live_detail::render_columns(q.selected_properties()),
-                table_name<Entity>(),
-                pg_live_detail::render_wheres(q.where_clauses(), ctx),
-                pg_live_detail::render_order_by(q.order_clauses()),
-                pg_live_detail::render_limits(q.limit_clauses()));
-            return exec_select<Row, Response>(db, sql, {});
+            const std::string sql = build_select_sql<Response, inferred>(q, ctx);
+            return exec_select<Response, inferred>(db, sql, {});
         }
 
         // ── SELECT (with runtime params) ──────────────────────────────────────
@@ -356,19 +402,12 @@ namespace orm {
             PostgreSQLLiveDB& db,
             select_query<Response, Joins, Wheres, Limits, Groups, Orders> q,
             Params&&... params)
-            -> result<projected_type<Response>, Response>
         {
-            using Row = projected_type<Response>;
-            using Entity = typename Response::template orm_type<0>::table_type;
+            constexpr bool inferred = orm::detail::is_multi_table<Response> && Joins::size == 0;
             pg_live_detail::RenderCtx ctx;
-            const std::string sql = std::format("SELECT {} FROM {}{}{}{}",
-                pg_live_detail::render_columns(q.selected_properties()),
-                table_name<Entity>(),
-                pg_live_detail::render_wheres(q.where_clauses(), ctx),
-                pg_live_detail::render_order_by(q.order_clauses()),
-                pg_live_detail::render_limits(q.limit_clauses()));
+            const std::string sql = build_select_sql<Response, inferred>(q, ctx);
             auto vals = pg_live_detail::collect_params(std::forward<Params>(params)...);
-            return exec_select<Row, Response>(db, sql, vals);
+            return exec_select<Response, inferred>(db, sql, vals);
         }
 
         // ── INSERT (no runtime params) ────────────────────────────────────────
@@ -527,19 +566,48 @@ namespace orm {
             PQclear(res);
         }
 
-        template <typename Row, typename Response>
+        // Build the SELECT SQL. Inferred = multi-table relationship query with no
+        // explicit .join(): table-qualified columns + the inferred JOIN chain (shared
+        // renderer). Otherwise the bare single-table form.
+        template <typename Response, bool Inferred, typename Query>
+        static std::string build_select_sql(const Query& q, pg_live_detail::RenderCtx& ctx)
+        {
+            if constexpr (Inferred)
+            {
+                using Base = orm::detail::base_table_t<Response>;
+                return std::format("SELECT {} FROM {}{}{}{}{}",
+                    pg_live_detail::render_qualified_columns<Response>(),
+                    std::string(table_name<Base>()),
+                    pg_live_detail::render_inferred_joins<Response>(),
+                    pg_live_detail::render_wheres(q.where_clauses(), ctx),
+                    pg_live_detail::render_order_by(q.order_clauses()),
+                    pg_live_detail::render_limits(q.limit_clauses()));
+            }
+            else
+            {
+                using Entity = typename Response::template orm_type<0>::table_type;
+                return std::format("SELECT {} FROM {}{}{}{}",
+                    pg_live_detail::render_columns(q.selected_properties()),
+                    std::string(table_name<Entity>()),
+                    pg_live_detail::render_wheres(q.where_clauses(), ctx),
+                    pg_live_detail::render_order_by(q.order_clauses()),
+                    pg_live_detail::render_limits(q.limit_clauses()));
+            }
+        }
+
+        // Run a SELECT and hydrate. Inferred → partial entities grouped into a
+        // joined_row_for<Response>; otherwise a flat projected_type<Response> tuple.
+        template <typename Response, bool Inferred>
         static auto exec_select(
             PostgreSQLLiveDB& db,
             const std::string& sql,
             const std::vector<std::string>& vals)
-            -> result<Row, Response>
         {
-            // Prepare parameter arrays for PQexecParams
             std::vector<const char*> param_values;
             param_values.reserve(vals.size());
             for (const auto& v : vals)
                 param_values.push_back(v.c_str());
-            
+
             PGresult* res = PQexecParams(
                 db.native(),
                 sql.c_str(),
@@ -550,23 +618,37 @@ namespace orm {
                 nullptr,
                 0
             );
-            
+
             if (PQresultStatus(res) != PGRES_TUPLES_OK)
             {
                 std::string err = PQerrorMessage(db.native());
                 PQclear(res);
                 throw std::runtime_error("PostgreSQL SELECT failed: " + err);
             }
-            
+
             const int nrows = PQntuples(res);
-            std::vector<Row> rows;
-            rows.reserve(nrows);
-            
-            for (int i = 0; i < nrows; ++i)
-                rows.push_back(hydrate_row<Row>(res, i));
-            
-            PQclear(res);
-            return result<Row, Response>{ std::move(rows) };
+
+            if constexpr (Inferred)
+            {
+                using Flat = projected_type<Response>;
+                using Row  = joined_row_for<Response>;
+                std::vector<Row> rows;
+                rows.reserve(nrows);
+                for (int i = 0; i < nrows; ++i)
+                    rows.push_back(orm::hydrate_joined<Response>(hydrate_row<Flat>(res, i)));
+                PQclear(res);
+                return result<Row, Response>{ std::move(rows) };
+            }
+            else
+            {
+                using Row = projected_type<Response>;
+                std::vector<Row> rows;
+                rows.reserve(nrows);
+                for (int i = 0; i < nrows; ++i)
+                    rows.push_back(hydrate_row<Row>(res, i));
+                PQclear(res);
+                return result<Row, Response>{ std::move(rows) };
+            }
         }
 
         template <typename Row>

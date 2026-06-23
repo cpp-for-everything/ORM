@@ -80,6 +80,34 @@ RUN mkdir -p build && cd build \
 CMD ["bash", "-c", "cd build && ctest -R postgresql --output-on-failure"]
 
 # ══════════════════════════════════════════════════════════════════════════════
+# MySQL Stack
+# ══════════════════════════════════════════════════════════════════════════════
+
+FROM base-builder AS mysql-test
+# MariaDB Connector/C (libmariadb-dev) provides BOTH the classic MySQL C API used by
+# the live connector AND the non-blocking API (MYSQL_OPT_NONBLOCK, *_start/_cont) that
+# mysql_async.hpp needs — Oracle's libmysqlclient lacks the latter.
+RUN apt-get update && apt-get install -y \
+    build-essential cmake pkg-config libmariadb-dev libmariadb-dev-compat libgtest-dev libgmock-dev \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /workspace
+COPY . /workspace/
+RUN mkdir -p build && cd build \
+    && cmake .. \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_CXX_STANDARD=23 \
+        -DORM_USE_SYSTEM_LIBS=ON \
+        -DORM_ENABLE_MYSQL=ON \
+        -DORM_ENABLE_POSTGRESQL=OFF \
+        -DORM_ENABLE_MONGODB=OFF \
+        -DORM_ENABLE_REDIS=OFF \
+        -DORM_ENABLE_CASSANDRA=OFF \
+        -DORM_ENABLE_NEO4J=OFF \
+        -DORM_ENABLE_SQLITE=OFF \
+    && cmake --build . -j$(nproc)
+CMD ["bash", "-c", "cd build && ctest -R mysql --output-on-failure"]
+
+# ══════════════════════════════════════════════════════════════════════════════
 # MongoDB Stack
 # ══════════════════════════════════════════════════════════════════════════════
 

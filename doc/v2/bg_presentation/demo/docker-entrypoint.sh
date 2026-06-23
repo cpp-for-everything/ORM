@@ -36,14 +36,24 @@ fi
 ninja -C build 01_capability_gating 02_query_anatomy 03_relationships 04_async_task 2>&1 | tail -3
 
 # ── 2. Сглобяване на bench_async + MariaDB проба (за Демо B) ──────────────
-step "build-docker/ (bench_async + MariaDB проба)"
+step "build-docker/ (bench_async + MariaDB проба, всички живи конектори)"
 cd "$ORM_ROOT"
 if [ ! -f "$BUILD_DIR/build.ninja" ]; then
+    # Всички конектори се активират — всичките им клиентски библиотеки са
+    # инсталирани в образа (виж Dockerfile, секции 1, 3, 4). Това гарантира,
+    # че `find_package` няма да фейлне за нито един от тях; самото линкване
+    # се прави само за target-ите, които наистина ги ползват (test_*_live).
     cmake -G Ninja -B "$BUILD_DIR" \
         -DCMAKE_BUILD_TYPE=Release \
         -DORM_USE_SYSTEM_LIBS=ON \
         -DORM_ENABLE_BENCHMARKS=ON \
+        -DORM_ENABLE_SQLITE=ON \
         -DORM_ENABLE_MYSQL=ON \
+        -DORM_ENABLE_POSTGRESQL=ON \
+        -DORM_ENABLE_MONGODB=ON \
+        -DORM_ENABLE_REDIS=ON \
+        -DORM_ENABLE_CASSANDRA=ON \
+        -DORM_ENABLE_NEO4J=ON \
         -DORM_LINUX_REACTOR=epoll 2>&1 | tail -3
 fi
 ninja -C "$BUILD_DIR" bench_async test_mysql_async_coroutine_probe 2>&1 | tail -3
