@@ -96,10 +96,9 @@
     Разработка на библиотека за обектно-релационно картографиране по време на компилация}
 \subtitle{Дипломна работа}
 \author[Алекс Цветанов]{%
-    Алекс Цветанов, фак.~№~121222225\\[0.3em]
-    {\footnotesize Научен ръководител: проф.~д-р~инж.~Румен Трифонов}}
-\institute[ТУ--София]{%
-    Технически университет~--~София\\
+    Алекс Цветанов, фак.~№~121222225}
+\institute[ТУ–София]{%
+    Технически университет~–~София\\
     Факултет „Компютърни системи и технологии"\\
     Компютърно и софтуерно инженерство}
 \date{2026}
@@ -123,13 +122,14 @@
         \begin{column}{0.54\textwidth}
             \textbf{Традиционен подход:}
             \begin{itemize}\small
+                \setlength{\itemsep}{0pt}
                 \item Заявките се описват като \alert{низове}
                 \item Валидиране едва при изпълнение
                 \item Грешни имена на полета → срив при изпълнение
                 \item Несъвместими типове → късно откриване
                 \item Смяна на хранилището → \alert{пълно пренаписване}
             \end{itemize}
-            \vspace{0.15em}
+            \vspace{0.05em}
             \textbf{Изследователски въпрос:}\\
             \textit{Може ли компилаторът да поеме ролята на
             първи валидатор на заявките?}
@@ -147,11 +147,10 @@
                     Ранно откриване\\
                 \bottomrule
             \end{tabularx}
-            \vspace{0.15em}
+            \vspace{0.02em}
             \begin{alertblock}{Цел}
-                {\small Компилаторът поема ролята
-                на първи валидатор
-                на заявките.}
+                {\small Компилаторът е първи
+                валидатор на заявките.}
             \end{alertblock}
         \end{column}
     \end{columns}
@@ -361,14 +360,13 @@ struct orm::connector_trait<MyDB> {
                 \texttt{reference} & SQL: \texttt{JOIN}\quad MongoDB: \texttt{\$lookup}\\
                 \texttt{embed}     & MongoDB вложен документ\\
             \end{tabularx}
-            \vspace{0.15em}
-            {\footnotesize Избор на поле от свързана таблица $\rightarrow$ JOIN-ът се
-            \textbf{извежда при компилация} и връща \texttt{joined\_row}; еднакво за SQL и
-            NoSQL --- \textbf{живо в Демо 7}.}
-            \vspace{0.15em}
+            \vspace{0.1em}
+            {\footnotesize Избор на поле от свързана таблица $\rightarrow$ JOIN се
+            \textbf{извежда при компилация} и връща \texttt{joined\_row} (живо в Демо 7).}
+            \vspace{0.1em}
             \begin{alertblock}{Принцип}
                 {\small Един C++ модел е \emph{логическата} схема; хранилището определя
-                материализацията. Едно приложение --- \textbf{macOS / Linux / Windows}.}
+                физическата материализация.}
             \end{alertblock}
         \end{column}
     \end{columns}
@@ -464,10 +462,10 @@ struct orm::connector_trait<MyDB> {
     \begin{columns}[T]
         \begin{column}{0.54\textwidth}
             \begin{enumerate}\footnotesize
-                \setlength{\itemsep}{0.15em}
+                \setlength{\itemsep}{0.05em}
                 \item ORM модел с проверка при компилация в стандартен C++23, без външна кодогенерация
                 \item Един C++ обектен модел за 7 системи за съхранение (SQL и NoSQL)
-                \item \textbf{Релационно-осъзнати заявки}: авто-JOIN, изведен при компилация; една заявка $\rightarrow$ SQL \texttt{JOIN} / Mongo \texttt{\$lookup}, жив \texttt{joined\_row} от 4 бази
+                \item \textbf{Релационно-осъзнати заявки}: една заявка $\rightarrow$ SQL \texttt{JOIN} / Mongo \texttt{\$lookup}, жив \texttt{joined\_row} от 4 бази
                 \item Формален договор на конектора и разширяемост чрез способности
                 \item Асинхронен слой с измерима полза при натоварвания, ограничени от вход-изход
                 \item Многостепенна верификация: тестове $+$ проверки срещу живи системи $+$ емпирични измервания
@@ -480,8 +478,6 @@ struct orm::connector_trait<MyDB> {
                 конектора, валидиран от компилатора, плюс корутинно изпълнение.
                 \textbf{\color{tusofia}Тази комбинация не съществува в друга C++ библиотека.}}
             \end{block}
-            {\footnotesize Един и същ код --- \textbf{macOS / Linux / Windows}, релационни и
-            документни бази; демонстрациите вървят „out of the box" през Docker.}
             \textbf{Бъдещо развитие:}
             \begin{itemize}\footnotesize
                 \setlength{\itemsep}{0.1em}
