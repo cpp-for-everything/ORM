@@ -3,25 +3,10 @@ services:
   # Database Services (shared across all tests)
   # ══════════════════════════════════════════════════════════════════════════════
   
-  mysql:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: test_password
-      MYSQL_DATABASE: test_db
-    ports:
-      - "3306:3306"
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-ptest_password"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-    networks:
-      - orm-network
-
-  # Plain (non-TLS) MariaDB instance used by the empirical
-  # AsyncMySQLDB coroutine probe (test_mysql_async_coroutine_probe).
-  # Exposed on a distinct host port so it does not collide with the
-  # MySQL 8.0 service above.
+  # MariaDB — the MySQL-compatible server used for ALL MySQL connector tests.
+  # The ORM's MySQL connector links MariaDB Connector/C (it needs the non-blocking
+  # mysql_*_start/_cont API), so we target MariaDB, not Oracle MySQL. Host port 3307
+  # (the coroutine probe / WSL scripts expect it there).
   mariadb:
     image: mariadb:10.11
     environment:
@@ -214,7 +199,7 @@ services:
       dockerfile: docker/Dockerfile
       target: all-test
     depends_on:
-      mysql:
+      mariadb:
         condition: service_healthy
       postgresql:
         condition: service_healthy
@@ -225,11 +210,11 @@ services:
       cassandra:
         condition: service_healthy
     environment:
-      ORM_MYSQL_HOST: mysql
+      ORM_MYSQL_HOST: mariadb
       ORM_MYSQL_PORT: 3306
       ORM_MYSQL_USER: root
-      ORM_MYSQL_PASSWORD: test_password
-      ORM_MYSQL_DATABASE: test_db
+      ORM_MYSQL_PASSWORD: orm_test_password
+      ORM_MYSQL_DATABASE: orm_test
       ORM_POSTGRESQL_HOST: postgresql
       ORM_POSTGRESQL_PORT: 5432
       ORM_POSTGRESQL_USER: postgres

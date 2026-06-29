@@ -349,7 +349,8 @@ RUN apt-get update && apt-get install -y \
     cmake \
     pkg-config \
     libpq-dev \
-    libmysqlclient-dev \
+    libmariadb-dev \
+    libmariadb-dev-compat \
     libmongoc-dev \
     libbson-dev \
     libuv1-dev \
