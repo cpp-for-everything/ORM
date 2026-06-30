@@ -112,11 +112,16 @@ TEST(RunOnPoolTest, VoidReturn)
 TEST(RunOnPoolTest, ExceptionPropagates)
 {
     orm::ThreadPool pool(2);
-    auto task = [&]() -> orm::Task<int> {
+    // Hold the coroutine-lambda closure alive across sync_wait(): an immediately-
+    // invoked [&]{...}() destroys its closure at the end of the full expression, but
+    // the suspended coroutine still reads its captures when resumed → stack-use-after-
+    // scope (crashes on libc++/macOS in the exception-unwind path; latent on glibc).
+    auto coro = [&]() -> orm::Task<int> {
         co_return co_await orm::run_on_pool(pool, []() -> int {
             throw std::runtime_error("pool boom");
         });
-    }();
+    };
+    auto task = coro();
     EXPECT_THROW(task.sync_wait(), std::runtime_error);
     pool.shutdown();
 }
@@ -124,12 +129,13 @@ TEST(RunOnPoolTest, ExceptionPropagates)
 TEST(RunOnPoolTest, VoidExceptionPropagates)
 {
     orm::ThreadPool pool(2);
-    auto task = [&]() -> orm::Task<void> {
+    auto coro = [&]() -> orm::Task<void> {        // keep closure alive — see ExceptionPropagates
         co_await orm::run_on_pool(pool, [] {
             throw std::logic_error("void boom");
         });
         co_return;
-    }();
+    };
+    auto task = coro();
     EXPECT_THROW(task.sync_wait(), std::logic_error);
     pool.shutdown();
 }

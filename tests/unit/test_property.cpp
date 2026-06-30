@@ -55,6 +55,38 @@ TEST(Property, ExplicitConstructor)
     EXPECT_EQ(p.value, 99);
 }
 
+// ── optional / engaged semantics (partial hydration) ──────────────────────────
+
+TEST(Property, DefaultIsUnset)
+{
+    orm::property<int, "id"> p;
+    EXPECT_FALSE(p.has_value());
+    EXPECT_FALSE(static_cast<bool>(p));
+}
+
+TEST(Property, ValueConstructorEngages)
+{
+    orm::property<int, "id"> p(7);
+    EXPECT_TRUE(p.has_value());
+    EXPECT_EQ(p.get(), 7);
+}
+
+TEST(Property, SetEngages)
+{
+    orm::property<int, "id"> p;
+    p.set(5);
+    EXPECT_TRUE(p.has_value());
+    EXPECT_EQ(p.value, 5);
+}
+
+TEST(Property, ResetDisengages)
+{
+    orm::property<int, "id"> p(5);
+    p.reset();
+    EXPECT_FALSE(p.has_value());
+    EXPECT_EQ(p.value, 0);
+}
+
 // ── is_property concept ───────────────────────────────────────────────────────
 
 TEST(Property, IsPropertyTrue)

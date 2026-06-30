@@ -12,6 +12,7 @@
 \setstretch{1.5}
 \usepackage[none]{hyphenat}
 \usepackage[expansion=false]{microtype}
+\DisableLigatures{encoding=*,family=tt*}
 \emergencystretch=1.5em
 \sloppy
 \usepackage{makecell}
@@ -115,6 +116,10 @@
 \usepackage{longtable}
 \usepackage{multirow}
 \usepackage{tabularx}
+\usepackage{arydshln}
+\setlength\dashlinedash{1.5pt}
+\setlength\dashlinegap{1.5pt}
+\setlength\arrayrulewidth{0.4pt}
 
 % --- Библиография ---
 \usepackage{hyperref}
@@ -147,8 +152,11 @@
     \group_begin:
       \tl_set:Nx \l__orm_code_text_tl { \tl_to_str:n {#1} }
       \regex_replace_all:nnN { \\([_&]) } { \1 } \l__orm_code_text_tl
-      \ttfamily
-      \exp_args:NV \seqsplit \l__orm_code_text_tl
+      \regex_replace_all:nnN { \\\{ } { \c{textbraceleft} } \l__orm_code_text_tl
+      \regex_replace_all:nnN { \\\} } { \c{textbraceright} } \l__orm_code_text_tl
+      \regex_replace_all:nnN { < } { \c{textless} } \l__orm_code_text_tl
+      \regex_replace_all:nnN { > } { \c{textgreater} } \l__orm_code_text_tl
+      \mbox { \ttfamily \tl_use:N \l__orm_code_text_tl }
     \group_end:
   }
 \DeclareRobustCommand{\code}[1]{\orm_code:n {#1}}
@@ -283,7 +291,7 @@
     \end{figure}
     \vspace{0.5cm}
 
-    {\fontsize{20}{24}\selectfont\bfseries ПРОЕКТИРАНЕ И РАЗРАБОТВАНЕ НА Compile-time Object-Relational Mapping библиотека на C++\par}
+    {\fontsize{20}{24}\selectfont\bfseries РАЗРАБОТВАНЕ НА БИБЛИОТЕКА ЗА ОБЕКТНО-РЕЛАЦИОННО КАРТОГРАФИРАНЕ ПО ВРЕМЕ НА КОМПИЛАЦИЯ\par}
 
     \vspace{1cm}
 
@@ -299,7 +307,7 @@
     \vspace{1cm}
 
     {\fontsize{14}{16.8}\selectfont\bfseries Научен ръководител:\par}
-    доц. д-р инж. Галя Павлова\par
+    проф. д-р инж. Румен Трифонов\par
     \end{flushleft}
 
     \vfill
@@ -309,21 +317,16 @@
 \end{titlepage}
 
 \newpage
-\pagenumbering{roman}
+\pagestyle{empty}
+\setcounter{tocdepth}{2}
 \tableofcontents
 \newpage
 
+\pagestyle{fancy}
 \pagenumbering{arabic}
 
 % ============================================================================
-% Резюме
-% ============================================================================
-\input{chapters/00_abstract.tex}
-
-\newpage
-
-% ============================================================================
-% Глава 1: Въведение
+% Увод (без номер)
 % ============================================================================
 \input{chapters/01_introduction.tex}
 
@@ -337,65 +340,23 @@
 \newpage
 
 % ============================================================================
-% Глава 3: Теоретични основи
+% Глава 3: Проектиране на библиотеката
 % ============================================================================
-\input{chapters/03_theoretical_background.tex}
+\input{chapters/03_design.tex}
 
 \newpage
 
 % ============================================================================
-% Глава 4: Теория на корутините и асинхронното изпълнение
+% Глава 4: Програмна реализация
 % ============================================================================
-\input{chapters/04_coroutines_async_theory.tex}
+\input{chapters/04_implementation.tex}
 
 \newpage
 
 % ============================================================================
-% Глава 5: Compile-time ORM архитектура
+% Глава 5: Заключение
 % ============================================================================
-\input{chapters/05_compile_time_orm_architecture.tex}
-
-\newpage
-
-% ============================================================================
-% Глава 6: Асинхронна архитектура на изпълнението
-% ============================================================================
-\input{chapters/06_async_execution_architecture.tex}
-
-\newpage
-
-% ============================================================================
-% Глава 7: Backend изпълнителни модели
-% ============================================================================
-\input{chapters/07_backend_execution_models.tex}
-
-\newpage
-
-% ============================================================================
-% Глава 8: Верификация и емпирична оценка
-% ============================================================================
-\input{chapters/08_verification_evaluation.tex}
-
-\newpage
-
-% ============================================================================
-% Глава 9: Надграждаемост чрез нови конектори
-% ============================================================================
-\input{chapters/09_extensibility_connectors.tex}
-
-\newpage
-
-% ============================================================================
-% Глава 10: Ограничения и бъдещо развитие
-% ============================================================================
-\input{chapters/10_future_work.tex}
-
-\newpage
-
-% ============================================================================
-% Глава 11: Заключение
-% ============================================================================
-\input{chapters/11_conclusion.tex}
+\input{chapters/05_conclusion.tex}
 
 \newpage
 

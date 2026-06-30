@@ -1,0 +1,11 @@
+INNER  (field<&User::name> налага JOIN):
+  SELECT posts.id, user.name FROM posts INNER JOIN user ON posts.user_id = user.id
+LEFT   (optional_field<&User::name>):
+  SELECT posts.id, user.name FROM posts LEFT JOIN user ON posts.user_id = user.id
+RIGHT  (optional Post, required User):
+  SELECT posts.id, user.name FROM posts RIGHT JOIN user ON posts.user_id = user.id
+FULL   (двете optional):
+  SELECT posts.id, user.name FROM posts FULL JOIN user ON posts.user_id = user.id
+MULTI-HOP  Comment -> Post -> User:
+  SELECT comments.body, user.name FROM comments INNER JOIN posts ON comments.post_id = posts.id INNER JOIN user ON posts.user_id = user.id
+Един модел; relationship-ите движат заявките --- автоматичен JOIN, изведен и проверен при компилация.

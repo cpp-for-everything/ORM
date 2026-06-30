@@ -6,6 +6,7 @@
 #include "ORM/query/update.hpp"
 #include "ORM/query/delete.hpp"
 #include "ORM/query/field.hpp"
+#include "ORM/query/join_infer.hpp"
 #include "ORM/entity/table.hpp"
 #include <string>
 #include <format>
@@ -64,7 +65,9 @@ namespace orm {
             }
         }
 
-        // ── render a comma-separated list of column names from an orm_tuple of mem_ptr<>
+        // ── render a comma-separated list of bare column names from an orm_tuple of
+        // mem_ptr<> (single-table SELECT, plus INSERT/UPDATE column lists). Multi-table
+        // SELECTs use render_qualified_columns<Response>() below.
         template <typename Tuple>
         [[nodiscard]] std::string render_columns(const Tuple& t)
         {
@@ -73,9 +76,61 @@ namespace orm {
             {
                 std::size_t idx = 0;
                 ((void)(out += (idx++ > 0 ? ", " : "")
-                    + std::string(t.template get<Is>().column_name())), ...);
+                             + std::string(t.template get<Is>().column_name())), ...);
             }(std::make_index_sequence<Tuple::size>{});
             return out;
+        }
+
+        // ── relationship-aware SQL rendering (connector-local) ────────────────
+        // The ORM core hands us the compile-time join plan; turning it into SQL
+        // text — including which dialect keyword join::mode maps to — is the
+        // connector's job, so this lives here rather than in the ORM core.
+        [[nodiscard]] inline std::string_view join_kind_sql(orm::join::mode m) noexcept
+        {
+            switch (m)
+            {
+                case orm::join::mode::inner: return "INNER JOIN";
+                case orm::join::mode::left:  return "LEFT JOIN";
+                case orm::join::mode::right: return "RIGHT JOIN";
+                default:                     return "FULL JOIN";
+            }
+        }
+
+        template <typename... Fields>
+        [[nodiscard]] std::string qualified_columns_impl(orm::detail::orm_tuple<Fields...>*)
+        {
+            std::string out;
+            bool first = true;
+            (((out += (first ? std::string{} : std::string{", "})
+                 + std::string(orm::table_name<typename Fields::table_type>()) + "."
+                 + std::string(Fields::column_name())),
+              first = false),
+             ...);
+            return out;
+        }
+        template <typename Response>
+        [[nodiscard]] std::string render_qualified_columns()
+        {
+            return qualified_columns_impl(static_cast<Response*>(nullptr));
+        }
+
+        template <typename... Steps>
+        [[nodiscard]] std::string inferred_joins_impl(orm::detail::tl<Steps...>*)
+        {
+            std::string out;
+            ((out += " " + std::string(join_kind_sql(Steps::mode)) + " "
+                   + std::string(orm::table_name<typename Steps::to>()) + " ON "
+                   + std::string(orm::table_name<typename Steps::from>()) + "."
+                   + std::string(Steps::rel::column_name()) + " = "
+                   + std::string(orm::table_name<typename Steps::to>()) + "."
+                   + std::string(Steps::rel::target_column())),
+             ...);
+            return out;
+        }
+        template <typename Response>
+        [[nodiscard]] std::string render_inferred_joins()
+        {
+            return inferred_joins_impl(static_cast<orm::detail::join_plan_t<Response>*>(nullptr));
         }
 
         // ── render WHERE clauses
@@ -180,6 +235,41 @@ namespace orm {
             }
         }
 
+        // ── assemble the full SELECT (relationship-aware) ──────────────────────
+        // A query that spans >1 table WITHOUT explicit .join() clauses gets
+        // relationship-driven JOIN inference: columns are table-qualified, the
+        // inferred JOIN chain is rendered, and the base table name is used.
+        // Single-table queries and explicit-.join() queries render exactly as
+        // before (`FROM ?`, bare columns, explicit joins).
+        template <typename Response, typename Joins, typename Wheres,
+                  typename Limits, typename Groups, typename Orders>
+        [[nodiscard]] std::string render_select(
+            const select_query<Response, Joins, Wheres, Limits, Groups, Orders>& q)
+        {
+            if constexpr (orm::detail::is_multi_table<Response> && Joins::size == 0)
+            {
+                using Base = orm::detail::base_table_t<Response>;
+                return std::format("SELECT {} FROM {}{}{}{}{}{}",
+                    render_qualified_columns<Response>(),
+                    std::string(orm::table_name<Base>()),
+                    render_inferred_joins<Response>(),
+                    render_wheres(q.where_clauses()),
+                    render_group_by(q.group_clauses()),
+                    render_order_by(q.order_clauses()),
+                    render_limits(q.limit_clauses()));
+            }
+            else
+            {
+                return std::format("SELECT {} FROM ?{}{}{}{}{}",
+                    render_columns(q.selected_properties()),
+                    render_joins(q.join_clauses()),
+                    render_wheres(q.where_clauses()),
+                    render_group_by(q.group_clauses()),
+                    render_order_by(q.order_clauses()),
+                    render_limits(q.limit_clauses()));
+            }
+        }
+
         // ── render N placeholder question marks
         [[nodiscard]] inline std::string placeholders(std::size_t n)
         {
@@ -272,13 +362,7 @@ namespace orm {
             select_query<Response, Joins, Wheres, Limits, Groups, Orders> q)
             -> result<projected_type<Response>, Response>
         {
-            db.last_sql = std::format("SELECT {} FROM ?{}{}{}{}{}",
-                mockdb::render_columns(q.selected_properties()),
-                mockdb::render_joins(q.join_clauses()),
-                mockdb::render_wheres(q.where_clauses()),
-                mockdb::render_group_by(q.group_clauses()),
-                mockdb::render_order_by(q.order_clauses()),
-                mockdb::render_limits(q.limit_clauses()));
+            db.last_sql = mockdb::render_select(q);
             db.last_params.clear();
             return result<projected_type<Response>, Response>{};
         }
@@ -293,13 +377,7 @@ namespace orm {
             Params&&... params)
             -> result<projected_type<Response>, Response>
         {
-            db.last_sql = std::format("SELECT {} FROM ?{}{}{}{}{}",
-                mockdb::render_columns(q.selected_properties()),
-                mockdb::render_joins(q.join_clauses()),
-                mockdb::render_wheres(q.where_clauses()),
-                mockdb::render_group_by(q.group_clauses()),
-                mockdb::render_order_by(q.order_clauses()),
-                mockdb::render_limits(q.limit_clauses()));
+            db.last_sql = mockdb::render_select(q);
             db.last_params = mockdb::collect_params(std::forward<Params>(params)...);
             return result<projected_type<Response>, Response>{};
         }

@@ -1,0 +1,10 @@
+$ c++ -std=c++23 -I lib/include -DDEMO_REJECT backend_shape.cpp
+
+In file included from backend_shape.cpp:18:
+lib/include/ORM/db/connectors/RedisDB/redis_db.hpp:107:27: error: static assertion failed due to requirement 'redis_detail::is_pk_only_where()': RedisDB connector supports only primary-key equality WHERE predicates
+  107 |             static_assert(redis_detail::is_pk_only_where<Wheres>(),
+      |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+lib/include/ORM/connector/db.hpp:41:41: note: in instantiation of function template specialization 'orm::connector_trait<orm::RedisDB>::execute<orm::detail::orm_tuple<orm::mem_ptr<&Session::token>>, orm::detail::orm_tuple<>, orm::detail::orm_tuple<orm::Rule<orm::property<int, detail::string_literal<3>{"id"}> Session::*, detail::string_literal<3>{"=="}, orm::Placeholder<int>>, orm::Rule<orm::property<std::u8string, detail::string_literal<6>{"token"}> Session::*, detail::string_literal<3>{"=="}, orm::Placeholder<std::u8string>>>, orm::detail::orm_tuple<>, orm::detail::orm_tuple<>, orm::detail::orm_tuple<>>' requested here
+   41 |             return connector_trait<DB>::execute(*conn_, std::move(q));
+      |                                         ^
+1 error generated.

@@ -1,5 +1,6 @@
 #pragma once
 #include "ORM/connector/trait.hpp"
+#include "ORM/connector/param_check.hpp"
 #include "ORM/result/result.hpp"
 #include <utility>
 
@@ -27,6 +28,7 @@ namespace orm {
         template <typename... Params>
         auto execute(Params&&... params) const
         {
+            detail::check_query_params<Query, Params...>();
             return connector_trait<DB>::execute(
                 conn_, query_, std::forward<Params>(params)...);
         }

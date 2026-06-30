@@ -1,0 +1,32 @@
+$ bash run_live.sh      # през docker-compose: SQLite (in-process) + PostgreSQL
+                        # + MySQL/MariaDB + MongoDB, всяко в свой контейнер.
+#
+# ЕДНИЯТ И СЪЩ ред C++ за всичките четири backend-а:
+#   constexpr auto q = orm::select(orm::field<&Book::title>, orm::field<&Author::name>);
+#   auto rows = (db << q).to_vector();   // rows : std::vector<joined_row<Book, Author>>
+
+== Една заявка: select(field<&Book::title>, field<&Author::name>) ==
+   Резултат: std::vector<orm::joined_row<Book, Author>> — за ВСЕКИ backend.
+── SQLite  (вграден, in-process) ──
+   SQL: ... INNER JOIN authors ON books.author_id = authors.id
+   joined_row{ Book.title="A Wizard of Earthsea", Author.name="Le Guin" }
+   joined_row{ Book.title="The Hobbit", Author.name="Tolkien" }
+   → 2 реда, хидратирани в joined_row<Book, Author>
+── PostgreSQL  (клиент-сървър) ──
+   SQL: ... INNER JOIN authors ON books.author_id = authors.id
+   joined_row{ Book.title="A Wizard of Earthsea", Author.name="Le Guin" }
+   joined_row{ Book.title="The Hobbit", Author.name="Tolkien" }
+   → 2 реда, хидратирани в joined_row<Book, Author>
+── MySQL / MariaDB  (клиент-сървър) ──
+   SQL: ... INNER JOIN authors ON books.author_id = authors.id
+   joined_row{ Book.title="A Wizard of Earthsea", Author.name="Le Guin" }
+   joined_row{ Book.title="The Hobbit", Author.name="Tolkien" }
+   → 2 реда, хидратирани в joined_row<Book, Author>
+── MongoDB  (документна, NoSQL) ──
+   Aggregation: $lookup { from: authors, localField: author_id, foreignField: id } + $unwind
+   joined_row{ Book.title="A Wizard of Earthsea", Author.name="Le Guin" }
+   joined_row{ Book.title="The Hobbit", Author.name="Tolkien" }
+   → 2 реда, хидратирани в joined_row<Book, Author>
+
+# Една заявка → SQL `INNER JOIN` за релационните бази, `$lookup` за MongoDB,
+# идентичен joined_row<Book, Author> резултат. Релация × SQL × NoSQL — един модел.

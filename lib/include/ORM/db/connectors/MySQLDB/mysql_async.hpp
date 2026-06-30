@@ -159,27 +159,38 @@ namespace orm {
     } // namespace mysql_async_detail
 
     // ── connector_trait<AsyncMySQLDB> ──────────────────────────────────────────
+    //
+    // History: an earlier specialisation referenced three helpers that never
+    // existed in mysql_live.hpp (\code{table_for_query}, \code{render_joins},
+    // \code{hydrate_row} as free functions). It therefore failed to compile
+    // the moment any translation unit instantiated it, and no test exercised
+    // it. The empirical probe at
+    // \code{tests/integration/test_mysql_async_coroutine_probe.cpp} confirmed
+    // that the underlying `mysql_async_detail::query_async` (which drives
+    // `_start`/`_cont` from C++20 coroutines via `IoContext::watch_*`) works
+    // correctly on plain (non-TLS) connections. After lifting `hydrate_row`
+    // out of `connector_trait<MySQLLiveDB>` into the `mysql_live_detail`
+    // namespace, this specialisation is now re-introduced — it shares the
+    // same query-rendering and row-hydration pipeline as the synchronous
+    // trait and adds an asynchronous execution path on top.
     template <>
     struct connector_trait<AsyncMySQLDB>
     {
-        using supports_joins = void;
-        using supports_transactions = void;
-        using supports_aggregation = void;
-        using supports_async = void;
+        using supports_joins              = void;
+        using supports_transactions       = void;
+        using supports_aggregation        = void;
+        using supports_async              = void;
         using supports_concurrent_execute = void;
 
         template <typename T>
-        struct wire_type
-        {
-            using type = T;
-        };
+        struct wire_type { using type = T; };
 
         struct cursor_type
         {
             [[nodiscard]] bool has_next() const noexcept { return false; }
         };
 
-        // ── Async SELECT ───────────────────────────────────────────────────
+        // ── Async SELECT (no runtime params) ──────────────────────────────
         template <typename Response, typename Joins, typename Wheres,
                   typename Limits, typename Groups, typename Orders>
         static auto async_execute(
@@ -188,35 +199,38 @@ namespace orm {
             -> Task<result<projected_type<Response>, Response>>
         {
             using Row = projected_type<Response>;
+            using Entity = typename Response::template orm_type<0>::table_type;
 
-            auto sql = std::format("SELECT {} FROM {}{}{}{}{}",
+            const std::string sql = std::format("SELECT {} FROM {}{}{}{}",
                 mysql_live_detail::render_columns(q.selected_properties()),
-                mysql_live_detail::table_for_query(q),
-                mysql_live_detail::render_joins(q.join_clauses()),
+                table_name<Entity>(),
                 mysql_live_detail::render_wheres(q.where_clauses()),
                 mysql_live_detail::render_order_by(q.order_clauses()),
                 mysql_live_detail::render_limits(q.limit_clauses()));
 
             MYSQL_RES* res = co_await mysql_async_detail::query_async(db, sql);
-
             if (!res)
-                throw std::runtime_error(
-                    std::format("MySQL async SELECT failed: {}", mysql_error(db.conn_)));
+            {
+                throw std::runtime_error(std::format(
+                    "MySQL async SELECT failed: {}", mysql_error(db.conn_)));
+            }
 
             std::vector<Row> rows;
-            unsigned int num_fields = mysql_num_fields(res);
             MYSQL_ROW row;
             while ((row = mysql_fetch_row(res)) != nullptr)
             {
                 unsigned long* lengths = mysql_fetch_lengths(res);
-                rows.push_back(mysql_live_detail::hydrate_row<Row>(row, lengths, num_fields));
+                rows.push_back(mysql_live_detail::hydrate_row<Row>(row, lengths));
             }
 
             mysql_free_result(res);
-            co_return result<Row, Response>{std::move(rows)};
+            co_return result<Row, Response>{ std::move(rows) };
         }
 
-        // ── Sync execute fallback ──────────────────────────────────────────
+        // ── Sync execute fallback ─────────────────────────────────────────
+        // Provided for symmetry with connector_trait<MySQLLiveDB>; it runs
+        // synchronously on the calling thread and is intended for tests and
+        // for the case where async_db<DB> is bypassed deliberately.
         template <typename Response, typename Joins, typename Wheres,
                   typename Limits, typename Groups, typename Orders>
         static auto execute(
@@ -225,48 +239,47 @@ namespace orm {
             -> result<projected_type<Response>, Response>
         {
             using Row = projected_type<Response>;
+            using Entity = typename Response::template orm_type<0>::table_type;
 
-            auto sql = std::format("SELECT {} FROM {}{}{}{}{}",
+            const std::string sql = std::format("SELECT {} FROM {}{}{}{}",
                 mysql_live_detail::render_columns(q.selected_properties()),
-                mysql_live_detail::table_for_query(q),
-                mysql_live_detail::render_joins(q.join_clauses()),
+                table_name<Entity>(),
                 mysql_live_detail::render_wheres(q.where_clauses()),
                 mysql_live_detail::render_order_by(q.order_clauses()),
                 mysql_live_detail::render_limits(q.limit_clauses()));
 
-            if (mysql_real_query(db.conn_, sql.c_str(), sql.size()))
-                throw std::runtime_error(
-                    std::format("MySQL query failed: {}", mysql_error(db.conn_)));
-
+            if (mysql_real_query(db.conn_, sql.c_str(), sql.size()) != 0)
+            {
+                throw std::runtime_error(std::format(
+                    "MySQL query failed: {}", mysql_error(db.conn_)));
+            }
             MYSQL_RES* res = mysql_store_result(db.conn_);
             if (!res)
-                throw std::runtime_error(
-                    std::format("MySQL store_result failed: {}", mysql_error(db.conn_)));
+            {
+                throw std::runtime_error(std::format(
+                    "MySQL store_result failed: {}", mysql_error(db.conn_)));
+            }
 
             std::vector<Row> rows;
-            unsigned int num_fields = mysql_num_fields(res);
             MYSQL_ROW row;
             while ((row = mysql_fetch_row(res)) != nullptr)
             {
                 unsigned long* lengths = mysql_fetch_lengths(res);
-                rows.push_back(mysql_live_detail::hydrate_row<Row>(row, lengths, num_fields));
+                rows.push_back(mysql_live_detail::hydrate_row<Row>(row, lengths));
             }
 
             mysql_free_result(res);
-            return result<Row, Response>{std::move(rows)};
+            return result<Row, Response>{ std::move(rows) };
         }
 
-        // ── Transaction control ────────────────────────────────────────────
         static void begin(AsyncMySQLDB& db)
         {
             mysql_real_query(db.conn_, "BEGIN", 5);
         }
-
         static void commit(AsyncMySQLDB& db)
         {
             mysql_real_query(db.conn_, "COMMIT", 6);
         }
-
         static void rollback(AsyncMySQLDB& db)
         {
             mysql_real_query(db.conn_, "ROLLBACK", 8);

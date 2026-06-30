@@ -7,6 +7,8 @@
 #include "ORM/query/delete.hpp"
 #include "ORM/query/field.hpp"
 #include "ORM/query/placeholders.hpp"
+#include "ORM/query/join_infer.hpp"   // join_plan_t / base_table_t / is_multi_table
+#include "ORM/result/joined_row.hpp"  // joined_row_for / hydrate_joined
 #include "ORM/entity/table.hpp"
 #include "ORM/details/member_pointer.hpp"
 
@@ -330,6 +332,75 @@ namespace orm {
             return doc;
         }
 
+        // Append one stage document to a pipeline array under the next index key.
+        inline void append_stage(bson_t* pipeline, int& idx, bson_t* stage)
+        {
+            const char* key;
+            char        buf[16];
+            const std::size_t klen = bson_uint32_to_string(
+                static_cast<std::uint32_t>(idx++), &key, buf, sizeof buf);
+            bson_append_document(pipeline, key, static_cast<int>(klen), stage);
+        }
+
+        // Build a relationship-aware aggregation pipeline from the inferred join plan.
+        // Each related table gets a top-level alias equal to its collection name, so the
+        // construction generalises to multi-hop: step From→To emits
+        //   { $lookup: { from: <To>, localField: <From-prefix>.<fk>, foreignField: <pk>, as: <To> } }
+        //   { $unwind: { path: "$<To>", preserveNullAndEmptyArrays: <LEFT/FULL> } }
+        // followed by an optional { $match: <filter> }.
+        template <typename Response>
+        [[nodiscard]] BsonDoc build_lookup_pipeline(BsonDoc& filter, bool has_filter)
+        {
+            using Base = orm::detail::base_table_t<Response>;
+            BsonDoc pipeline;            // a BSON array (integer-string keys)
+            int idx = 0;
+
+            [&]<typename... Steps>(orm::detail::tl<Steps...>*)
+            {
+                ([&]()
+                {
+                    using From = typename Steps::from;
+                    using To   = typename Steps::to;
+                    using Rel  = typename Steps::rel;
+
+                    const std::string to_coll = std::string(orm::table_name<To>());
+                    const std::string local   = std::is_same_v<From, Base>
+                        ? std::string(Rel::column_name())
+                        : std::string(orm::table_name<From>()) + "." + std::string(Rel::column_name());
+                    const std::string foreign = std::string(Rel::target_column());
+                    const std::string path    = "$" + to_coll;
+                    const bool preserve =
+                        (Steps::mode == orm::join::mode::left || Steps::mode == orm::join::mode::full);
+
+                    bson_t* lookup = BCON_NEW("$lookup", "{",
+                        "from",         BCON_UTF8(to_coll.c_str()),
+                        "localField",   BCON_UTF8(local.c_str()),
+                        "foreignField", BCON_UTF8(foreign.c_str()),
+                        "as",           BCON_UTF8(to_coll.c_str()),
+                    "}");
+                    append_stage(pipeline.get(), idx, lookup);
+                    bson_destroy(lookup);
+
+                    bson_t* unwind = BCON_NEW("$unwind", "{",
+                        "path",                       BCON_UTF8(path.c_str()),
+                        "preserveNullAndEmptyArrays", BCON_BOOL(preserve),
+                    "}");
+                    append_stage(pipeline.get(), idx, unwind);
+                    bson_destroy(unwind);
+                }(), ...);
+            }(static_cast<orm::detail::join_plan_t<Response>*>(nullptr));
+
+            if (has_filter)
+            {
+                bson_t match;
+                bson_init(&match);
+                BSON_APPEND_DOCUMENT(&match, "$match", filter.get());
+                append_stage(pipeline.get(), idx, &match);
+                bson_destroy(&match);
+            }
+            return pipeline;
+        }
+
     } // namespace mongo_live_detail
 
     // ── connector_trait<MongoDBLive> specialisation ───────────────────────────
@@ -350,9 +421,12 @@ namespace orm {
         static auto execute(
             MongoDBLive& db,
             select_query<Response, Joins, Wheres, Limits, Groups, Orders> q)
-            -> result<projected_type<Response>, Response>
         {
-            return exec_select<projected_type<Response>, Response>(db, q, {});
+            constexpr bool inferred = orm::detail::is_multi_table<Response> && Joins::size == 0;
+            if constexpr (inferred)
+                return exec_select_joined<Response>(db, q.where_clauses(), {});
+            else
+                return exec_select<projected_type<Response>, Response>(db, q, {});
         }
 
         // ── SELECT (with runtime params) ──────────────────────────────────────
@@ -363,10 +437,13 @@ namespace orm {
             MongoDBLive& db,
             select_query<Response, Joins, Wheres, Limits, Groups, Orders> q,
             Params&&... params)
-            -> result<projected_type<Response>, Response>
         {
+            constexpr bool inferred = orm::detail::is_multi_table<Response> && Joins::size == 0;
             auto p = mongo_live_detail::collect_params(std::forward<Params>(params)...);
-            return exec_select<projected_type<Response>, Response>(db, q, p);
+            if constexpr (inferred)
+                return exec_select_joined<Response>(db, q.where_clauses(), p);
+            else
+                return exec_select<projected_type<Response>, Response>(db, q, p);
         }
 
         // ── INSERT (no runtime params) ────────────────────────────────────────
@@ -471,6 +548,71 @@ namespace orm {
         {
             return Row{ mongo_live_detail::convert_col<std::tuple_element_t<Is, Row>>(
                 col_vals[Is])... };
+        }
+
+        // ── relationship-aware SELECT via $lookup aggregation → joined_row ────────
+        // Reads each Response column from its BSON path (base columns are top-level,
+        // related columns live under "<collection>.<field>" after $lookup+$unwind),
+        // builds the flat projected tuple, then hydrate_joined() splits it into the
+        // partial entities of a joined_row_for<Response>.
+        template <typename Response, typename Wheres>
+        static auto exec_select_joined(
+            MongoDBLive& db, const Wheres& wheres, const std::vector<std::string>& params)
+            -> result<joined_row_for<Response>, Response>
+        {
+            using Base = orm::detail::base_table_t<Response>;
+            using Flat = projected_type<Response>;
+            using Row  = joined_row_for<Response>;
+
+            const std::string coll_name = std::string(table_name<Base>());
+            auto filter   = mongo_live_detail::build_filter(wheres, params);
+            auto pipeline = mongo_live_detail::build_lookup_pipeline<Response>(
+                filter, Wheres::size > 0);
+
+            mongoc_collection_t* coll = mongoc_client_get_collection(
+                db.native(), db.default_db_.c_str(), coll_name.c_str());
+            mongoc_cursor_t* cursor = mongoc_collection_aggregate(
+                coll, MONGOC_QUERY_NONE, pipeline.get(), nullptr, nullptr);
+
+            constexpr std::size_t ncols = std::tuple_size_v<Flat>;
+            std::vector<Row> rows;
+
+            const bson_t* doc;
+            while (mongoc_cursor_next(cursor, &doc))
+            {
+                std::array<std::string, ncols> col_vals;
+                [&]<std::size_t... Is>(std::index_sequence<Is...>)
+                {
+                    ([&]()
+                    {
+                        using F = typename Response::template orm_type<Is>;
+                        using T = typename F::table_type;
+                        const std::string path = std::is_same_v<T, Base>
+                            ? std::string(F::column_name())
+                            : std::string(table_name<T>()) + "." + std::string(F::column_name());
+
+                        bson_iter_t iter, found;
+                        if (bson_iter_init(&iter, doc)
+                            && bson_iter_find_descendant(&iter, path.c_str(), &found))
+                            col_vals[Is] = mongo_live_detail::iter_to_string(&found);
+                    }(), ...);
+                }(std::make_index_sequence<ncols>{});
+
+                Flat flat = make_row<Flat>(col_vals, std::make_index_sequence<ncols>{});
+                rows.push_back(orm::hydrate_joined<Response>(flat));
+            }
+
+            bson_error_t error;
+            if (mongoc_cursor_error(cursor, &error))
+            {
+                mongoc_cursor_destroy(cursor);
+                mongoc_collection_destroy(coll);
+                throw std::runtime_error(std::format("MongoDB aggregate failed: {}", error.message));
+            }
+
+            mongoc_cursor_destroy(cursor);
+            mongoc_collection_destroy(coll);
+            return result<Row, Response>{ std::move(rows) };
         }
 
         template <typename Properties>

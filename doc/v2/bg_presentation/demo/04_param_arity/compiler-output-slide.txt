@@ -1,0 +1,5 @@
+$ c++ -std=c++23 -I lib/include -DDEMO_REJECT param_arity.cpp
+
+lib/include/ORM/connector/param_check.hpp:202:21: error: static assertion failed due to requirement 'n_ph == sizeof...(Params)': orm: wrong number of runtime parameters passed to execute(). The argument count does not match the number of anonymous placeholders (orm::Placeholder<T>) in the query's clauses. Note: queries with no placeholders should be executed via `db << query`, and indexed placeholders (orm::ph<T,_N>) are validated by the connector.
+lib/include/ORM/connector/param_check.hpp:202:26: note: expression evaluates to '2 == 1'
+1 error generated.
