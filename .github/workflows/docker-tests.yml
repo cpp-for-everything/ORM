@@ -1,63 +1,97 @@
+# Live-DB integration. Host `ci` does not start Cassandra/Mongo/MySQL/Neo4j/
+# Postgres/Redis; this workflow does (except Neo4j — skipped in the open).
+#
+# Confirmed from run 32657126338: the previous job failed with
+# `no such service: orm-test` (and `mysql` / `run_tests.sh` also do not exist).
+# Compose services are `test-all` + `mariadb` (not `mysql`).
 name: Docker Integration Tests
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
   workflow_dispatch:
+
+concurrency:
+  group: docker-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   docker-tests:
-    name: Run Tests in Docker
-    runs-on: ubuntu-latest
-    
+    name: Live DB integration (Docker)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: false  # Not needed when using system libraries
-      
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-      
-      - name: Build test container
+          submodules: false
+
+      - name: Disclose skipped suites
         run: |
-          docker compose -f docker/docker-compose.yml build orm-test
-      
+          cat >> "$GITHUB_STEP_SUMMARY" << 'EOF'
+          ## Docker Integration Tests — scope
+
+          **This job is not the GCC 15 / Clang 18 host matrix.** The image is `ubuntu:24.04` (Dockerfile `all-test`), distro GCC unless the image install changes. Host workflow `ci` covers GCC 15 / Clang 18 / MSVC.
+
+          | Suite | In this job |
+          |-------|-------------|
+          | Unit + MockDB + SQLite | Yes (`test-all` enables SQLite + default tests) |
+          | MySQL/MariaDB live | Yes (`mariadb` service, `ORM_ENABLE_MYSQL=ON`) |
+          | PostgreSQL live | Yes |
+          | MongoDB live | Yes |
+          | Redis live | Yes |
+          | Cassandra live | Yes |
+          | Neo4j live | **SKIPPED** — `docker/Dockerfile` `all-test` sets `ORM_ENABLE_NEO4J=OFF`; libneo4j-client is not installed. Compose has no `neo4j` service. |
+          EOF
+          echo "::notice title=Skipped suite::Neo4j live tests (ORM_ENABLE_NEO4J=OFF; no neo4j compose service, no libneo4j-client in the image)"
+
+      - name: Build test-all image
+        run: docker compose -f docker/docker-compose.yml build test-all
+
       - name: Start database services
         run: |
-          docker compose -f docker/docker-compose.yml up -d mysql postgresql mongodb redis cassandra neo4j
-      
-      - name: Wait for services to be healthy
+          docker compose -f docker/docker-compose.yml up -d --wait --wait-timeout 600 \
+            mariadb postgresql mongodb redis cassandra
+
+      - name: Run ctest in test-all
         run: |
-          timeout 300 bash -c 'until docker compose -f docker/docker-compose.yml ps | grep -q "healthy"; do sleep 5; done'
-      
-      - name: Run tests
-        run: |
-          docker compose -f docker/docker-compose.yml run --rm orm-test /workspace/docker/scripts/run_tests.sh
-      
-      - name: Collect test results
+          set +e
+          docker compose -f docker/docker-compose.yml run --rm -T test-all \
+            bash -lc 'echo "----- compiler -----"; g++ --version; echo "----- ctest -----"; cd /workspace/build && ctest --output-on-failure' \
+            | tee docker-ctest.log
+          exit_code=${PIPESTATUS[0]}
+          echo "${exit_code}" > docker-compose-run-exit.txt
+          exit "${exit_code}"
+
+      - name: Collect logs
         if: always()
         run: |
-          docker compose -f docker/docker-compose.yml logs > docker-logs.txt
-      
+          docker compose -f docker/docker-compose.yml logs > docker-logs.txt || true
+          {
+            echo "## Docker ctest"
+            echo
+            echo "compose run exit: \`$(cat docker-compose-run-exit.txt 2>/dev/null || echo missing)\`"
+            echo
+            echo '```'
+            cat docker-ctest.log 2>/dev/null || echo "(no docker-ctest.log)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Upload test logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: docker-test-logs
-          path: docker-logs.txt
-      
+          path: |
+            docker-logs.txt
+            docker-ctest.log
+            docker-compose-run-exit.txt
+
       - name: Shutdown services
         if: always()
-        run: |
-          docker compose -f docker/docker-compose.yml down -v
+        run: docker compose -f docker/docker-compose.yml down -v

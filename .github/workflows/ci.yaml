@@ -1,220 +1,169 @@
+# Host CI: compile the library and run unit / MockDB / SQLite tests on current
+# GitHub-hosted runners. Live Cassandra/Mongo/MySQL/Neo4j/Postgres/Redis are
+# not run here — they live in docker-tests.yml.
+#
+# ubuntu-24.04 does not ship GCC 15 (image has GCC 12/13/14). GCC jobs use the
+# official `gcc:15` container on an ubuntu-24.04 runner so the compiler is 15+.
 name: ci
+
 on:
   pull_request:
-  release:
-    types: [published]
   push:
-    tags:
-    branches:
-      - main
-      - develop
+    branches: [main, develop]
+  workflow_dispatch:
 
-env:
-  # Conan cache environment variables
-  CONAN_SYSREQUIRES_MODE: enabled
-  CONAN_USER_HOME: "${{ github.workspace }}/conan-cache"
-  CONAN_USER_HOME_SHORT: "${{ github.workspace }}/conan-cache/short"
-  CLANG_TIDY_VERSION: "13.0.0"
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
-  Test:
-    runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.os == 'macos-13' }}
+  skipped-checks:
+    name: Skipped checks (explicit)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Disclose skipped checks
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" << 'EOF'
+          ## Skipped checks (not hidden)
+
+          These are **not** run by this `ci` workflow. A skip is recorded here instead of a green badge.
+
+          | Check | Why it is skipped |
+          |-------|-------------------|
+          | clang-tidy | No `.clang-tidy` in the repo. ubuntu-24.04 has `clang-tidy-18` matching Clang 18; enabling default checks as WarningsAsErrors would be a silent policy change. |
+          | clang-format gate | `.clang-format` exists; `auto-clang-format.yml` auto-commits and is not called from this workflow. |
+          | cppcheck / Doxygen / `deploy.yaml` | Template leftover (`upload-artifact@v1`, paths `example` / `lib/core`). Not called from this workflow. |
+          | GitHub Pages (`gh-pages.yaml`) | Uploads `./reports`, which is not in git. Not called from this workflow. Repo-level "pages build and deployment" is a GitHub Pages setting (Jekyll); `.nojekyll` is added so Jekyll does not parse submodules. **Not claimed green until it runs on `main`.** |
+          | Live Cassandra / Mongo / MySQL / Neo4j / Postgres / Redis | Host matrix does not start foreign DBs. See workflow `Docker Integration Tests`. |
+          | Neo4j live suite in Docker | `docker/Dockerfile` `all-test` sets `ORM_ENABLE_NEO4J=OFF` (no libneo4j-client in the image). Disclosed again in that workflow. |
+          | macOS | Clang 18 is covered on ubuntu-24.04; no extra macOS cell. |
+          | `ENABLE_DEVELOPER_MODE` ON/OFF | Option does not exist in current CMake. |
+          | Coverage / codecov | Not part of the compile+ctest bar. |
+          | C++26 reflection path | Compilers in this matrix do not provide `__cpp_impl_reflection`; tests use the Boost.PFR path. |
+          EOF
+
+  test-gcc15:
+    name: ubuntu-24.04 GCC 15 ${{ matrix.build_type }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    container: gcc:15
     strategy:
       fail-fast: false
-      # Recommendations:
-      #   * support at least 2 operating systems
-      #   * support at least 2 compilers
-      #   * make sure all supported configurations for your project are built
-      #
-      # Disable/enable builds in this list to meet the above recommendations
-      # and your own projects needs
       matrix:
-        os:
-          - ubuntu-20.04
-          - ubuntu-22.04
-          - macos-11
-          - macos-12
-          - macos-13
-        compiler:
-          # you can specify the version after `-` like "llvm-13.0.0".
-          - llvm-13.0.0
-          - gcc-11
-        generator:
-          - "Ninja Multi-Config"
-        build_type:
-          - Release
-          - Debug
-        developer_mode:
-          - ON
-          - OFF
-
-        exclude:
-          # mingw is determined by this author to be too buggy to support
-          - os: macos-11
-            compiler: gcc-11
-          - os: macos-12
-            compiler: gcc-11
-          - os: macos-13
-            compiler: gcc-11
-          - os: ubuntu-20.04
-            compiler: llvm-13.0.0
-          - os: ubuntu-22.04
-            compiler: llvm-13.0.0
-
-        include:
-          # Add appropriate variables for gcov version required. This will intentionally break
-          # if you try to use a compiler that does not have gcov set
-          - compiler: gcc-11
-            gcov_executable: gcov
-          - compiler: llvm-13.0.0
-            gcov_executable: "llvm-cov gcov"
-
-          # Set up preferred package generators, for given build configurations
-          - build_type: Release
-            developer_mode: OFF
-            package_generator: TBZ2
-
-          - os: windows-2022
-            compiler: msvc
-            generator: "Visual Studio 17 2022"
-            build_type: Debug
-            developer_mode: On
-
-          - os: windows-2022
-            compiler: msvc
-            generator: "Visual Studio 17 2022"
-            build_type: Release
-            developer_mode: On
-
-          - os: windows-2022
-            compiler: msvc
-            generator: "Visual Studio 17 2022"
-            build_type: Debug
-            developer_mode: OFF
-
-          - os: windows-2022
-            compiler: msvc
-            generator: "Visual Studio 17 2022"
-            build_type: Release
-            developer_mode: OFF
-            package_generator: ZIP
-
+        build_type: [Debug, Release]
     steps:
-      - name: Check for llvm version mismatches
-        if: ${{ contains(matrix.compiler, 'llvm') && !contains(matrix.compiler, env.CLANG_TIDY_VERSION) }}
-        uses: actions/github-script@v7
-        with:
-          script: |
-            core.setFailed('There is a mismatch between configured llvm compiler and clang-tidy version chosen')
+      - name: Install CMake, Ninja, SQLite
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            ca-certificates \
+            cmake \
+            git \
+            libsqlite3-dev \
+            ninja-build \
+            pkg-config \
+            python3
+          git --version
+          cmake --version
+          ninja --version
+          g++ --version
 
       - uses: actions/checkout@v4
+
+      - name: Configure, build, ctest
+        env:
+          CC: gcc
+          CXX: g++
+        run: bash .github/scripts/ci-build.sh "${{ matrix.build_type }}"
+
+      - name: Upload ctest logs
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          submodules: 'recursive'
+          name: ctest-ubuntu-24.04-gcc15-${{ matrix.build_type }}
+          path: |
+            compiler-version.txt
+            ctest-exit.txt
+            ctest-list.txt
+            ctest.log
+            ctest-results.xml
+            ci-report.md
+          if-no-files-found: warn
 
-      - name: Setup Cache
-        uses: ./.github/actions/setup_cache
+  test-clang18:
+    name: ubuntu-24.04 Clang 18 Release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Clang 18 (matches clang-tidy-18 on this image)
+        run: |
+          clang++-18 --version
+          clang-tidy-18 --version | head -n 1
+          echo "CC=clang-18" >> "$GITHUB_ENV"
+          echo "CXX=clang++-18" >> "$GITHUB_ENV"
+
+      - name: Configure, build, ctest
+        run: bash .github/scripts/ci-build.sh Release
+
+      - name: Upload ctest logs
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          compiler: ${{ matrix.compiler }}
-          build_type: ${{ matrix.build_type }}
-          developer_mode: ${{ matrix.developer_mode }}
-          generator: ${{ matrix.generator }}
+          name: ctest-ubuntu-24.04-clang18-Release
+          path: |
+            compiler-version.txt
+            ctest-exit.txt
+            ctest-list.txt
+            ctest.log
+            ctest-results.xml
+            ci-report.md
+          if-no-files-found: warn
 
-      - name: Setup Cpp
-        uses: aminya/setup-cpp@v1
+  test-msvc:
+    name: windows-2022 MSVC Release
+    runs-on: windows-2022
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: MSVC developer command prompt
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install SQLite via vcpkg
+        shell: bash
+        run: |
+          echo "VCPKG_INSTALLATION_ROOT=${VCPKG_INSTALLATION_ROOT}"
+          "${VCPKG_INSTALLATION_ROOT}/vcpkg" install sqlite3:x64-windows
+          toolchain="${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake"
+          toolchain="${toolchain//\\//}"
+          vcpkg_bin="${VCPKG_INSTALLATION_ROOT}/installed/x64-windows/bin"
+          vcpkg_bin="${vcpkg_bin//\\//}"
+          echo "${vcpkg_bin}" >> "$GITHUB_PATH"
+          echo "CMAKE_EXTRA_ARGS=-DCMAKE_TOOLCHAIN_FILE=${toolchain} -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL" >> "$GITHUB_ENV"
+
+      - name: Configure, build, ctest
+        shell: bash
+        env:
+          CC: cl
+          CXX: cl
+        run: bash .github/scripts/ci-build.sh Release
+
+      - name: Upload ctest logs
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          compiler: ${{ matrix.compiler }}
-          vcvarsall: ${{ contains(matrix.os, 'windows' )}}
-
-          cmake: true
-          ninja: true
-          conan: true
-          vcpkg: false
-          ccache: true
-          clangtidy: ${{ env.CLANG_TIDY_VERSION }}
-          cppcheck: true
-          gcovr: true
-          opencppcoverage: true
-
-      - name: Cleanup Conan system packages (they are not properly cached)
-        run: |
-          conan remove -f '*/system'
-
-        # make sure coverage is only enabled for Debug builds, since it sets -O0 to make sure coverage
-        # has meaningful results
-      - name: Configure CMake
-        run: |
-          cmake -S . -B ./build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -DENABLE_DEVELOPER_MODE:BOOL=${{matrix.developer_mode}} -DOPT_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' && matrix.developer_mode == 'OFF' }} -DGIT_SHA:STRING=${{ github.sha }}
-
-      - name: Build
-        if: success()
-        # Execute the build.  You can specify a specific target with "--target <NAME>"
-        run: |
-          cmake --build ./build --config ${{matrix.build_type}}
-
-      - name: Unix - Test and coverage
-        if: runner.os != 'Windows' && success()
-        working-directory: ./build
-        # Execute tests defined by the CMake configuration.
-        # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-        run: |
-          ctest -C ${{matrix.build_type}} --output-on-failure
-          gcovr -j ${{env.nproc}} --delete --root ../ --print-summary --xml-pretty --xml coverage.xml . --gcov-executable '${{ matrix.gcov_executable }}'
-
-      - name: Windows - Test and coverage
-        if: runner.os == 'Windows' && success()
-        continue-on-error: ${{ matrix.os == 'macos-13' }}
-        working-directory: ./build
-        run: |
-          OpenCppCoverage.exe --export_type cobertura:coverage.xml --cover_children -- ctest -C ${{matrix.build_type}} --output-on-failure
-
-      - name: CPack
-        if: matrix.package_generator != '' && success()
-        continue-on-error: ${{ matrix.os == 'macos-13' }}
-        working-directory: ./build
-        run: |
-          cpack -C ${{matrix.build_type}} -G ${{matrix.package_generator}}
-
-      - name: Publish Tagged Release
-        uses: softprops/action-gh-release@v1
-        if: ${{ startsWith(github.ref, 'refs/tags/') && matrix.package_generator != '' && success() }}
-        continue-on-error: ${{ matrix.os == 'macos-13' }}
-        with:
-          files: |
-            build/*-*${{ matrix.build_type }}*-*.*
-
-
-      - name: Publish to codecov
-        if: success()
-        continue-on-error: ${{ matrix.os == 'macos-13' }}
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          flags: ${{ runner.os }}
-          name: ${{ runner.os }}-coverage
-          files: ./build/coverage.xml
-
-      - name: Raise warning
-        if: ${{ failure() && matrix.os == 'macos-13' }}
-        uses: actions/github-script@v7
-        with:
-          script: |
-            core.summary.addRaw(':x: Experimental support failed for ${{ matrix.os }}, ${{ matrix.compiler }}, ${{ matrix.generator }}, ${{ matrix.build_type }}, ${{ matrix.developer_mode }}', false)
-
-  Deploy:
-    needs: [Test]
-    uses: ./.github/workflows/deploy.yaml
-  clang-format:
-    permissions:
-      contents: write
-      pull-requests: write
-    needs: [Deploy]
-    uses: ./.github/workflows/auto-clang-format.yml
-  gh-pages:
-    if: ${{ github.ref == 'refs/heads/main' }}
-    permissions:
-      contents: write
-      pages: write
-      id-token: write
-    needs: [clang-format]
-    uses: ./.github/workflows/gh-pages.yaml
+          name: ctest-windows-2022-msvc-Release
+          path: |
+            compiler-version.txt
+            ctest-exit.txt
+            ctest-list.txt
+            ctest.log
+            ctest-results.xml
+            ci-report.md
+          if-no-files-found: warn
