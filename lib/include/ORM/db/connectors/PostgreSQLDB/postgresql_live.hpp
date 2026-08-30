@@ -444,11 +444,15 @@ namespace orm {
         static auto execute(PostgreSQLLiveDB& db, update_query<Table, Statements, Wheres> q)
             -> result<std::tuple<>>
         {
+            // Render SET then WHERE sequentially: both mutate RenderCtx.next_param.
+            // Passing them as sibling std::format args has unspecified evaluation
+            // order, which can assign $1 to WHERE while runtime params stay
+            // SET-first (grape→$1 typed as int) — CI PostgreSQLLiveTest.UpdateChangesName.
             pg_live_detail::RenderCtx ctx;
+            const std::string set_sql = pg_live_detail::render_set(q.updates(), ctx);
+            const std::string where_sql = pg_live_detail::render_wheres(q.wheres(), ctx);
             const std::string sql = std::format("UPDATE {} SET {}{}",
-                table_name<Table>(),
-                pg_live_detail::render_set(q.updates(), ctx),
-                pg_live_detail::render_wheres(q.wheres(), ctx));
+                table_name<Table>(), set_sql, where_sql);
             exec_no_result(db, sql, {});
             return result<std::tuple<>>{};
         }
@@ -460,10 +464,10 @@ namespace orm {
             -> result<std::tuple<>>
         {
             pg_live_detail::RenderCtx ctx;
+            const std::string set_sql = pg_live_detail::render_set(q.updates(), ctx);
+            const std::string where_sql = pg_live_detail::render_wheres(q.wheres(), ctx);
             const std::string sql = std::format("UPDATE {} SET {}{}",
-                table_name<Table>(),
-                pg_live_detail::render_set(q.updates(), ctx),
-                pg_live_detail::render_wheres(q.wheres(), ctx));
+                table_name<Table>(), set_sql, where_sql);
             auto vals = pg_live_detail::collect_params(std::forward<Params>(params)...);
             exec_no_result(db, sql, vals);
             return result<std::tuple<>>{};

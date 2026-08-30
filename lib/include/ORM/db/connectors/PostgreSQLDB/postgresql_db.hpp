@@ -399,11 +399,13 @@ namespace orm {
         static auto execute(PostgreSQLDB& db, update_query<Table, Statements, Wheres> q)
             -> result<std::tuple<>>
         {
+            // Sequential SET then WHERE — shared RenderCtx must not be mutated from
+            // sibling std::format args (unspecified evaluation order).
             pg_detail::RenderCtx ctx;
+            std::string set_sql = pg_detail::render_set_ctx(q.updates(), ctx);
+            std::string where_sql = pg_detail::render_wheres_ctx(q.wheres(), ctx);
             std::string sql = std::format("UPDATE {} SET {}{}",
-                table_name<Table>(),
-                pg_detail::render_set_ctx(q.updates(), ctx),
-                pg_detail::render_wheres_ctx(q.wheres(), ctx));
+                table_name<Table>(), set_sql, where_sql);
             int nparams = ctx.next_param - 1;
             db.conn.prepare("stmt", sql, nparams);
             db.conn.exec_prepared("stmt", nparams, {});
@@ -421,10 +423,10 @@ namespace orm {
             -> result<std::tuple<>>
         {
             pg_detail::RenderCtx ctx;
+            std::string set_sql = pg_detail::render_set_ctx(q.updates(), ctx);
+            std::string where_sql = pg_detail::render_wheres_ctx(q.wheres(), ctx);
             std::string sql = std::format("UPDATE {} SET {}{}",
-                table_name<Table>(),
-                pg_detail::render_set_ctx(q.updates(), ctx),
-                pg_detail::render_wheres_ctx(q.wheres(), ctx));
+                table_name<Table>(), set_sql, where_sql);
             int nparams = ctx.next_param - 1;
             auto values = pg_detail::collect_params(std::forward<Params>(params)...);
             db.conn.prepare("stmt", sql, nparams);
