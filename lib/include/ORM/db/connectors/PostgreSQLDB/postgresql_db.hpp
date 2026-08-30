@@ -150,15 +150,21 @@ namespace orm {
         template <typename Wheres>
         [[nodiscard]] std::string render_wheres_ctx(const Wheres& w, RenderCtx& ctx)
         {
+            // Clang 18 ICE on empty-pack generic-lambda without else (see mock_db).
             if constexpr (Wheres::size == 0)
-                return {};
-            std::string out = " WHERE ";
-            [&]<std::size_t... Is>(std::index_sequence<Is...>)
             {
-                std::size_t i = 0;
-                ((void)(out += (i++ > 0 ? " AND " : "") + render_rule_ctx(w.template get<Is>(), ctx)), ...);
-            }(std::make_index_sequence<Wheres::size>{});
-            return out;
+                return {};
+            }
+            else
+            {
+                std::string out = " WHERE ";
+                [&]<std::size_t... Is>(std::index_sequence<Is...>)
+                {
+                    std::size_t i = 0;
+                    ((void)(out += (i++ > 0 ? " AND " : "") + render_rule_ctx(w.template get<Is>(), ctx)), ...);
+                }(std::make_index_sequence<Wheres::size>{});
+                return out;
+            }
         }
 
         // ── render ORDER BY
@@ -166,23 +172,28 @@ namespace orm {
         [[nodiscard]] std::string render_order_by(const Orders& /*o*/)
         {
             if constexpr (Orders::size == 0)
-                return {};
-            std::string out = " ORDER BY ";
-            bool first = true;
-            [&]<std::size_t... Is>(std::index_sequence<Is...>)
             {
-                ([&]()
+                return {};
+            }
+            else
+            {
+                std::string out = " ORDER BY ";
+                bool first = true;
+                [&]<std::size_t... Is>(std::index_sequence<Is...>)
                 {
-                    using OB = typename Orders::template orm_type<Is>;
-                    using Tag = mem_ptr<OB::member>;
-                    constexpr std::string_view dir =
-                        (OB::sort == order::direction::asc) ? "ASC" : "DESC";
-                    if (!first) out += ", ";
-                    out += std::string(Tag::column_name()) + " " + std::string(dir);
-                    first = false;
-                }(), ...);
-            }(std::make_index_sequence<Orders::size>{});
-            return out;
+                    ([&]()
+                    {
+                        using OB = typename Orders::template orm_type<Is>;
+                        using Tag = mem_ptr<OB::member>;
+                        constexpr std::string_view dir =
+                            (OB::sort == order::direction::asc) ? "ASC" : "DESC";
+                        if (!first) out += ", ";
+                        out += std::string(Tag::column_name()) + " " + std::string(dir);
+                        first = false;
+                    }(), ...);
+                }(std::make_index_sequence<Orders::size>{});
+                return out;
+            }
         }
 
         // ── render LIMIT
@@ -205,20 +216,25 @@ namespace orm {
         [[nodiscard]] std::string render_set_ctx(const Stmts& s, RenderCtx& ctx)
         {
             if constexpr (Stmts::size == 0)
-                return {};
-            std::string out;
-            [&]<std::size_t... Is>(std::index_sequence<Is...>)
             {
-                std::size_t idx = 0;
-                ([&]()
+                return {};
+            }
+            else
+            {
+                std::string out;
+                [&]<std::size_t... Is>(std::index_sequence<Is...>)
                 {
-                    const auto& stmt = s.template get<Is>();
-                    using StmtT = std::remove_cvref_t<decltype(stmt)>;
-                    const std::string col = std::string(StmtT::field_tag::column_name());
-                    out += (idx++ > 0 ? ", " : "") + col + " = $" + std::to_string(ctx.next_param++);
-                }(), ...);
-            }(std::make_index_sequence<Stmts::size>{});
-            return out;
+                    std::size_t idx = 0;
+                    ([&]()
+                    {
+                        const auto& stmt = s.template get<Is>();
+                        using StmtT = std::remove_cvref_t<decltype(stmt)>;
+                        const std::string col = std::string(StmtT::field_tag::column_name());
+                        out += (idx++ > 0 ? ", " : "") + col + " = $" + std::to_string(ctx.next_param++);
+                    }(), ...);
+                }(std::make_index_sequence<Stmts::size>{});
+                return out;
+            }
         }
 
         // ── render N $1,$2,... placeholders for INSERT

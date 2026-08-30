@@ -77,9 +77,12 @@ TEST(ThreadPoolTest, DoubleShutdownIsSafe)
 TEST(RunOnPoolTest, NonVoidReturn)
 {
     orm::ThreadPool pool(2);
-    auto task = [&]() -> orm::Task<int> {
+    // Keep the coroutine-lambda closure alive across sync_wait() — see
+    // RunOnPoolTest.ExceptionPropagates / TaskTest.VoidTaskCompletes.
+    auto coro = [&]() -> orm::Task<int> {
         co_return co_await orm::run_on_pool(pool, [] { return 42; });
-    }();
+    };
+    auto task = coro();
     EXPECT_EQ(task.sync_wait(), 42);
     pool.shutdown();
 }
@@ -87,11 +90,12 @@ TEST(RunOnPoolTest, NonVoidReturn)
 TEST(RunOnPoolTest, StringReturn)
 {
     orm::ThreadPool pool(2);
-    auto task = [&]() -> orm::Task<std::string> {
+    auto coro = [&]() -> orm::Task<std::string> {
         co_return co_await orm::run_on_pool(pool, [] {
             return std::string("hello from pool");
         });
-    }();
+    };
+    auto task = coro();
     EXPECT_EQ(task.sync_wait(), "hello from pool");
     pool.shutdown();
 }
@@ -100,10 +104,11 @@ TEST(RunOnPoolTest, VoidReturn)
 {
     orm::ThreadPool pool(2);
     std::atomic<bool> called{false};
-    auto task = [&]() -> orm::Task<void> {
+    auto coro = [&]() -> orm::Task<void> {
         co_await orm::run_on_pool(pool, [&] { called = true; });
         co_return;
-    }();
+    };
+    auto task = coro();
     task.sync_wait();
     EXPECT_TRUE(called.load());
     pool.shutdown();
@@ -144,11 +149,12 @@ TEST(RunOnPoolTest, RunsOnPoolThread)
 {
     orm::ThreadPool pool(2);
     auto main_id = std::this_thread::get_id();
-    auto task = [&]() -> orm::Task<std::thread::id> {
+    auto coro = [&]() -> orm::Task<std::thread::id> {
         co_return co_await orm::run_on_pool(pool, [] {
             return std::this_thread::get_id();
         });
-    }();
+    };
+    auto task = coro();
     auto pool_id = task.sync_wait();
     EXPECT_NE(pool_id, main_id);
     pool.shutdown();
@@ -157,12 +163,13 @@ TEST(RunOnPoolTest, RunsOnPoolThread)
 TEST(RunOnPoolTest, SequentialOffloads)
 {
     orm::ThreadPool pool(2);
-    auto task = [&]() -> orm::Task<int> {
+    auto coro = [&]() -> orm::Task<int> {
         int a = co_await orm::run_on_pool(pool, [] { return 10; });
         int b = co_await orm::run_on_pool(pool, [] { return 20; });
         int c = co_await orm::run_on_pool(pool, [] { return 12; });
         co_return a + b + c;
-    }();
+    };
+    auto task = coro();
     EXPECT_EQ(task.sync_wait(), 42);
     pool.shutdown();
 }
