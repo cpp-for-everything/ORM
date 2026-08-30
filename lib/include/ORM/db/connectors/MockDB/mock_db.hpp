@@ -156,6 +156,29 @@ namespace orm {
         }
 
         // ── render JOIN clauses
+        // Clang 18 ICE: nested IIFE generic-lambda + pack (even non-empty) crashes
+        // in TemplateArgument::isPackExpansion. Use a free function template instead.
+        template <typename Joins, std::size_t I>
+        void append_join_item(std::string& out, const Joins& j)
+        {
+            const auto& jr = j.template get<I>();
+            using JR = std::remove_cvref_t<decltype(jr)>;
+            std::string_view kind;
+            if constexpr (JR::mode == join::mode::inner)       kind = "INNER JOIN";
+            else if constexpr (JR::mode == join::mode::left)   kind = "LEFT JOIN";
+            else if constexpr (JR::mode == join::mode::right)  kind = "RIGHT JOIN";
+            else                                                kind = "FULL JOIN";
+            out += std::string(" ") + std::string(kind) + " ? ON " + render_rule(jr.to_rule());
+        }
+
+        template <typename Joins, std::size_t... Is>
+        [[nodiscard]] std::string render_joins_impl(const Joins& j, std::index_sequence<Is...>)
+        {
+            std::string out;
+            (append_join_item<Joins, Is>(out, j), ...);
+            return out;
+        }
+
         template <typename Joins>
         [[nodiscard]] std::string render_joins(const Joins& j)
         {
@@ -165,26 +188,30 @@ namespace orm {
             }
             else
             {
-                std::string out;
-                [&]<std::size_t... Is>(std::index_sequence<Is...>)
-                {
-                    ([&]()
-                    {
-                        const auto& jr = j.template get<Is>();
-                        using JR = std::remove_cvref_t<decltype(jr)>;
-                        std::string_view kind;
-                        if constexpr (JR::mode == join::mode::inner)       kind = "INNER JOIN";
-                        else if constexpr (JR::mode == join::mode::left)   kind = "LEFT JOIN";
-                        else if constexpr (JR::mode == join::mode::right)  kind = "RIGHT JOIN";
-                        else                                                kind = "FULL JOIN";
-                        out += std::string(" ") + std::string(kind) + " ? ON " + render_rule(jr.to_rule());
-                    }(), ...);
-                }(std::make_index_sequence<Joins::size>{});
-                return out;
+                return render_joins_impl(j, std::make_index_sequence<Joins::size>{});
             }
         }
 
         // ── render GROUP BY
+        template <typename Groups, std::size_t I>
+        void append_group_by_item(std::string& out, bool& first)
+        {
+            using GB = typename Groups::template orm_type<I>;
+            using Tag = mem_ptr<GB::member>;
+            if (!first) out += ", ";
+            out += std::string(Tag::column_name());
+            first = false;
+        }
+
+        template <typename Groups, std::size_t... Is>
+        [[nodiscard]] std::string render_group_by_impl(std::index_sequence<Is...>)
+        {
+            std::string out = " GROUP BY ";
+            bool first = true;
+            (append_group_by_item<Groups, Is>(out, first), ...);
+            return out;
+        }
+
         template <typename Groups>
         [[nodiscard]] std::string render_group_by(const Groups& /*g*/)
         {
@@ -194,24 +221,32 @@ namespace orm {
             }
             else
             {
-                std::string out = " GROUP BY ";
-                bool first = true;
-                [&]<std::size_t... Is>(std::index_sequence<Is...>)
-                {
-                    ([&]()
-                    {
-                        using GB = typename Groups::template orm_type<Is>;
-                        using Tag = mem_ptr<GB::member>;
-                        if (!first) out += ", ";
-                        out += std::string(Tag::column_name());
-                        first = false;
-                    }(), ...);
-                }(std::make_index_sequence<Groups::size>{});
-                return out;
+                return render_group_by_impl<Groups>(std::make_index_sequence<Groups::size>{});
             }
         }
 
         // ── render ORDER BY col [ASC|DESC], ...
+        template <typename Orders, std::size_t I>
+        void append_order_by_item(std::string& out, bool& first)
+        {
+            using OB = typename Orders::template orm_type<I>;
+            using Tag = mem_ptr<OB::member>;
+            constexpr std::string_view dir =
+                (OB::sort == order::direction::asc) ? "ASC" : "DESC";
+            if (!first) out += ", ";
+            out += std::string(Tag::column_name()) + " " + std::string(dir);
+            first = false;
+        }
+
+        template <typename Orders, std::size_t... Is>
+        [[nodiscard]] std::string render_order_by_impl(std::index_sequence<Is...>)
+        {
+            std::string out = " ORDER BY ";
+            bool first = true;
+            (append_order_by_item<Orders, Is>(out, first), ...);
+            return out;
+        }
+
         template <typename Orders>
         [[nodiscard]] std::string render_order_by(const Orders& /*o*/)
         {
@@ -221,22 +256,7 @@ namespace orm {
             }
             else
             {
-                std::string out = " ORDER BY ";
-                bool first = true;
-                [&]<std::size_t... Is>(std::index_sequence<Is...>)
-                {
-                    ([&]()
-                    {
-                        using OB = typename Orders::template orm_type<Is>;
-                        using Tag = mem_ptr<OB::member>;
-                        constexpr std::string_view dir =
-                            (OB::sort == order::direction::asc) ? "ASC" : "DESC";
-                        if (!first) out += ", ";
-                        out += std::string(Tag::column_name()) + " " + std::string(dir);
-                        first = false;
-                    }(), ...);
-                }(std::make_index_sequence<Orders::size>{});
-                return out;
+                return render_order_by_impl<Orders>(std::make_index_sequence<Orders::size>{});
             }
         }
 
@@ -305,6 +325,24 @@ namespace orm {
         }
 
         // ── render SET col = ? list from UpdateStatement tuple
+        template <typename Stmts, std::size_t I>
+        void append_set_item(std::string& out, std::size_t& idx, const Stmts& s)
+        {
+            const auto& stmt = s.template get<I>();
+            using StmtT = std::remove_cvref_t<decltype(stmt)>;
+            const std::string col = std::string(StmtT::field_tag::column_name());
+            out += (idx++ > 0 ? ", " : "") + col + " = ?";
+        }
+
+        template <typename Stmts, std::size_t... Is>
+        [[nodiscard]] std::string render_set_impl(const Stmts& s, std::index_sequence<Is...>)
+        {
+            std::string out;
+            std::size_t idx = 0;
+            (append_set_item<Stmts, Is>(out, idx, s), ...);
+            return out;
+        }
+
         template <typename Stmts>
         [[nodiscard]] std::string render_set(const Stmts& s)
         {
@@ -314,20 +352,7 @@ namespace orm {
             }
             else
             {
-                std::string out;
-                [&]<std::size_t... Is>(std::index_sequence<Is...>)
-                {
-                    std::size_t idx = 0;
-                    ([&]()
-                    {
-                        const auto& stmt = s.template get<Is>();
-                        using StmtT = std::remove_cvref_t<decltype(stmt)>;
-                        // field_tag is mem_ptr<Ptr>; its column_name() returns the property column name
-                        const std::string col = std::string(StmtT::field_tag::column_name());
-                        out += (idx++ > 0 ? ", " : "") + col + " = ?";
-                    }(), ...);
-                }(std::make_index_sequence<Stmts::size>{});
-                return out;
+                return render_set_impl(s, std::make_index_sequence<Stmts::size>{});
             }
         }
 

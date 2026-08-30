@@ -168,6 +168,28 @@ namespace orm {
         }
 
         // ── render ORDER BY
+        // Clang 18 ICE on nested IIFE generic-lambda + pack — use free helpers.
+        template <typename Orders, std::size_t I>
+        void append_order_by_item(std::string& out, bool& first)
+        {
+            using OB = typename Orders::template orm_type<I>;
+            using Tag = mem_ptr<OB::member>;
+            constexpr std::string_view dir =
+                (OB::sort == order::direction::asc) ? "ASC" : "DESC";
+            if (!first) out += ", ";
+            out += std::string(Tag::column_name()) + " " + std::string(dir);
+            first = false;
+        }
+
+        template <typename Orders, std::size_t... Is>
+        [[nodiscard]] std::string render_order_by_impl(std::index_sequence<Is...>)
+        {
+            std::string out = " ORDER BY ";
+            bool first = true;
+            (append_order_by_item<Orders, Is>(out, first), ...);
+            return out;
+        }
+
         template <typename Orders>
         [[nodiscard]] std::string render_order_by(const Orders& /*o*/)
         {
@@ -177,22 +199,7 @@ namespace orm {
             }
             else
             {
-                std::string out = " ORDER BY ";
-                bool first = true;
-                [&]<std::size_t... Is>(std::index_sequence<Is...>)
-                {
-                    ([&]()
-                    {
-                        using OB = typename Orders::template orm_type<Is>;
-                        using Tag = mem_ptr<OB::member>;
-                        constexpr std::string_view dir =
-                            (OB::sort == order::direction::asc) ? "ASC" : "DESC";
-                        if (!first) out += ", ";
-                        out += std::string(Tag::column_name()) + " " + std::string(dir);
-                        first = false;
-                    }(), ...);
-                }(std::make_index_sequence<Orders::size>{});
-                return out;
+                return render_order_by_impl<Orders>(std::make_index_sequence<Orders::size>{});
             }
         }
 
@@ -212,6 +219,24 @@ namespace orm {
         }
 
         // ── render SET col = $N list
+        template <typename Stmts, std::size_t I>
+        void append_set_item(std::string& out, std::size_t& idx, RenderCtx& ctx, const Stmts& s)
+        {
+            const auto& stmt = s.template get<I>();
+            using StmtT = std::remove_cvref_t<decltype(stmt)>;
+            const std::string col = std::string(StmtT::field_tag::column_name());
+            out += (idx++ > 0 ? ", " : "") + col + " = $" + std::to_string(ctx.next_param++);
+        }
+
+        template <typename Stmts, std::size_t... Is>
+        [[nodiscard]] std::string render_set_ctx_impl(const Stmts& s, RenderCtx& ctx, std::index_sequence<Is...>)
+        {
+            std::string out;
+            std::size_t idx = 0;
+            (append_set_item<Stmts, Is>(out, idx, ctx, s), ...);
+            return out;
+        }
+
         template <typename Stmts>
         [[nodiscard]] std::string render_set_ctx(const Stmts& s, RenderCtx& ctx)
         {
@@ -221,19 +246,7 @@ namespace orm {
             }
             else
             {
-                std::string out;
-                [&]<std::size_t... Is>(std::index_sequence<Is...>)
-                {
-                    std::size_t idx = 0;
-                    ([&]()
-                    {
-                        const auto& stmt = s.template get<Is>();
-                        using StmtT = std::remove_cvref_t<decltype(stmt)>;
-                        const std::string col = std::string(StmtT::field_tag::column_name());
-                        out += (idx++ > 0 ? ", " : "") + col + " = $" + std::to_string(ctx.next_param++);
-                    }(), ...);
-                }(std::make_index_sequence<Stmts::size>{});
-                return out;
+                return render_set_ctx_impl(s, ctx, std::make_index_sequence<Stmts::size>{});
             }
         }
 
