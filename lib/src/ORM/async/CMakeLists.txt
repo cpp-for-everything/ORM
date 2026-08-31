@@ -14,7 +14,8 @@ set(ORM_LINUX_REACTOR "auto" CACHE STRING
     "Linux reactor backend for orm::async: auto|uring|epoll")
 set_property(CACHE ORM_LINUX_REACTOR PROPERTY STRINGS auto uring epoll)
 
-set(ORM_ASYNC_SOURCES "")
+# Always compile the final-suspend destroy helper out of line (see task.hpp).
+set(ORM_ASYNC_SOURCES task_final_suspend.cpp)
 set(ORM_ASYNC_LINUX_REACTOR "")
 
 if(APPLE)

@@ -12,12 +12,32 @@
 #include <atomic>
 #include <concepts>
 
+// Force a real call for await_suspend helpers that may destroy the coroutine
+// frame. GCC/Clang: __attribute__((noinline)). MSVC: __declspec(noinline).
+// Raw __attribute__((noinline)) is a hard error under MSVC (C2988/C2059).
+#if defined(_MSC_VER)
+#    define ORM_AWAITER_NOINLINE __declspec(noinline)
+#elif defined(__GNUC__)
+#    define ORM_AWAITER_NOINLINE __attribute__((noinline))
+#else
+#    define ORM_AWAITER_NOINLINE
+#endif
+
 namespace orm {
 
     template <typename T = void>
     class Task;
 
     namespace detail {
+
+        // Defined in lib/src/ORM/async/task_final_suspend.cpp so the compiler
+        // cannot inline destroy-of-frame into the final-suspend ramp (GCC 15
+        // -O3 and Apple clang / libc++ both miscompile that pattern).
+        ORM_AWAITER_NOINLINE std::coroutine_handle<> task_final_suspend_resume(
+            bool is_detached,
+            std::coroutine_handle<> continuation,
+            std::function<void()> on_done,
+            std::coroutine_handle<> frame) noexcept;
 
         struct TaskPromiseBase
         {
@@ -34,9 +54,9 @@ namespace orm {
                 // This awaiter calls h.destroy() to free the (detached) coroutine
                 // frame; if inlined, Apple clang / libc++ keeps live references to the
                 // just-freed frame across the symmetric-transfer tail call → crash.
-                // Forcing a real call makes destroy() operate on its own stack frame.
+                // The destroy path lives in task_final_suspend.cpp (real call).
                 template <typename Promise>
-                __attribute__((noinline)) static std::coroutine_handle<> await_suspend(
+                static std::coroutine_handle<> await_suspend(
                     std::coroutine_handle<Promise> h) noexcept
                 {
                     auto& promise = h.promise();
@@ -48,20 +68,11 @@ namespace orm {
                     auto continuation = promise.continuation_;
                     auto on_done = std::move(promise.on_complete_);
 
-                    if (on_done)
-                    {
-                        on_done();
-                    }
-                    if (is_detached)
-                    {
-                        h.destroy();
-                        return std::noop_coroutine();
-                    }
-                    if (continuation)
-                    {
-                        return continuation;
-                    }
-                    return std::noop_coroutine();
+                    return task_final_suspend_resume(
+                        is_detached,
+                        continuation,
+                        std::move(on_done),
+                        h);
                 }
 
                 static void await_resume() noexcept {}

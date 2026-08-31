@@ -150,39 +150,57 @@ namespace orm {
         template <typename Wheres>
         [[nodiscard]] std::string render_wheres_ctx(const Wheres& w, RenderCtx& ctx)
         {
+            // Clang 18 ICE on empty-pack generic-lambda without else (see mock_db).
             if constexpr (Wheres::size == 0)
-                return {};
-            std::string out = " WHERE ";
-            [&]<std::size_t... Is>(std::index_sequence<Is...>)
             {
-                std::size_t i = 0;
-                ((void)(out += (i++ > 0 ? " AND " : "") + render_rule_ctx(w.template get<Is>(), ctx)), ...);
-            }(std::make_index_sequence<Wheres::size>{});
-            return out;
+                return {};
+            }
+            else
+            {
+                std::string out = " WHERE ";
+                [&]<std::size_t... Is>(std::index_sequence<Is...>)
+                {
+                    std::size_t i = 0;
+                    ((void)(out += (i++ > 0 ? " AND " : "") + render_rule_ctx(w.template get<Is>(), ctx)), ...);
+                }(std::make_index_sequence<Wheres::size>{});
+                return out;
+            }
         }
 
         // ── render ORDER BY
+        // Clang 18 ICE on nested IIFE generic-lambda + pack — use free helpers.
+        template <typename Orders, std::size_t I>
+        void append_order_by_item(std::string& out, bool& first)
+        {
+            using OB = typename Orders::template orm_type<I>;
+            using Tag = mem_ptr<OB::member>;
+            constexpr std::string_view dir =
+                (OB::sort == order::direction::asc) ? "ASC" : "DESC";
+            if (!first) out += ", ";
+            out += std::string(Tag::column_name()) + " " + std::string(dir);
+            first = false;
+        }
+
+        template <typename Orders, std::size_t... Is>
+        [[nodiscard]] std::string render_order_by_impl(std::index_sequence<Is...>)
+        {
+            std::string out = " ORDER BY ";
+            bool first = true;
+            (append_order_by_item<Orders, Is>(out, first), ...);
+            return out;
+        }
+
         template <typename Orders>
         [[nodiscard]] std::string render_order_by(const Orders& /*o*/)
         {
             if constexpr (Orders::size == 0)
-                return {};
-            std::string out = " ORDER BY ";
-            bool first = true;
-            [&]<std::size_t... Is>(std::index_sequence<Is...>)
             {
-                ([&]()
-                {
-                    using OB = typename Orders::template orm_type<Is>;
-                    using Tag = mem_ptr<OB::member>;
-                    constexpr std::string_view dir =
-                        (OB::sort == order::direction::asc) ? "ASC" : "DESC";
-                    if (!first) out += ", ";
-                    out += std::string(Tag::column_name()) + " " + std::string(dir);
-                    first = false;
-                }(), ...);
-            }(std::make_index_sequence<Orders::size>{});
-            return out;
+                return {};
+            }
+            else
+            {
+                return render_order_by_impl<Orders>(std::make_index_sequence<Orders::size>{});
+            }
         }
 
         // ── render LIMIT
@@ -201,24 +219,35 @@ namespace orm {
         }
 
         // ── render SET col = $N list
+        template <typename Stmts, std::size_t I>
+        void append_set_item(std::string& out, std::size_t& idx, RenderCtx& ctx, const Stmts& s)
+        {
+            const auto& stmt = s.template get<I>();
+            using StmtT = std::remove_cvref_t<decltype(stmt)>;
+            const std::string col = std::string(StmtT::field_tag::column_name());
+            out += (idx++ > 0 ? ", " : "") + col + " = $" + std::to_string(ctx.next_param++);
+        }
+
+        template <typename Stmts, std::size_t... Is>
+        [[nodiscard]] std::string render_set_ctx_impl(const Stmts& s, RenderCtx& ctx, std::index_sequence<Is...>)
+        {
+            std::string out;
+            std::size_t idx = 0;
+            (append_set_item<Stmts, Is>(out, idx, ctx, s), ...);
+            return out;
+        }
+
         template <typename Stmts>
         [[nodiscard]] std::string render_set_ctx(const Stmts& s, RenderCtx& ctx)
         {
             if constexpr (Stmts::size == 0)
-                return {};
-            std::string out;
-            [&]<std::size_t... Is>(std::index_sequence<Is...>)
             {
-                std::size_t idx = 0;
-                ([&]()
-                {
-                    const auto& stmt = s.template get<Is>();
-                    using StmtT = std::remove_cvref_t<decltype(stmt)>;
-                    const std::string col = std::string(StmtT::field_tag::column_name());
-                    out += (idx++ > 0 ? ", " : "") + col + " = $" + std::to_string(ctx.next_param++);
-                }(), ...);
-            }(std::make_index_sequence<Stmts::size>{});
-            return out;
+                return {};
+            }
+            else
+            {
+                return render_set_ctx_impl(s, ctx, std::make_index_sequence<Stmts::size>{});
+            }
         }
 
         // ── render N $1,$2,... placeholders for INSERT
@@ -370,11 +399,13 @@ namespace orm {
         static auto execute(PostgreSQLDB& db, update_query<Table, Statements, Wheres> q)
             -> result<std::tuple<>>
         {
+            // Sequential SET then WHERE — shared RenderCtx must not be mutated from
+            // sibling std::format args (unspecified evaluation order).
             pg_detail::RenderCtx ctx;
+            std::string set_sql = pg_detail::render_set_ctx(q.updates(), ctx);
+            std::string where_sql = pg_detail::render_wheres_ctx(q.wheres(), ctx);
             std::string sql = std::format("UPDATE {} SET {}{}",
-                table_name<Table>(),
-                pg_detail::render_set_ctx(q.updates(), ctx),
-                pg_detail::render_wheres_ctx(q.wheres(), ctx));
+                table_name<Table>(), set_sql, where_sql);
             int nparams = ctx.next_param - 1;
             db.conn.prepare("stmt", sql, nparams);
             db.conn.exec_prepared("stmt", nparams, {});
@@ -392,10 +423,10 @@ namespace orm {
             -> result<std::tuple<>>
         {
             pg_detail::RenderCtx ctx;
+            std::string set_sql = pg_detail::render_set_ctx(q.updates(), ctx);
+            std::string where_sql = pg_detail::render_wheres_ctx(q.wheres(), ctx);
             std::string sql = std::format("UPDATE {} SET {}{}",
-                table_name<Table>(),
-                pg_detail::render_set_ctx(q.updates(), ctx),
-                pg_detail::render_wheres_ctx(q.wheres(), ctx));
+                table_name<Table>(), set_sql, where_sql);
             int nparams = ctx.next_param - 1;
             auto values = pg_detail::collect_params(std::forward<Params>(params)...);
             db.conn.prepare("stmt", sql, nparams);

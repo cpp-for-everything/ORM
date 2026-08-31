@@ -147,12 +147,15 @@ TEST(IoContextTest, WatchReadableWithPipe)
 
     std::atomic<bool> ready{false};
 
-    auto coro = [&]() -> orm::Task<void> {
+    // Keep the coroutine-lambda closure alive: IIFE [&]{...}() frees captures
+    // before start_detached()/run() resume the frame (SEGFAULT under GCC 15 -O3).
+    auto coro_fn = [&]() -> orm::Task<void> {
         co_await ctx->watch_readable(read_fd);
         ready.store(true, std::memory_order_release);
         ctx->stop();
         co_return;
-    }();
+    };
+    auto coro = coro_fn();
     coro.start_detached();
 
     // Write to pipe after a short delay to make read end readable
@@ -174,12 +177,13 @@ TEST(IoContextTest, WatchWritableWithPipe)
     std::atomic<bool> ready{false};
 
     // Both endpoints of an empty TCP / pipe pair are immediately writable.
-    auto coro = [&]() -> orm::Task<void> {
+    auto coro_fn = [&]() -> orm::Task<void> {
         co_await ctx->watch_writable(write_fd);
         ready.store(true, std::memory_order_release);
         ctx->stop();
         co_return;
-    }();
+    };
+    auto coro = coro_fn();
     coro.start_detached();
 
     ctx->run();
@@ -197,7 +201,7 @@ TEST(IoContextTest, MultipleWatchesSequential)
 
     std::atomic<int> step{0};
 
-    auto coro = [&]() -> orm::Task<void> {
+    auto coro_fn = [&]() -> orm::Task<void> {
         // First watch: writable
         co_await ctx->watch_writable(write_fd);
         step.store(1, std::memory_order_release);
@@ -211,7 +215,8 @@ TEST(IoContextTest, MultipleWatchesSequential)
 
         ctx->stop();
         co_return;
-    }();
+    };
+    auto coro = coro_fn();
     coro.start_detached();
 
     ctx->run();

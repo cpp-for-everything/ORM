@@ -60,12 +60,6 @@ namespace orm {
         PollAwaitable(PollAwaitable&&) = default;
         PollAwaitable& operator=(PollAwaitable&&) = default;
 
-#if defined(__GNUC__) && !defined(__clang__)
-#define ORM_AWAITER_NOINLINE __attribute__((noinline))
-#else
-#define ORM_AWAITER_NOINLINE
-#endif
-
         bool await_ready() const noexcept { return false; }
 
         ORM_AWAITER_NOINLINE void await_suspend(std::coroutine_handle<> h) noexcept;
@@ -123,12 +117,5 @@ namespace orm {
         [[nodiscard]] static auto create(size_t thread_count = 1)
             -> std::unique_ptr<IoContext>;
     };
-
-    ORM_AWAITER_NOINLINE inline void
-    PollAwaitable::await_suspend(std::coroutine_handle<> h) noexcept
-    {
-        op->continuation = h;
-        ctx->register_poll(fd, op.get());
-    }
 
 } // namespace orm

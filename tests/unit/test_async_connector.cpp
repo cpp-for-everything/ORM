@@ -38,10 +38,12 @@ TEST_F(AsyncDbTest, AsyncSelectViaOperator)
     orm::async_db<orm::MockDB> adb(conn, pool);
     constexpr auto q = orm::select(orm::field<&AsyncUser::id>);
 
-    auto task = [&]() -> orm::Task<void> {
+    // Keep the coroutine-lambda closure alive across sync_wait() (IIFE UAF).
+    auto coro = [&]() -> orm::Task<void> {
         auto result = co_await (adb << q);
         co_return;
-    }();
+    };
+    auto task = coro();
     task.sync_wait();
 
     EXPECT_TRUE(conn.last_sql.starts_with("SELECT"));
@@ -53,10 +55,11 @@ TEST_F(AsyncDbTest, AsyncSelectRunsOnPoolThread)
     constexpr auto q = orm::select(orm::field<&AsyncUser::id>);
     auto main_id = std::this_thread::get_id();
 
-    auto task = [&]() -> orm::Task<std::thread::id> {
+    auto coro = [&]() -> orm::Task<std::thread::id> {
         [[maybe_unused]] auto result = co_await (adb << q);
         co_return std::this_thread::get_id();
-    }();
+    };
+    auto task = coro();
     auto exec_id = task.sync_wait();
 
     EXPECT_NE(exec_id, main_id);
@@ -67,10 +70,11 @@ TEST_F(AsyncDbTest, AsyncExecuteWithParams)
     orm::async_db<orm::MockDB> adb(conn, pool);
     constexpr auto q = orm::insert(orm::field<&AsyncUser::id>, orm::field<&AsyncUser::name>);
 
-    auto task = [&]() -> orm::Task<void> {
+    auto coro = [&]() -> orm::Task<void> {
         co_await adb.async_execute(q, 42, u8"alice");
         co_return;
-    }();
+    };
+    auto task = coro();
     task.sync_wait();
 
     EXPECT_TRUE(conn.last_sql.starts_with("INSERT"));
@@ -92,14 +96,15 @@ TEST_F(AsyncDbTest, MultipleSequentialAsyncQueries)
 {
     orm::async_db<orm::MockDB> adb(conn, pool);
 
-    auto task = [&]() -> orm::Task<void> {
+    auto coro = [&]() -> orm::Task<void> {
         constexpr auto q1 = orm::select(orm::field<&AsyncUser::id>);
         [[maybe_unused]] auto r1 = co_await (adb << q1);
 
         constexpr auto q2 = orm::select(orm::field<&AsyncUser::name>);
         [[maybe_unused]] auto r2 = co_await (adb << q2);
         co_return;
-    }();
+    };
+    auto task = coro();
     task.sync_wait();
 
     EXPECT_TRUE(conn.last_sql.starts_with("SELECT"));

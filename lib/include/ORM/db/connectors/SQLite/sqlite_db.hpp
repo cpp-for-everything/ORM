@@ -291,15 +291,20 @@ namespace orm {
         std::string render_wheres_sqlite(const Wheres& w)
         {
             if constexpr (Wheres::size == 0)
-                return {};
-            std::string out = " WHERE ";
-            [&]<std::size_t... Is>(std::index_sequence<Is...>)
             {
-                std::size_t idx = 0;
-                ((void)(out += (idx++ > 0 ? " AND " : "")
-                    + render_rule_sqlite(w.template get<Is>())), ...);
-            }(std::make_index_sequence<Wheres::size>{});
-            return out;
+                return {};
+            }
+            else
+            {
+                std::string out = " WHERE ";
+                [&]<std::size_t... Is>(std::index_sequence<Is...>)
+                {
+                    std::size_t idx = 0;
+                    ((void)(out += (idx++ > 0 ? " AND " : "")
+                        + render_rule_sqlite(w.template get<Is>())), ...);
+                }(std::make_index_sequence<Wheres::size>{});
+                return out;
+            }
         }
 
         // ── relationship-aware SQL rendering (connector-local) ────────────────
@@ -483,23 +488,31 @@ namespace orm {
         }
 
         // ── UPDATE (with runtime values for SET + WHERE placeholders) ─────────
+        // Clang 18 ICE: nested IIFE generic-lambda + pack in SET clause building.
+        template <typename Statements, std::size_t I>
+        static void append_update_set_item(std::string& set_clause, std::size_t& idx)
+        {
+            using Stmt = typename Statements::template orm_type<I>;
+            set_clause += (idx++ > 0 ? ", " : "")
+                + std::string(Stmt::field_tag::column_name()) + " = ?";
+        }
+
+        template <typename Statements, std::size_t... Is>
+        static std::string build_update_set_clause(std::index_sequence<Is...>)
+        {
+            std::string set_clause;
+            std::size_t idx = 0;
+            (append_update_set_item<Statements, Is>(set_clause, idx), ...);
+            return set_clause;
+        }
+
         template <typename Table, typename Statements, typename Wheres, typename... Params>
         static auto execute(SQLiteDB& db, update_query<Table, Statements, Wheres> q,
                             Params&&... params)
             -> result<std::tuple<>>
         {
-            // Build SET col = ?, col = ? list from UpdateStatement types.
-            std::string set_clause;
-            [&]<std::size_t... Is>(std::index_sequence<Is...>)
-            {
-                std::size_t idx = 0;
-                ([&]()
-                {
-                    using Stmt = typename Statements::template orm_type<Is>;
-                    set_clause += (idx++ > 0 ? ", " : "")
-                        + std::string(Stmt::field_tag::column_name()) + " = ?";
-                }(), ...);
-            }(std::make_index_sequence<Statements::size>{});
+            const std::string set_clause =
+                build_update_set_clause<Statements>(std::make_index_sequence<Statements::size>{});
 
             const std::string sql = std::format("UPDATE {} SET {}{}",
                 table_name<Table>(),

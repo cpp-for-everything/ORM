@@ -90,38 +90,56 @@ namespace orm {
         template <typename Wheres>
         [[nodiscard]] std::string render_wheres(const Wheres& w)
         {
+            // Clang 18 ICE on empty-pack generic-lambda without else (see mock_db).
             if constexpr (Wheres::size == 0)
-                return {};
-            std::string out = " WHERE ";
-            [&]<std::size_t... Is>(std::index_sequence<Is...>)
             {
-                std::size_t idx = 0;
-                ((void)(out += (idx++ > 0 ? " AND " : "") + render_rule(w.template get<Is>())), ...);
-            }(std::make_index_sequence<Wheres::size>{});
-            return out;
+                return {};
+            }
+            else
+            {
+                std::string out = " WHERE ";
+                [&]<std::size_t... Is>(std::index_sequence<Is...>)
+                {
+                    std::size_t idx = 0;
+                    ((void)(out += (idx++ > 0 ? " AND " : "") + render_rule(w.template get<Is>())), ...);
+                }(std::make_index_sequence<Wheres::size>{});
+                return out;
+            }
         }
 
         // ── render ORDER BY
+        // Clang 18 ICE on nested IIFE generic-lambda + pack — use free helpers.
+        template <typename Orders, std::size_t I>
+        void append_order_by_item(std::string& out, std::size_t& idx)
+        {
+            using OB = typename Orders::template orm_type<I>;
+            using Tag = mem_ptr<OB::member>;
+            constexpr std::string_view dir =
+                (OB::sort == order::direction::asc) ? "ASC" : "DESC";
+            out += (idx++ > 0 ? ", " : "")
+                + std::string(Tag::column_name()) + " " + std::string(dir);
+        }
+
+        template <typename Orders, std::size_t... Is>
+        [[nodiscard]] std::string render_order_by_impl(std::index_sequence<Is...>)
+        {
+            std::string out = " ORDER BY ";
+            std::size_t idx = 0;
+            (append_order_by_item<Orders, Is>(out, idx), ...);
+            return out;
+        }
+
         template <typename Orders>
         [[nodiscard]] std::string render_order_by(const Orders& /*o*/)
         {
             if constexpr (Orders::size == 0)
-                return {};
-            std::string out = " ORDER BY ";
-            [&]<std::size_t... Is>(std::index_sequence<Is...>)
             {
-                std::size_t idx = 0;
-                ([&]()
-                {
-                    using OB = typename Orders::template orm_type<Is>;
-                    using Tag = mem_ptr<OB::member>;
-                    constexpr std::string_view dir =
-                        (OB::sort == order::direction::asc) ? "ASC" : "DESC";
-                    out += (idx++ > 0 ? ", " : "")
-                        + std::string(Tag::column_name()) + " " + std::string(dir);
-                }(), ...);
-            }(std::make_index_sequence<Orders::size>{});
-            return out;
+                return {};
+            }
+            else
+            {
+                return render_order_by_impl<Orders>(std::make_index_sequence<Orders::size>{});
+            }
         }
 
         // ── render LIMIT / OFFSET
@@ -152,24 +170,35 @@ namespace orm {
         }
 
         // ── render SET col = ? list from UpdateStatement tuple
+        template <typename Stmts, std::size_t I>
+        void append_set_item(std::string& out, std::size_t& idx, const Stmts& s)
+        {
+            const auto& stmt = s.template get<I>();
+            using StmtT = std::remove_cvref_t<decltype(stmt)>;
+            const std::string col = std::string(StmtT::field_tag::column_name());
+            out += (idx++ > 0 ? ", " : "") + col + " = ?";
+        }
+
+        template <typename Stmts, std::size_t... Is>
+        [[nodiscard]] std::string render_set_impl(const Stmts& s, std::index_sequence<Is...>)
+        {
+            std::string out;
+            std::size_t idx = 0;
+            (append_set_item<Stmts, Is>(out, idx, s), ...);
+            return out;
+        }
+
         template <typename Stmts>
         [[nodiscard]] std::string render_set(const Stmts& s)
         {
             if constexpr (Stmts::size == 0)
-                return {};
-            std::string out;
-            [&]<std::size_t... Is>(std::index_sequence<Is...>)
             {
-                std::size_t idx = 0;
-                ([&]()
-                {
-                    const auto& stmt = s.template get<Is>();
-                    using StmtT = std::remove_cvref_t<decltype(stmt)>;
-                    const std::string col = std::string(StmtT::field_tag::column_name());
-                    out += (idx++ > 0 ? ", " : "") + col + " = ?";
-                }(), ...);
-            }(std::make_index_sequence<Stmts::size>{});
-            return out;
+                return {};
+            }
+            else
+            {
+                return render_set_impl(s, std::make_index_sequence<Stmts::size>{});
+            }
         }
 
         // ── stringify a runtime parameter value

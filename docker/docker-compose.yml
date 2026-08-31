@@ -229,6 +229,8 @@ services:
       ORM_REDIS_PORT: 6379
       ORM_CASSANDRA_CONTACT_POINTS: cassandra
       ORM_CASSANDRA_PORT: 9042
+      # Probe is compiled whenever mysql live is on; run it instead of GTEST_SKIP.
+      ORM_TEST_MYSQL_LIVE: "1"
     networks:
       - orm-network
 

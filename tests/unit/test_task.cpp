@@ -7,10 +7,14 @@
 TEST(TaskTest, VoidTaskCompletes)
 {
     bool executed = false;
-    auto task = [&]() -> orm::Task<void> {
+    // Keep the coroutine-lambda closure alive across sync_wait(): an immediately-
+    // invoked [&]{...}() destroys its closure at the end of the full expression, but
+    // the coroutine frame still holds a reference to that closure (captures live there).
+    auto coro = [&]() -> orm::Task<void> {
         executed = true;
         co_return;
-    }();
+    };
+    auto task = coro();
     task.sync_wait();
     EXPECT_TRUE(executed);
 }
@@ -34,10 +38,11 @@ TEST(TaskTest, StringTaskReturnsValue)
 TEST(TaskTest, NestedAwait)
 {
     auto inner = []() -> orm::Task<int> { co_return 7; };
-    auto outer = [&]() -> orm::Task<int> {
+    auto outer_fn = [&]() -> orm::Task<int> {
         int v = co_await inner();
         co_return v * 6;
-    }();
+    };
+    auto outer = outer_fn();
     EXPECT_EQ(outer.sync_wait(), 42);
 }
 
@@ -48,10 +53,11 @@ TEST(TaskTest, DeepNesting)
         int v = co_await level3();
         co_return v + 1;
     };
-    auto level1 = [&]() -> orm::Task<int> {
+    auto level1_fn = [&]() -> orm::Task<int> {
         int v = co_await level2();
         co_return v + 1;
-    }();
+    };
+    auto level1 = level1_fn();
     EXPECT_EQ(level1.sync_wait(), 3);
 }
 
@@ -129,10 +135,11 @@ TEST(TaskTest, DetachReleasesOwnership)
 
 TEST(TaskTest, YieldAwaiter)
 {
-    auto task = []() -> orm::Task<int> {
+    auto coro = []() -> orm::Task<int> {
         co_await orm::yield();
         co_return 42;
-    }();
+    };
+    auto task = coro();
     EXPECT_EQ(task.sync_wait(), 42);
 }
 
