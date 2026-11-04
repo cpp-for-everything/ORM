@@ -38,7 +38,8 @@
 \begin{lstlisting}[language=C++,caption={Заявка, написана по документирания начин},label={lst:enf-query}]
 struct Item
 {
-    orm::property<int, "id">           id;    // името на колоната е аргумент на шаблон
+    // името на колоната е аргумент на шаблон
+    orm::property<int, "id">           id;
     orm::property<std::string, "name"> name;
 };
 
@@ -47,14 +48,18 @@ namespace orm
     template <>
     struct table_name_trait<Item>
     {
-        static constexpr std::string_view value = "items";   // константен израз
+        // константен израз
+        static constexpr std::string_view value = "items";
     };
 }
 
-constexpr auto q = orm::select(orm::field<&Item::id>)
-                       .where(orm::field<&Item::name> == orm::Placeholder<std::string>{});
+constexpr auto q =
+    orm::select(orm::field<&Item::id>)
+        .where(orm::field<&Item::name> ==
+               orm::Placeholder<std::string>{});
 
-auto rows = db.execute(q, input);   // стойността пътува отделно от заявката
+// стойността пътува отделно от заявката
+auto rows = db.execute(q, input);
 \end{lstlisting}
 
 В листинга трябва да се забележат три неща: името на колоната е част от типа на

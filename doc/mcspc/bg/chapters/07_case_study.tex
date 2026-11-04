@@ -27,7 +27,8 @@ constexpr auto operator==(mem_ptr<P>, T x)
     if constexpr (is_field<T>)
         return Rule<decltype(P), "==", decltype(T::get())>(P, T::get());
     else
-        return Rule<decltype(P), "==", T>(P, x);   // стойността се записва в заявката
+        // стойността се записва в заявката
+        return Rule<decltype(P), "==", T>(P, x);
 }
 \end{lstlisting}
 

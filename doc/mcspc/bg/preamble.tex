@@ -166,7 +166,11 @@
       \regex_replace_all:nnN { \\\} } { \c{textbraceright} } \l__orm_code_text_tl
       \regex_replace_all:nnN { < } { \c{textless} } \l__orm_code_text_tl
       \regex_replace_all:nnN { > } { \c{textgreater} } \l__orm_code_text_tl
-      \mbox { \ttfamily \tl_use:N \l__orm_code_text_tl }
+      % Пренасяне е разрешено само след ::, /, _ и запетая, без сричкопренасяне.
+      \regex_replace_all:nnN { (::|[/_,]) } { \1 \c{allowbreak} } \l__orm_code_text_tl
+      \int_set:Nn \hyphenpenalty { 10000 }
+      \int_set:Nn \exhyphenpenalty { 10000 }
+      \ttfamily \tl_use:N \l__orm_code_text_tl
     \group_end:
   }
 \DeclareRobustCommand{\code}[1]{\orm_code:n {#1}}
