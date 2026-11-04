@@ -69,7 +69,7 @@ builds RESP frames, and neither parses attacker text as syntax. That is a differ
 respects stronger position than parameter binding.
 
 Transactions issue the literal constants `BEGIN`, `COMMIT` and `ROLLBACK`
-([`PostgreSQLDB/postgresql_live.hpp:463`](lib/include/ORM/db/connectors/PostgreSQLDB/postgresql_live.hpp)).
+([`PostgreSQLDB/postgresql_live.hpp:506`](lib/include/ORM/db/connectors/PostgreSQLDB/postgresql_live.hpp)).
 These carry no user data.
 
 ## Known boundaries
@@ -91,7 +91,7 @@ The claim above is deliberately narrow. These are outside it.
 ## Latent risk being tracked
 
 `to_sql_literal` in
-[`MySQLDB/mysql_live.hpp:248`](lib/include/ORM/db/connectors/MySQLDB/mysql_live.hpp) builds SQL by
+[`MySQLDB/mysql_live.hpp:249`](lib/include/ORM/db/connectors/MySQLDB/mysql_live.hpp) builds SQL by
 **escaping and inlining** a value instead of binding it. Its own comment describes it as being for
 queries without prepared statements.
 

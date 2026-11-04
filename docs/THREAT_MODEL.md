@@ -4,7 +4,8 @@ Scope: the query construction and execution path of this library, across all sev
 backends. Companion to [`SECURITY.md`](../SECURITY.md), which states the policy. This document
 states the reasoning and the evidence.
 
-Every claim below cites the code it came from. Where something has not been verified yet, it says
+Every claim below cites the code it came from. Line numbers refer to commit
+`a17f4e7`; the connector headers they point into have not changed since. Where something has not been verified yet, it says
 so rather than assuming.
 
 ---
@@ -121,12 +122,12 @@ defended across four different protocols, and the argument has to hold separatel
 
 | Backend | Mechanism | Evidence |
 |---|---|---|
-| PostgreSQL | `PQexecParams`, parameter arrays | `PostgreSQLDB/postgresql_live.hpp:503,509,537,543` |
-| MySQL | `MYSQL_BIND` prepared statements | `MySQLDB/mysql_live.hpp:313` `param_binder` |
+| PostgreSQL | `PQexecParams`, parameter arrays | `PostgreSQLDB/postgresql_live.hpp:552,615` |
+| MySQL | `MYSQL_BIND` prepared statements | `MySQLDB/mysql_live.hpp:316` `param_binder` |
 | SQLite | `sqlite3_prepare_v2` and `sqlite3_bind_*` | `SQLite/sqlite_db.hpp:62,67,72` |
 | Cassandra | `cass_statement_bind_*` | `CassandraDB/cassandra_live.hpp:200-221` |
-| MongoDB | bsoncxx document builder, `append` | `MongoDB/mongodb_live.hpp:212-236` |
-| Neo4j | Bolt parameters, `neo4j_map_entry` | `Neo4jDB/neo4j_live.hpp:175` |
+| MongoDB | bsoncxx document builder, `append` | `MongoDB/mongodb_live.hpp:214-238` |
+| Neo4j | Bolt parameters, `neo4j_map_entry` | `Neo4jDB/neo4j_live.hpp:174` |
 | Redis | hiredis `%s` and argv forms | `RedisDB/redis_live.hpp:109,180,257` |
 
 Three observations worth carrying into any evaluation.
@@ -141,7 +142,7 @@ injection.
 `MATCH (n:{}) RETURN {}{}` at `neo4j_live.hpp:261`. That looks like string building and deserves
 scrutiny. The inserted fields are the label and the projection, both from `constexpr` type
 metadata, not from input. Runtime values go through a separate parameter map transmitted as typed
-Bolt values (`neo4j_live.hpp:175`). **Formatting compile time constants into a template is not
+Bolt values (`neo4j_live.hpp:174`). **Formatting compile time constants into a template is not
 interpolation of untrusted data.** The distinction should be demonstrated, not asserted.
 
 **Redis `%s` is not `printf`.** hiredis does not substitute text; it length prefixes each argument
@@ -149,7 +150,7 @@ into a RESP frame, so argument content cannot be read as protocol. The `argv` fo
 (`redis_live.hpp:257`) makes this explicit.
 
 Transaction control issues literal `BEGIN`, `COMMIT`, `ROLLBACK` constants
-(`postgresql_live.hpp:463,475,487`) with no interpolation.
+(`postgresql_live.hpp:506,518,530`) with no interpolation.
 
 ---
 
@@ -159,7 +160,7 @@ Honest limits. A model that only lists successes is not a model.
 
 | Risk | Status | Why |
 |---|---|---|
-| `to_sql_literal` escaping path | **Dead code, tracked** | `MySQLDB/mysql_live.hpp:248` escapes and inlines rather than binds. Searching `lib/` and `tests/` finds the definition and no caller. Escaping is weaker than binding. It should be removed or put behind an explicit opt in before someone wires it up. |
+| `to_sql_literal` escaping path | **Dead code, tracked** | `MySQLDB/mysql_live.hpp:249` escapes and inlines rather than binds. Searching `lib/` and `tests/` finds the definition and no caller. Escaping is weaker than binding. It should be removed or put behind an explicit opt in before someone wires it up. |
 | Literal operands in the IR | **Fixed, November 2026** | Silently compared against NULL. Now a compile error at every entry point. See section 2, level 1. |
 | Second order injection | **Out of scope** | A value read from the database and later used as an identifier by application code is invisible here. |
 | Application logic flaws | **Out of scope** | Missing authorisation and over broad filters are not injection. |
