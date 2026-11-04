@@ -28,8 +28,8 @@ SQLite, Cassandra, MongoDB, Neo4j и Redis.
 включително с извличане на съхранена идентификационна информация, а библиотеката
 от нито един. Тестът беше изпълнен и срещу работещи сървъри на PostgreSQL, MySQL,
 MongoDB, Redis и Cassandra в система за непрекъсната интеграция. Общо за шестте
-хранилища нито един от 92-та приложими полезни товара не е имал ефект през
-библиотеката. Наивният път е компрометиран от по 2 полезни товара при
+хранилища през библиотеката не е имала ефект нито една от 92-те двойки на
+полезен товар и хранилище, съставени от 60 различни полезни товара. Наивният път е компрометиран от по 2 полезни товара при
 PostgreSQL, MySQL, MongoDB и Redis. При Cassandra той не е компрометиран от нито
 един и сравнението е неубедително. Neo4j не е измерен.
 
@@ -71,8 +71,8 @@ with all 314 existing and 23 new tests passing. On SQLite the vulnerable query
 was compromised by 4 of 22 applicable payloads, including the theft of a stored
 credential, and the library by none. The test was then run against live servers
 of PostgreSQL, MySQL, MongoDB, Redis and Cassandra in a continuous integration
-system. Across the six stores, none of the 92 applicable payloads had an effect
-through the library. The naive path was compromised by 2 payloads each on
+system. Across the six stores, none of the 92 pairs of payload and store, made up
+of 60 distinct payloads, had an effect through the library. The naive path was compromised by 2 payloads each on
 PostgreSQL, MySQL, MongoDB and Redis. On Cassandra it was never compromised, so
 the comparison is inconclusive. Neo4j was not measured.
 
