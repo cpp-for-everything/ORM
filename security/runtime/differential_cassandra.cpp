@@ -210,7 +210,9 @@ int main(int argc, char** argv)
 
         Backend b;
         b.name       = "cassandra";
-        b.server     = "Cassandra " + joined(admin.session, "SELECT release_version FROM system.local");
+        std::string version = joined(admin.session, "SELECT release_version FROM system.local");
+        version.erase(version.find_first_of("|;") == std::string::npos ? version.size() : version.find_first_of("|;"));
+        b.server     = "Cassandra " + version;
         b.naive_desc = "CQL built by concatenation and sent as an unprepared statement, one statement per request";
         b.applies    = [](const Payload& p) { return p.cls == "cql"; };
         b.naive      = [&](const std::string& p) { return run_naive(admin.session, victim.session, p); };

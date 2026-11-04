@@ -22,6 +22,10 @@
 // documents and sec_users holding one credential. The snapshot covers both
 // collections in canonical extended JSON and the list of sec_ collections. The
 // naive find carries maxTimeMS, so a busy loop in $where cannot hang CI.
+//
+// Limit of this setup: the documents carry only id and name. Payloads written for
+// a schema with username and password fields match only through the absence of
+// those fields, so the naive compromise count is a lower bound.
 #include "ORM/ORM.hpp"
 #include "ORM/connector/trait.hpp"
 #include "ORM/db/connectors/MongoDB/mongodb_live.hpp"

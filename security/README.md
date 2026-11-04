@@ -45,3 +45,24 @@ The test fails if the naive path is never compromised.
 The oracle sees effects only. A blind payload that changes the query's logic but
 still returns zero rows is not counted as a compromise, so the naive compromise
 count is a lower bound. That bias works against the claim, not for it.
+
+## Server backends
+
+`runtime/differential_<backend>.cpp` repeats the differential for PostgreSQL,
+MySQL (the MariaDB server of the compose file), MongoDB, Redis and Cassandra.
+They are built when the matching `orm::<backend>_live` target exists and need a
+running server, reached through the `ORM_<BACKEND>_*` variables that
+`tests/integration` uses. CI runs them in the `test-all` image against the
+compose services and uploads `evidence/` as the `security-evidence` artifact.
+
+The naive path is the realistic vulnerable construction for each store:
+concatenated SQL with stacked statements allowed (PostgreSQL, MySQL), concatenated
+CQL sent unprepared (Cassandra), a JSON filter or `$where` expression built by
+concatenation (MongoDB, five constructions, most severe outcome kept), and a
+command sent in the inline protocol so that CR LF starts a second command (Redis).
+
+The failure rule differs from SQLite on purpose. A server harness fails only if a
+payload has an effect through the library. If the naive path is never compromised
+the harness passes and the summary says the comparison is inconclusive for that
+backend. Neo4j is not measured: the image has no `libneo4j-client` and the compose
+file has no Neo4j service. See `evidence/differential_neo4j_summary.txt`.

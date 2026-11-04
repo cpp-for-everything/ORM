@@ -1,0 +1,9 @@
+backend: neo4j
+status: not measured
+applicable payloads: 6 (class cypher in corpus/payloads.csv)
+reason: the test-all image has no libneo4j-client (ORM_ENABLE_NEO4J=OFF in docker/Dockerfile),
+        so orm::neo4j_live is not built and no harness is registered, and docker/docker-compose.yml
+        has no Neo4j service. Measuring it needs a new image stage that builds libneo4j-client and a
+        Neo4j service in the compose file. That was judged not cheap, so it was not attempted.
+naive compromised: not measured
+orm with any effect: not measured
