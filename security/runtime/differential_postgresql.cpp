@@ -88,6 +88,12 @@ namespace
     {
         std::string items, users, columns, tables, roles;
         bool operator==(const Snapshot&) const = default;
+        [[nodiscard]] bool ok() const
+        {
+            for (const std::string* s : {&items, &users, &columns, &tables, &roles})
+                if (*s == "<error>") return false;
+            return true;
+        }
     };
 
     Snapshot snapshot(PGconn* c)
@@ -172,8 +178,11 @@ int main(int argc, char** argv)
         orm::db<orm::PostgreSQLLiveDB> db{lib};
         exec(lib.native(), kTimeout);
 
+        fresh(admin.c);
+        if (!snapshot(admin.c).ok()) throw std::runtime_error("a snapshot query failed, the oracle would be blind");
         Backend b;
         b.name       = "postgresql";
+        b.control    = "apple";
         b.server     = "PostgreSQL " + text(admin.c, "SHOW server_version");
         b.naive_desc = "string concatenation, simple query protocol (PQsendQuery), stacked statements allowed";
         b.applies    = [](const Payload& p) {

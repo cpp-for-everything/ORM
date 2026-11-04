@@ -90,6 +90,12 @@ namespace
     {
         std::string items, users, columns, tables, accounts, privileges;
         bool operator==(const Snapshot&) const = default;
+        [[nodiscard]] bool ok() const
+        {
+            for (const std::string* s : {&items, &users, &columns, &tables, &accounts, &privileges})
+                if (*s == "<error>") return false;
+            return true;
+        }
     };
 
     Snapshot snapshot(MYSQL* c)
@@ -184,8 +190,11 @@ int main(int argc, char** argv)
         exec(lib.native(), kTimeout);
         orm::db<orm::MySQLLiveDB> db{lib};
 
+        fresh(admin.c);
+        if (!snapshot(admin.c).ok()) throw std::runtime_error("a snapshot query failed, the oracle would be blind");
         Backend b;
         b.name       = "mysql";
+        b.control    = "apple";
         b.server     = std::string("MySQL-compatible server ") + text(admin.c, "SELECT VERSION()");
         b.naive_desc = "string concatenation, mysql_real_query on a CLIENT_MULTI_STATEMENTS connection, stacked statements allowed";
         b.applies    = [](const Payload& pl) {

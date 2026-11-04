@@ -102,6 +102,12 @@ namespace
     {
         std::string items, users, tables, columns, keyspaces;
         bool operator==(const Snapshot&) const = default;
+        [[nodiscard]] bool ok() const
+        {
+            for (const std::string* s : {&items, &users, &tables, &columns, &keyspaces})
+                if (*s == "<error>") return false;
+            return true;
+        }
     };
 
     Snapshot snapshot(CassSession* s)
@@ -208,8 +214,11 @@ int main(int argc, char** argv)
         orm::CassandraLiveDB lib = orm::CassandraLiveDB::connect(points, kKeyspace, static_cast<unsigned>(port));
         orm::db<orm::CassandraLiveDB> db{lib};
 
+        fresh(admin.session);
+        if (!snapshot(admin.session).ok()) throw std::runtime_error("a snapshot query failed, the oracle would be blind");
         Backend b;
         b.name       = "cassandra";
+        b.control    = "1";
         std::string version = joined(admin.session, "SELECT release_version FROM system.local");
         version.erase(version.find_first_of("|;") == std::string::npos ? version.size() : version.find_first_of("|;"));
         b.server     = "Cassandra " + version;

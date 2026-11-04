@@ -267,6 +267,7 @@ int main(int argc, char** argv)
 
         Backend b;
         b.name       = "mongodb";
+        b.control    = "apple";
         b.server     = "MongoDB " + server_version(cl);
         b.naive_desc = "filter built by concatenation and parsed with bson_new_from_json, or a $where expression; "
                        "five constructions, the most severe outcome is kept";

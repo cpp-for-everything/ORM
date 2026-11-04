@@ -81,6 +81,7 @@ namespace orm_security
         std::string                               name;
         std::string                               server;       // server version, read from the server
         std::string                               naive_desc;   // how the naive path is built
+        std::string                               control;      // benign payload that must return exactly one row on both paths
         std::function<bool(const Payload&)>       applies;
         std::function<Run(const std::string&)>    naive;
         std::function<Run(const std::string&)>    library;
@@ -94,6 +95,28 @@ namespace orm_security
             return 2;
         }
         const auto corpus = load_corpus(argv[1]);
+
+        // Control. A benign lookup of a seeded value must find exactly one row on both
+        // paths. Otherwise the seed or the query is broken and every NO_EFFECT below
+        // would mean nothing.
+        long control_naive = -1, control_library = -1;
+        if (!b.control.empty())
+        {
+            control_naive   = b.naive(b.control).rows;
+            control_library = b.library(b.control).rows;
+            std::printf("control %s: naive rows %ld, library rows %ld\n",
+                        b.control.c_str(), control_naive, control_library);
+            if (control_naive != 1 || control_library != 1)
+            {
+                std::ofstream cs(argv[3], std::ios::binary);
+                cs << "backend: " << b.name << "\nserver: " << b.server << "\n"
+                   << "CONTROL FAILED: a benign lookup of " << b.control << " returned naive rows "
+                   << control_naive << " and library rows " << control_library
+                   << ", expected 1 and 1\n";
+                std::fprintf(stderr, "FAIL: control lookup did not return one row on both paths\n");
+                return 1;
+            }
+        }
 
         std::ofstream out(argv[2], std::ios::binary);
         out << "id,dialect,technique,template,naive_outcome,naive_rows,orm_outcome,orm_rows\n";
@@ -127,6 +150,9 @@ namespace orm_security
         sum << "backend: " << b.name << "\n";
         sum << "server: " << b.server << "\n";
         sum << "naive path: " << b.naive_desc << "\n";
+        if (!b.control.empty())
+            sum << "control (benign lookup of " << b.control << "): naive rows " << control_naive
+                << ", library rows " << control_library << "\n";
         sum << "applicable payloads: " << applicable << "\n";
         sum << "naive compromised: " << naive_compromised << "\n";
         sum << "orm with any effect: " << orm_effect << "\n\n";

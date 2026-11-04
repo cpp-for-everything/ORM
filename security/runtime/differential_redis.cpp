@@ -217,6 +217,7 @@ int main(int argc, char** argv)
         Ctx admin;
         Backend b;
         b.name       = "redis";
+        b.control    = "apple";
         b.server     = "Redis " + server_version(admin.c);
         b.naive_desc = "command text built by concatenation and sent in the inline protocol, CR LF ends a command";
         b.applies    = [](const Payload& p) { return p.cls == "redis"; };
