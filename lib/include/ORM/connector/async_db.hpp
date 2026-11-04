@@ -36,6 +36,7 @@ namespace orm {
         template <typename Query>
         [[nodiscard]] auto operator<<(Query q) -> Task<decltype(std::declval<db<DB>>() << std::declval<Query>())>
         {
+            detail::check_query_shape<Query>();
             using ResultType = decltype(std::declval<db<DB>>() << std::declval<Query>());
 
             if constexpr (has_capability<DB, cap::supports_async>)
@@ -56,6 +57,7 @@ namespace orm {
         [[nodiscard]] auto async_execute(Query q, Params&&... params)
             -> Task<decltype(std::declval<db<DB>>().execute(std::declval<Query>(), std::declval<Params>()...))>
         {
+            detail::check_query_shape<Query>();
             co_return co_await run_on_pool(*pool_,
                 [this, q = std::move(q), ... p = std::forward<Params>(params)]() mutable {
                     return db_.execute(std::move(q), std::move(p)...);

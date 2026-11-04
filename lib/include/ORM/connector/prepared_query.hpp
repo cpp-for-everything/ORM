@@ -36,6 +36,7 @@ namespace orm {
         // ── execute with no parameters ────────────────────────────────────────
         auto execute() const
         {
+            detail::check_query_shape<Query>();
             return connector_trait<DB>::execute(conn_, query_);
         }
 

@@ -28,6 +28,7 @@ namespace orm {
         template <typename Query>
         auto operator<<(Query q)
         {
+            detail::check_query_shape<Query>();
             if constexpr (is_select_query<Query>)
             {
                 if constexpr (decltype(q.join_clauses())::size > 0)
@@ -55,6 +56,7 @@ namespace orm {
             requires is_select_query<Query>
         auto find_one(Query q)
         {
+            detail::check_query_shape<Query>();
             auto res = connector_trait<DB>::execute(*conn_, std::move(q));
             using Row = typename decltype(res)::value_type;
             if (res.empty())
@@ -74,6 +76,7 @@ namespace orm {
         template <typename Query>
         [[nodiscard]] auto prepare(Query q) -> prepared_query<DB, Query>
         {
+            detail::check_query_shape<Query>();
             return prepared_query<DB, Query>(*conn_, std::move(q));
         }
 

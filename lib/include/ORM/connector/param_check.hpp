@@ -23,6 +23,8 @@
 #include "ORM/query/select.hpp"
 #include "ORM/query/update.hpp"
 #include "ORM/query/delete.hpp"
+#include "ORM/query/insert.hpp"
+#include "ORM/query/field.hpp"
 #include "ORM/details/orm_tuple.hpp"
 #include <cstddef>
 #include <tuple>
@@ -185,10 +187,162 @@ namespace orm::detail {
                 ...);
     }
 
+    // ── literal operands ──────────────────────────────────────────────────────
+    // A leaf operand that is not a placeholder, a member pointer (a column), a
+    // field or nullptr is a VALUE written straight into the query, for example
+    // `field<&T::col> == v` or `.set(field<&T::col>, v)`.
+    //
+    // No connector binds such a value. Each renders the operand as a parameter
+    // marker and then binds only the arguments passed to execute(), so the
+    // marker is left unbound and the driver reads it as NULL. Measured on SQLite
+    // (security/probes): a SELECT returned no rows although one matched, an
+    // UPDATE bound its single argument into the literal's slot and left the
+    // WHERE slot NULL, and a DELETE deleted nothing. The value never became SQL
+    // text, so this was not injectable, but the result was silently wrong.
+    //
+    // Values therefore enter only through orm::Placeholder<T> or orm::ph<T, _N>,
+    // and a literal operand reaching execution is a compile error.
+    template <typename T>
+    inline constexpr bool is_literal_operand_v =
+        !is_placeholder_v<T> && !std::is_member_pointer_v<T> && !is_field<T> &&
+        !std::is_same_v<T, std::nullptr_t> && !is_rule<T>;
+
+    template <typename T>
+    struct has_literal : std::bool_constant<is_literal_operand_v<std::remove_cvref_t<T>>>
+    {
+    };
+    template <typename A, string_literal Op, typename B>
+    struct has_literal<Rule<A, Op, B>>
+        : std::bool_constant<has_literal<A>::value || has_literal<B>::value>
+    {
+    };
+
+    template <typename Tuple>
+    struct literal_in_rule_tuple : std::false_type
+    {
+    };
+    template <typename... R>
+    struct literal_in_rule_tuple<orm_tuple<R...>>
+        : std::bool_constant<(has_literal<R>::value || ...)>
+    {
+    };
+
+    template <typename JR>
+    struct literal_in_join : std::false_type
+    {
+    };
+    template <join::mode M, typename Tbl, typename R>
+    struct literal_in_join<JoinRule<M, Tbl, R>> : has_literal<R>
+    {
+    };
+    template <typename Tuple>
+    struct literal_in_join_tuple : std::false_type
+    {
+    };
+    template <typename... J>
+    struct literal_in_join_tuple<orm_tuple<J...>>
+        : std::bool_constant<(literal_in_join<J>::value || ...)>
+    {
+    };
+
+    template <typename S>
+    struct literal_in_stmt : std::false_type
+    {
+    };
+    template <typename Tag, typename V>
+    struct literal_in_stmt<UpdateStatement<Tag, V>>
+        : std::bool_constant<is_literal_operand_v<std::remove_cvref_t<V>>>
+    {
+    };
+    template <typename Tuple>
+    struct literal_in_stmt_tuple : std::false_type
+    {
+    };
+    template <typename... S>
+    struct literal_in_stmt_tuple<orm_tuple<S...>>
+        : std::bool_constant<(literal_in_stmt<S>::value || ...)>
+    {
+    };
+
+    template <typename Q>
+    struct query_has_literal : std::false_type
+    {
+    };
+    template <typename Resp, typename J, typename W, typename L, typename G, typename O>
+    struct query_has_literal<select_query<Resp, J, W, L, G, O>>
+        : std::bool_constant<literal_in_join_tuple<J>::value || literal_in_rule_tuple<W>::value>
+    {
+    };
+    template <typename Table, typename S, typename W>
+    struct query_has_literal<update_query<Table, S, W>>
+        : std::bool_constant<literal_in_stmt_tuple<S>::value || literal_in_rule_tuple<W>::value>
+    {
+    };
+    template <typename Table, typename W>
+    struct query_has_literal<delete_query<Table, W>> : literal_in_rule_tuple<W>
+    {
+    };
+
+    // ── is it a query at all? ─────────────────────────────────────────────────
+    // The db entry points are templates. They used to accept any type, so text
+    // such as a std::string reached connector overload resolution before it was
+    // rejected, with an error about the connector rather than about the cause.
+    // These four are every query kind any connector executes.
+    template <typename Q>
+    struct is_query_ir : std::false_type
+    {
+    };
+    template <typename Resp, typename J, typename W, typename L, typename G, typename O>
+    struct is_query_ir<select_query<Resp, J, W, L, G, O>> : std::true_type
+    {
+    };
+    template <typename P>
+    struct is_query_ir<insert_query<P>> : std::true_type
+    {
+    };
+    template <typename Table, typename S, typename W>
+    struct is_query_ir<update_query<Table, S, W>> : std::true_type
+    {
+    };
+    template <typename Table, typename W>
+    struct is_query_ir<delete_query<Table, W>> : std::true_type
+    {
+    };
+
+    // ── entry point: every path that reaches a connector calls this ───────────
+    // db::operator<<, db::execute, db::find_one, db::prepare,
+    // prepared_query::execute, and the async_db equivalents.
+    template <typename Query>
+    constexpr void check_query_shape()
+    {
+        using Q = std::remove_cvref_t<Query>;
+        static_assert(
+            is_query_ir<Q>::value,
+            "orm: this is not a query. execute(), operator<<, find_one() and "
+            "prepare() take a query built with orm::select, orm::insert, "
+            "orm::update or orm::deleteq. Query text such as a std::string is "
+            "not accepted: a query assembled from text is the injection this "
+            "library exists to prevent.");
+        if constexpr (is_query_ir<Q>::value)
+        {
+            static_assert(
+                !query_has_literal<Q>::value,
+                "orm: a literal operand reaches execution. A value was written "
+                "directly into the query, as in `field<&T::col> == value` or "
+                "`.set(field<&T::col>, value)`. No connector binds such a value: "
+                "it is left as an unbound parameter that the database reads as "
+                "NULL, so the query silently returns wrong results. Pass the "
+                "value through a typed placeholder instead, "
+                "`field<&T::col> == orm::Placeholder<V>{}`, and supply it to "
+                "execute(), or use orm::ph<V, _N>.");
+        }
+    }
+
     // ── entry point: called from db::execute and prepared_query::execute ──────
     template <typename Query, typename... Params>
     constexpr void check_query_params()
     {
+        check_query_shape<Query>();
         using Q  = std::remove_cvref_t<Query>;
         using QP = query_placeholders<Q>;
 
