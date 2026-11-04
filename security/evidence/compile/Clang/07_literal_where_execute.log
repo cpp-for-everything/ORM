@@ -1,0 +1,9 @@
+case:     07_literal_where_execute
+expected: fail
+result:   rejected
+regex:    literal operand
+verdict:  TRUE
+compiler: Clang 18.1.3
+
+<repo>/lib/include/ORM/connector/param_check.hpp:329:17: error: static assertion failed due to requirement '!query_has_literal<orm::select_query<orm::detail::orm_tuple<orm::mem_ptr<&Item::id>>, orm::detail::orm_tuple<>, orm::detail::orm_tuple<orm::Rule<orm::property<std::basic_string<char, std::char_traits<char>, std::allocator<char>>, orm::detail::string_literal<5>{"name"}> Item::*, orm::detail::string_literal<3>{"=="}, std::basic_string<char, std::char_traits<char>, std::allocator<char>>>>, orm::detail::orm_tuple<>, orm::detail::orm_tuple<>, orm::detail::orm_tuple<>>>::value': orm: a literal operand reaches execution. A value was written directly into the query, as in `field<&T::col> == value` or `.set(field<&T::col>, value)`. No connector binds such a value: it is left as an unbound parameter that the database reads as NULL, so the query silently returns wrong results. Pass the value through a typed placeholder instead, `field<&T::col> == orm::Placeholder<V>{}`, and supply it to execute(), or use orm::ph<V, _N>.
+1 error generated.

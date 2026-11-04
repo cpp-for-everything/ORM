@@ -1,0 +1,9 @@
+case:     05_where_raw_string
+expected: fail
+result:   rejected
+regex:    constraint|not satisfied
+verdict:  TRUE
+compiler: Clang 18.1.3
+
+<repo>/security/compile_fail/05_where_raw_string.cpp:8:19: error: no matching member function for call to 'where'
+1 error generated.

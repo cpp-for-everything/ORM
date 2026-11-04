@@ -1,0 +1,8 @@
+case:     09_literal_where_find_one
+expected: fail
+result:   rejected
+regex:    literal operand
+verdict:  TRUE
+compiler: GNU 14.2.0
+
+<repo>/lib/include/ORM/connector/param_check.hpp:329:40: error: static assertion failed: orm: a literal operand reaches execution. A value was written directly into the query, as in `field<&T::col> == value` or `.set(field<&T::col>, value)`. No connector binds such a value: it is left as an unbound parameter that the database reads as NULL, so the query silently returns wrong results. Pass the value through a typed placeholder instead, `field<&T::col> == orm::Placeholder<V>{}`, and supply it to execute(), or use orm::ph<V, _N>.

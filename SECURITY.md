@@ -33,6 +33,22 @@ Values travel separately from the statement, through `prepared_query::execute(ar
 ([`connector/prepared_query.hpp`](lib/include/ORM/connector/prepared_query.hpp)), and each backend
 hands them to its driver as parameters rather than splicing them into text.
 
+### A gap this claim used to have
+
+Until November 2026 a value could also be written straight into a query, as in
+`field<&T::col> == value`, without a placeholder. It compiled, and no connector
+bound it: each rendered it as an unbound parameter that the database read as
+NULL. Measured on SQLite, a matching row was not returned, an `UPDATE` bound its
+argument into the wrong slot, and a `DELETE` deleted nothing
+([`security/probes`](security/probes/README.md)). The value never became SQL
+text, so it was not injectable, but the result was silently wrong.
+
+It is now a compile error at every execution entry point, enforced by
+`detail::check_query_shape` in
+[`connector/param_check.hpp`](lib/include/ORM/connector/param_check.hpp). The
+same check rejects anything that is not a query, so query text such as a
+`std::string` is refused at the API boundary with a message naming the problem.
+
 ## How the property is enforced, per backend
 
 The guarantee is uniform. **The mechanism is not.** Each connector uses the strongest facility its
@@ -83,6 +99,19 @@ queries without prepared statements.
 site, so no live path uses it. It is recorded here because escaping is a weaker mechanism than
 binding, and because a future contributor could wire it up without realising the guarantee is
 different on that path. It should be removed or quarantined behind an explicit opt in.
+
+## Verification
+
+The claims above are tested, not only argued. See [`security/`](security/README.md).
+
+- **18 compile checks.** 15 programs that must be rejected, each with a named
+  diagnostic, and 3 controls that must compile. All pass under GCC 14.2 and
+  Clang 18.1.
+- **A differential test.** Every applicable payload from a sourced corpus goes
+  through a deliberately naive string built query and through the library. On
+  SQLite, 22 payloads: the naive query was compromised by 4, the library by 0.
+
+The suite runs in CI with `ORM_ENABLE_SECURITY=ON`.
 
 Full analysis, including the attacker model and the verification plan, is in
 [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md).

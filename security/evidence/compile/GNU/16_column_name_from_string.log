@@ -1,0 +1,9 @@
+case:     16_column_name_from_string
+expected: fail
+result:   rejected
+regex:    deduction failed|no matching|no viable|could not convert
+verdict:  TRUE
+compiler: GNU 14.2.0
+
+<repo>/security/compile_fail/16_column_name_from_string.cpp:9:30: error: class template argument deduction failed:
+<repo>/security/compile_fail/16_column_name_from_string.cpp:9:30: error: no matching function for call to ‘string_literal(std::string&)’

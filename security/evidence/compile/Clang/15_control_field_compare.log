@@ -1,0 +1,7 @@
+case:     15_control_field_compare
+expected: pass
+result:   compiled
+regex:    
+verdict:  TRUE
+compiler: Clang 18.1.3
+

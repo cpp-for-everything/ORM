@@ -1,0 +1,8 @@
+case:     06_placeholder_type_mismatch
+expected: fail
+result:   rejected
+regex:    incompatible
+verdict:  TRUE
+compiler: GNU 14.2.0
+
+<repo>/lib/include/ORM/connector/param_check.hpp:367:67: error: static assertion failed: orm: a runtime parameter type is incompatible with the placeholder it binds to. Check the argument types passed to execute() against the Placeholder<T> types declared in the query (parameters bind positionally in clause order).

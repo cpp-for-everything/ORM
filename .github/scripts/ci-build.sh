@@ -40,6 +40,7 @@ cmake -S . -B "$BUILD_DIR" -G Ninja \
   -DCMAKE_CXX_STANDARD_REQUIRED=ON \
   -DCMAKE_CXX_EXTENSIONS=OFF \
   -DORM_ENABLE_SQLITE=ON \
+  -DORM_ENABLE_SECURITY=ON \
   ${CMAKE_EXTRA_ARGS:-}
 
 cmake --build "$BUILD_DIR" --parallel
@@ -59,6 +60,7 @@ echo "${exit_code}" > ctest-exit.txt
   echo "- build_type: ${BUILD_TYPE}"
   echo "- ctest exit code: ${exit_code}"
   echo "- sqlite: ORM_ENABLE_SQLITE=ON"
+  echo "- security suite: ORM_ENABLE_SECURITY=ON"
   echo "- live DB connectors: not enabled in this job (see docker-tests.yml)"
   echo
   echo "### compiler"

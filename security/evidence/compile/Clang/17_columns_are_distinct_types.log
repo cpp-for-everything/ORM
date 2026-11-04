@@ -1,0 +1,9 @@
+case:     17_columns_are_distinct_types
+expected: fail
+result:   rejected
+regex:    distinct pointer types|incompatible operand types
+verdict:  TRUE
+compiler: Clang 18.1.3
+
+<repo>/security/compile_fail/17_columns_are_distinct_types.cpp:9:30: error: incompatible operand types ('orm::property<int, "owner"> Item::*' and 'orm::property<int, "id"> Item::*')
+1 error generated.

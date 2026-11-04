@@ -1,0 +1,8 @@
+case:     01_runtime_column_name
+expected: fail
+result:   rejected
+regex:    constant expression|not usable in a constant
+verdict:  TRUE
+compiler: GNU 14.2.0
+
+<repo>/security/compile_fail/01_runtime_column_name.cpp:14:30: error: the value of ‘column’ is not usable in a constant expression

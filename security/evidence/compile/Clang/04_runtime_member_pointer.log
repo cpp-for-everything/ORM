@@ -1,0 +1,9 @@
+case:     04_runtime_member_pointer
+expected: fail
+result:   rejected
+regex:    constant expression|not usable in a constant|not a valid template argument
+verdict:  TRUE
+compiler: Clang 18.1.3
+
+<repo>/security/compile_fail/04_runtime_member_pointer.cpp:14:36: error: non-type template argument is not a constant expression
+1 error generated.

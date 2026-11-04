@@ -1,0 +1,8 @@
+case:     02_runtime_table_name
+expected: fail
+result:   rejected
+regex:    constant expression|constexpr
+verdict:  TRUE
+compiler: GNU 14.2.0
+
+<repo>/security/compile_fail/02_runtime_table_name.cpp:17:69: error: call to non-‘constexpr’ function ‘std::string table_from_request()’

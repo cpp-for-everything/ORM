@@ -1,0 +1,8 @@
+case:     04_runtime_member_pointer
+expected: fail
+result:   rejected
+regex:    constant expression|not usable in a constant|not a valid template argument
+verdict:  TRUE
+compiler: GNU 14.2.0
+
+<repo>/security/compile_fail/04_runtime_member_pointer.cpp:14:42: error: ‘column’ is not a valid template argument for type ‘orm::property<int, orm::detail::string_literal<3>{"id"}> Item::*’

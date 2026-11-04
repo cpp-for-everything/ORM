@@ -1,0 +1,35 @@
+Security suite, first run, BEFORE the fix. 4 Nov 2026.
+Library at d5795a9. GCC 14.2.0, Ubuntu 24.04 (WSL). ctest -L security.
+
+12 of 21 passed, 9 failed.
+
+Failed because the program COMPILED (the defect, as predicted):
+  07_literal_where_execute
+  08_literal_where_stream
+  09_literal_where_find_one
+  10_literal_where_prepared
+  11_literal_update_set
+  12_literal_delete_where
+  13_literal_constant
+
+Failed because the program was rejected for a reason the test did not name.
+The claim held; the test asked the wrong question and was refined:
+  01_runtime_column_name     rejected by "class template argument deduction
+                             failed": a std::string is not the right type for a
+                             column name. Split into 01 (right type, run time
+                             value) and 16 (std::string).
+  04_runtime_member_pointer  rejected by "conditional expression between
+                             distinct pointer types": two columns of the same
+                             C++ type are distinct types. Split into 04 (one
+                             column, run time variable) and 17 (two columns).
+
+Passed: the 3 controls, 02, 03, 05, 06, the 4 SQLite unit tests and the SQLite
+differential.
+
+03 passed only with a loose pattern. Its diagnostic came from connector overload
+resolution, "no matching function for call to
+orm::connector_trait<orm::MockDB>::execute(orm::MockDB&, std::string)", which
+led to the query shape check at the API boundary.
+
+After the fix: 23 of 23 security tests, and 337 of 337 tests in the whole
+suite, under GCC 14.2.0. The 18 compile checks also pass under Clang 18.1.3.

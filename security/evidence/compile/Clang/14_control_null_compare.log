@@ -1,0 +1,7 @@
+case:     14_control_null_compare
+expected: pass
+result:   compiled
+regex:    
+verdict:  TRUE
+compiler: Clang 18.1.3
+

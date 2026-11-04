@@ -1,0 +1,5 @@
+A placeholder, benign  'banana'      -> 1 rows
+A placeholder, attack  "x' OR '1'='1" -> 0 rows
+B literal,     benign  'banana'      -> 0 rows
+B literal,     attack  "x' OR '1'='1" -> 0 rows
+table still has 3 rows

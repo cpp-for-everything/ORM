@@ -1,0 +1,3 @@
+U1 set via placeholder 'grape', id=1   -> name now grape
+U2 set via literal     'grape', id=2   -> name now banana
+D1 delete via literal id==3            -> rows left 3 (3 means nothing deleted)

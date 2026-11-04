@@ -1,0 +1,10 @@
+case:     17_columns_are_distinct_types
+expected: fail
+result:   rejected
+regex:    distinct pointer types|incompatible operand types
+verdict:  TRUE
+compiler: GNU 14.2.0
+
+<repo>/security/compile_fail/17_columns_are_distinct_types.cpp:9:30: error: conditional expression between distinct pointer types ‘orm::property<int, orm::detail::string_literal<6>{"owner"}> Item::*’ and ‘orm::property<int, orm::detail::string_literal<3>{"id"}> Item::*’ lacks a cast
+<repo>/security/compile_fail/17_columns_are_distinct_types.cpp:9:32: error: invalid conversion from ‘orm::property<int, orm::detail::string_literal<6>{"owner"}> Item::*’ to ‘void Item::*’ [-fpermissive]
+<repo>/security/compile_fail/17_columns_are_distinct_types.cpp:9:47: error: invalid conversion from ‘orm::property<int, orm::detail::string_literal<3>{"id"}> Item::*’ to ‘void Item::*’ [-fpermissive]

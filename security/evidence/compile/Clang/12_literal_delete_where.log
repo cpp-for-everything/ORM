@@ -1,0 +1,9 @@
+case:     12_literal_delete_where
+expected: fail
+result:   rejected
+regex:    literal operand
+verdict:  TRUE
+compiler: Clang 18.1.3
+
+<repo>/lib/include/ORM/connector/param_check.hpp:329:17: error: static assertion failed due to requirement '!query_has_literal<orm::delete_query<Item, orm::detail::orm_tuple<orm::Rule<orm::property<int, orm::detail::string_literal<3>{"id"}> Item::*, orm::detail::string_literal<3>{"=="}, int>>>>::value': orm: a literal operand reaches execution. A value was written directly into the query, as in `field<&T::col> == value` or `.set(field<&T::col>, value)`. No connector binds such a value: it is left as an unbound parameter that the database reads as NULL, so the query silently returns wrong results. Pass the value through a typed placeholder instead, `field<&T::col> == orm::Placeholder<V>{}`, and supply it to execute(), or use orm::ph<V, _N>.
+1 error generated.

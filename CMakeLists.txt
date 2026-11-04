@@ -26,6 +26,11 @@ enable_testing()
 add_subdirectory(lib)
 add_subdirectory(tests)
 
+option(ORM_ENABLE_SECURITY "Build the security evaluation suite (see security/README.md)" OFF)
+if(ORM_ENABLE_SECURITY)
+    add_subdirectory(security)
+endif()
+
 option(ORM_ENABLE_BENCHMARKS "Build benchmark executables (requires Google Benchmark)" OFF)
 if(ORM_ENABLE_BENCHMARKS)
     add_subdirectory(benchmarks)

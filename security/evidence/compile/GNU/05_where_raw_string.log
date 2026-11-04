@@ -1,0 +1,8 @@
+case:     05_where_raw_string
+expected: fail
+result:   rejected
+regex:    constraint|not satisfied
+verdict:  TRUE
+compiler: GNU 14.2.0
+
+<repo>/security/compile_fail/05_where_raw_string.cpp:8:24: error: no matching function for call to ‘orm::select_query<orm::detail::orm_tuple<orm::mem_ptr<&Item::id> >, orm::detail::orm_tuple<>, orm::detail::orm_tuple<>, orm::detail::orm_tuple<>, orm::detail::orm_tuple<>, orm::detail::orm_tuple<> >::where(const char [22])’

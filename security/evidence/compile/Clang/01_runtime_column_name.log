@@ -1,0 +1,9 @@
+case:     01_runtime_column_name
+expected: fail
+result:   rejected
+regex:    constant expression|not usable in a constant
+verdict:  TRUE
+compiler: Clang 18.1.3
+
+<repo>/security/compile_fail/01_runtime_column_name.cpp:14:24: error: non-type template argument is not a constant expression
+1 error generated.

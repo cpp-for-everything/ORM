@@ -1,0 +1,10 @@
+case:     03_raw_sql_string_execute
+expected: fail
+result:   rejected
+regex:    this is not a query
+verdict:  TRUE
+compiler: Clang 18.1.3
+
+<repo>/lib/include/ORM/connector/param_check.hpp:320:13: error: static assertion failed due to requirement 'is_query_ir<std::basic_string<char, std::char_traits<char>, std::allocator<char>>>::value': orm: this is not a query. execute(), operator<<, find_one() and prepare() take a query built with orm::select, orm::insert, orm::update or orm::deleteq. Query text such as a std::string is not accepted: a query assembled from text is the injection this library exists to prevent.
+<repo>/lib/include/ORM/connector/db.hpp:50:41: error: no matching member function for call to 'execute'
+2 errors generated.

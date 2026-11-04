@@ -40,6 +40,36 @@ does with them.
 A value is also **typed**. `orm::ph<int, _1>` will not accept a string. A whole class of coercion
 tricks is rejected by the compiler before it is a runtime question.
 
+**A gap found and closed by this work.** The claim above was not fully true
+until November 2026. The comparison operators accepted any value type, not only
+placeholders, so `field<&T::name> == some_string` compiled and stored the value
+in the IR. No connector bound it. Each rendered it as an unbound `?`
+(`SQLite/sqlite_db.hpp:258`), and the driver read that as NULL.
+
+Measured on SQLite before the fix (`security/probes`, `security/evidence/probe_*`):
+
+| Query | Intent | Result |
+|---|---|---|
+| `SELECT` with a literal `banana` | find 1 row | 0 rows |
+| `UPDATE ... SET` with a literal | rename one row | row unchanged |
+| `DELETE ... WHERE` with a literal | delete one row | nothing deleted |
+
+The `UPDATE` case is parameter confusion. Arguments bind positionally from slot
+1 (`sqlite_db.hpp:214`), so the one argument meant for `WHERE id = ?` was bound
+into the literal's `SET` slot.
+
+This **failed closed**. The value never became SQL text, so it was not an
+injection. It was a silent wrong result. The existing test suite never caught it
+because literal operands appeared only in unit tests of the IR's shape
+(`tests/unit/test_query.cpp`), never in a query that was executed.
+
+It is now a compile error at every entry point that reaches a connector:
+`db::operator<<`, `db::execute`, `db::find_one`, `db::prepare`,
+`prepared_query::execute`, and the `async_db` equivalents
+(`connector/param_check.hpp`, `check_query_shape`). Seven compile checks, one
+per entry point and query kind, hold it there (`security/compile_fail/07` to
+`13`).
+
 ### Level 2. The attacker controls identifiers
 
 The attacker chooses a table name, a column name, or an ordering key. This is where parameter
@@ -56,6 +86,11 @@ because the programmer cannot either.
 Libraries that bind values still interpolate identifiers, and that is where their injection bugs
 live. Here the capability is absent rather than guarded.
 
+It is stronger than "must be a constant". Because the column name is part of
+the property's type, two columns of the same C++ type are still different types,
+so one variable cannot range over two columns at all
+(`security/compile_fail/17`).
+
 The cost is real and should be stated plainly: genuinely dynamic schemas are not supported.
 
 ### Level 3. The attacker controls structure
@@ -66,6 +101,12 @@ predicates from a request.
 **Eliminated, with the same cost.** The query is a C++ type. A `select(...).where(...)` expression
 produces an IR whose shape is fixed at compile time. Shape cannot be assembled from runtime data
 because there is no runtime representation of shape to assemble.
+
+The entry points used to be unconstrained templates, so a `std::string` holding
+query text got as far as connector overload resolution before it was rejected,
+with an error about the connector. They now reject anything that is not one of
+the four query kinds with `orm: this is not a query`
+(`security/compile_fail/03`).
 
 A program that needs this must enumerate the permitted shapes as distinct compile time queries and
 select among them. That is more work, and it is also the only form in which the choice is
@@ -119,6 +160,7 @@ Honest limits. A model that only lists successes is not a model.
 | Risk | Status | Why |
 |---|---|---|
 | `to_sql_literal` escaping path | **Dead code, tracked** | `MySQLDB/mysql_live.hpp:248` escapes and inlines rather than binds. Searching `lib/` and `tests/` finds the definition and no caller. Escaping is weaker than binding. It should be removed or put behind an explicit opt in before someone wires it up. |
+| Literal operands in the IR | **Fixed, November 2026** | Silently compared against NULL. Now a compile error at every entry point. See section 2, level 1. |
 | Second order injection | **Out of scope** | A value read from the database and later used as an identifier by application code is invisible here. |
 | Application logic flaws | **Out of scope** | Missing authorisation and over broad filters are not injection. |
 | Migrations and DDL | **Not yet analysed** | The claim in section 2 covers the query path. DDL needs its own pass. |
@@ -129,25 +171,38 @@ Honest limits. A model that only lists successes is not a model.
 
 ## 5. How the claims get verified
 
-Stated here so the model is falsifiable. None of this is implemented yet.
+Stated so the model is falsifiable. The suite lives in
+[`security/`](../security/README.md).
 
-1. **Differential testing.** The same adversarial input down two paths: a deliberately naive string
-   built query, and the library. Run against all seven backends using the existing dockerised
-   integration harness (`tests/integration/`, `DockerRun.cmake`). The naive path must be shown to
-   be exploitable, otherwise the comparison proves nothing.
-2. **A payload corpus per backend**, not SQL only: SQL, MongoDB operator injection, Cypher, CQL,
-   and Redis protocol level attempts. Provenance recorded for every payload. Payloads are not
-   invented and then presented as a corpus.
-3. **A static check** that no query reaching a driver was built from a runtime string. If this can
-   be enforced in CI rather than argued in prose, the check is itself a result, and it is what
-   stops the guarantee eroding later.
-4. **Negative results reported with the positive ones.** Specifically: that dynamic identifiers are
-   unsupported rather than protected, and that the escaping path would weaken the guarantee if
-   revived.
+1. **Negative compilation tests. Done.** 15 programs that must be rejected, each
+   with a named diagnostic, and 3 controls that must compile, so a rejection
+   cannot pass by failing for an unrelated reason. All 18 pass under GCC 14.2
+   and Clang 18.1, with diagnostics kept per compiler in
+   `security/evidence/compile/`.
+2. **Differential testing.** The same adversarial input down a deliberately
+   naive string built query and down the library. **Done for SQLite:** 22
+   applicable payloads, the naive query compromised by 4, the library by 0
+   (`security/evidence/differential_sqlite.csv`). The naive path must be
+   compromised at least once or the test fails, because otherwise the comparison
+   proves nothing. **Pending** for the server backends, which run through the
+   dockerised integration stack.
+3. **A payload corpus per backend, every payload sourced. Done:** 66 payloads
+   from 11 sources (`security/corpus/`). Three are published templates with an
+   unfilled slot, and are run exactly as published.
+4. **The static check** that nothing but a query IR reaches a connector.
+   **Done**, as a compile time check rather than a lint: `check_query_shape`,
+   held in place by the compile tests, which run in CI.
+5. **Negative results reported with the positive ones.** The literal operand gap
+   in section 2 is the first.
+
+The differential oracle sees effects only, so a blind payload that changes the
+logic but still returns no rows is not counted. The naive compromise count is
+therefore a lower bound. That bias works against the claim, not for it.
 
 ---
 
 ## 6. Status
 
-Written 4 Nov 2026 from a read of the code at that date. Sections 1 to 4 are measured. Section 5 is
-a plan and nothing in it has been run.
+Sections 1 to 4 were written on 4 Nov 2026 from a read of the code, and revised
+the same day after measurement found the literal operand gap. Section 5 records
+what has been run.
