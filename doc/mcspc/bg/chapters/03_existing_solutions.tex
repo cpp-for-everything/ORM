@@ -38,8 +38,9 @@ DISCOURAGED“, а към защитите се добавят най-малки
 да промени структурата, защото тя вече е разчетена. Това е защитата, препоръчана от
 \textit{OWASP}, \textit{CISA} и \textit{FBI}~\cite{owasp_sqli_prevention,cisa_sqli_alert}.
 Същият принцип стои зад \textit{Neo4j}, където планът на заявката е компилиран преди
-подставянето на стойностите~\cite{neo4j_cypher_injection_kb}, и зад \textit{Cassandra},
-където заявка с поне един маркер трябва да бъде подготвена~\cite{cassandra_cql_prepared}.
+подставянето на стойностите~\cite{neo4j_cypher_injection_kb}. В \textit{Cassandra}
+заявка с поне един маркер трябва да бъде подготвена; документацията на \textit{CQL}
+описва това като оптимизация и не го свързва със сигурността~\cite{cassandra_cql_prepared}.
 Границата е посочена в наръчника на \textit{OWASP}: маркерите заместват стойности, а
 не имена на таблици и колони и не ключови думи~\cite{owasp_sqli_prevention}.
 Документацията на \textit{EF Core} казва същото~\cite{ef_core_sql}. Защитата не се
@@ -183,8 +184,8 @@ is impossible under normal circumstances using a normal client library“ и ч�
 \code{FromSqlInterpolated} са безопасни, защото предават данните като параметър, а
 \code{FromSqlRaw} може да е уязвим. Когато името на колона трябва да се вмъкне
 динамично, се ползва \code{FromSqlRaw}, а санитизирането е отговорност на
-програмиста~\cite{ef_core_sql}. В \textit{jOOQ} SQL се строи като типизирано дърво със
-свързани стойности, затова чрез него не е възможно да се въведат инжекции. Изключение
+програмиста~\cite{ef_core_sql}. В \textit{jOOQ} SQL обикновено се строи като типизирано дърво със
+свързани стойности и според документацията по този път не е възможно да се въведат инжекции. Изключение
 са методите за суров SQL, отбелязани с \code{org.jooq.PlainSQL} от версия 3.6~\cite{jooq_sqli},
 чието използване документацията свързва с проверка чрез \textit{Checker Framework} или
 \textit{Error Prone}~\cite{jooq_plain_sql}. \textit{Diesel} заявява стремеж да
@@ -230,7 +231,7 @@ Diesel & Свързани стойности~\cite{diesel_debug_query} & Схе�
 sqlx & Свързани параметри~\cite{sqlx_query_docs} & \code{query!} проверява литерален низ срещу база~\cite{sqlx_readme} & \code{AssertSqlSafe} върху динамичен низ~\cite{sqlx_query_docs} & Компилация срещу жива база или кеш \\
 esqueleto & \code{rawSql} приема стойности, за DSL н.д.~\cite{esqueleto_hackage} & н.д. & \code{rawSql}, \code{unsafeSqlFunction}, \code{unsafeSqlBinOp}~\cite{esqueleto_hackage} & Компилация (Haskell) \\
 opaleye & н.д. & Имена като \code{String}~\cite{opaleye_table} & \code{unsafeCast} с низ~\cite{opaleye_main} & Компилация (Haskell) \\
-sqlpp11 / sqlpp23 & Подготвени изрази с \code{parameter()}~\cite{sqlpp11_prepared} & Таблици от DDL~\cite{sqlpp11_repo}, в sqlpp23 е възможен \code{verbatim_table} & \code{verbatim}, \code{verbatim_table}, \code{verbatim_clause}~\cite{sqlpp11_functions,sqlpp23_custom} & Компилация (C++) \\
+sqlpp11 / sqlpp23 & В sqlpp11 подготвени изрази с \code{parameter()}~\cite{sqlpp11_prepared} & В sqlpp11 таблици от DDL~\cite{sqlpp11_repo}, в sqlpp23 е възможен \code{verbatim_table} & \code{verbatim}, \code{verbatim_table}, \code{verbatim_clause}~\cite{sqlpp11_functions,sqlpp23_custom} & Компилация (C++) \\
 \bottomrule
 \end{tabularx}
 \end{table}
