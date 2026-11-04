@@ -1,0 +1,75 @@
+\section*{ПРИЛОЖЕНИЯ}
+\label{sec:appendices}
+\addcontentsline{toc}{section}{ПРИЛОЖЕНИЯ}
+
+\subsection*{Приложение А. Възпроизвеждане на резултатите}
+\label{app:reproduce}
+
+Изходният код е публично достъпен в \url{https://github.com/cpp-for-everything/ORM}.
+Резултатите в глава~\ref{sec:evaluation} са получени с версия \code{a17f4e7}.
+Наборът за оценка се изгражда и изпълнява със следните команди, от корена на
+хранилището:
+
+\begin{lstlisting}[language=bash,caption={Изграждане и изпълнение на набора за оценка},label={lst:app-reproduce}]
+cmake -S . -B build-security -DORM_ENABLE_SECURITY=ON -DORM_ENABLE_SQLITE=ON
+cmake --build build-security
+ctest --test-dir build-security -L security --output-on-failure
+\end{lstlisting}
+
+Компилационните тестове изискват GCC или Clang. За изпълнение с Clang
+променливите на средата \code{CC} и \code{CXX} се задават съответно на
+\code{clang-18} и \code{clang++-18} преди конфигурирането. Резултатите се записват
+в \code{security/evidence/}. Описание на набора има в \code{security/README.md}.
+
+\subsection*{Приложение Б. Файлове на набора за оценка}
+
+\begin{table}[H]
+\centering
+\caption{Съдържание на каталога \code{security}}
+\label{tab:app-files}
+\begin{tabularx}{\textwidth}{L{5.4cm}Y}
+\toprule
+\textbf{Път} & \textbf{Съдържание} \\
+\midrule
+\code{compile\_fail/} & 18 компилационни теста и общата им постановка \\
+\code{cmake/check\_compile.cmake} & проверка на изхода и на диагностиката на всеки компилационен тест \\
+\code{corpus/payloads.csv} & 66 полезни товара с колони за идентификатор, клас, диалект, техника, текст, очакван ефект и източник \\
+\code{corpus/sources.bib} & 11 източника на корпуса \\
+\code{runtime/differential\_sqlite.cpp} & диференциалният тест със SQLite \\
+\code{runtime/test\_injection\_sqlite.cpp} & четири именувани теста на пътя през заместител \\
+\code{probes/} & двете програми, възпроизвеждащи пропуска преди поправката \\
+\code{evidence/} & всички записани резултати \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection*{Приложение В. Терминологичен речник}
+
+Таблица~\ref{tab:app-glossary} съпоставя термините, използвани в текста, с
+английските им съответствия и с идентификаторите в изходния код.
+
+\begin{table}[H]
+\centering
+\caption{Терминологичен речник}
+\label{tab:app-glossary}
+\begin{tabularx}{\textwidth}{L{4.4cm}L{4.4cm}Y}
+\toprule
+\textbf{Термин} & \textbf{На английски} & \textbf{В кода} \\
+\midrule
+инжекция & injection & \\
+полезен товар & payload & колона \code{payload} в корпуса \\
+екраниране & escaping & \code{to\_sql\_literal} \\
+свързване на параметри & parameter binding & \code{sqlite3\_bind\_*}, \code{PQexecParams} \\
+типизиран заместител & typed placeholder & \code{Placeholder<T>}, \code{ph<T, \_N>} \\
+литерален операнд & literal operand & \code{is\_literal\_operand\_v} \\
+междинно представяне & intermediate representation & \code{select\_query} и сродните \\
+свойство & property & \code{property<T, "name">} \\
+конектор & connector & \code{connector\_trait<DB>} \\
+проверка на границата & boundary check & \code{check\_query\_shape} \\
+контролен случай & control case & случаи 00, 14 и 15 \\
+оракул & oracle & функцията \code{classify} \\
+затворен отказ & fail closed & \\
+объркване на параметрите & parameter confusion & \\
+\bottomrule
+\end{tabularx}
+\end{table}

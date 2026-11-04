@@ -1,0 +1,91 @@
+% Дипломна работа, ОКС „Магистър“, специалност
+% „Киберсигурност и превенция на киберпрестъпления“, ФКСТ, ТУ София.
+\input{preamble.tex}
+
+\providecommand{\TODO}[1]{\textcolor{red}{[TODO: #1]}}
+\hypersetup{
+    pdftitle={Предотвратяване на инжекционни атаки чрез конструиране на заявки по време на компилация},
+    pdfauthor={Алекс Цветанов},
+}
+
+\begin{document}
+
+% --- Заглавна страница ---
+\begin{titlepage}
+\begin{center}
+    {\fontsize{18}{21.6}\selectfont\bfseries ТЕХНИЧЕСКИ УНИВЕРСИТЕТ \textendash{} СОФИЯ\par}
+    \vspace{0.5cm}
+    {\fontsize{16}{19.2}\selectfont\bfseries ФАКУЛТЕТ „КОМПЮТЪРНИ СИСТЕМИ И ТЕХНОЛОГИИ“\par}
+
+    \vspace{0.5cm}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.4\linewidth]{images/ту.png}
+    \end{figure}
+    \vspace{0.5cm}
+
+    {\fontsize{18}{21.6}\selectfont\bfseries ПРЕДОТВРАТЯВАНЕ НА ИНЖЕКЦИОННИ АТАКИ ЧРЕЗ КОНСТРУИРАНЕ НА ЗАЯВКИ ПО ВРЕМЕ НА КОМПИЛАЦИЯ: АНАЛИЗ И ОЦЕНКА ПРИ ХЕТЕРОГЕННИ ХРАНИЛИЩА ЗА ДАННИ\par}
+
+    \vspace{1cm}
+
+    {\fontsize{14}{16.8}\selectfont\bfseries ДИПЛОМНА РАБОТА\par}
+    \vspace{0.3cm}
+    {\fontsize{14}{16.8}\selectfont\bfseries за придобиване на ОКС „Магистър“\par}
+
+    \vfill
+
+    \begin{flushleft}
+    {\fontsize{14}{16.8}\selectfont\bfseries Изготвил:\par}
+    Алекс Цветанов, фак. № 371326005\par
+    Специалност: Киберсигурност и превенция на киберпрестъпления\par
+
+    \vspace{1cm}
+
+    {\fontsize{14}{16.8}\selectfont\bfseries Научен ръководител:\par}
+    \TODO{звание, име на ръководителя}\par
+    \end{flushleft}
+
+    \vfill
+
+    {\fontsize{12}{14.4}\selectfont София, 2027\par}
+\end{center}
+\end{titlepage}
+
+\newpage
+\pagestyle{empty}
+\input{chapters/00_abstract.tex}
+
+\newpage
+\setcounter{tocdepth}{2}
+\tableofcontents
+\newpage
+
+\pagestyle{fancy}
+\pagenumbering{arabic}
+
+\input{chapters/01_introduction.tex}
+\newpage
+\input{chapters/02_cybercrime.tex}
+\newpage
+\input{chapters/03_existing_solutions.tex}
+\newpage
+\input{chapters/04_theory.tex}
+\newpage
+\input{chapters/05_threat_model_method.tex}
+\newpage
+\input{chapters/06_enforcement.tex}
+\newpage
+\input{chapters/07_case_study.tex}
+\newpage
+\input{chapters/08_evaluation.tex}
+\newpage
+\input{chapters/09_conclusion.tex}
+\newpage
+
+\bibliographystyle{ieeetr}
+\bibliography{references}
+
+\newpage
+\input{chapters/10_appendices.tex}
+
+\end{document}
