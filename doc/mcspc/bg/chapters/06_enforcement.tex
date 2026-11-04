@@ -6,8 +6,8 @@
 точка~\ref{sec:theory-compile-time} се изпълнява от конкретния конектор, а не от
 общата абстракция. Настоящата глава описва накратко платформата, установява
 откъде идва всяка част на заявката и проследява за всеки от седемте конектора как
-стойността достига драйвера. Номерата на редовете се отнасят към версия
-\code{a17f4e7} на хранилището с изходния код.
+стойността достига драйвера. Откъсите от изходния код са от версия \code{a17f4e7}. Многоточие в коментар
+означава пропуснат код, а коментарите на български са добавени за изложението.
 
 \subsection{Платформата}
 \label{sec:enf-platform}
@@ -75,12 +75,30 @@ auto rows = db.execute(q, input);
 \toprule
 \textbf{Част на заявката} & \textbf{Произход} & \textbf{Достъпна ли е за вход по време на изпълнение} \\
 \midrule
-Имена на таблици и колони & \code{constexpr} метаданни на указател към член (\code{details/member\_pointer.hpp:44}, \code{entity/property.hpp:19}) & Не \\
+Имена на таблици и колони & \code{constexpr} метаданни на свойството, достигнати през указател към член & Не \\
 Форма на заявката (избор, условие, съединение, подреждане) & типове в междинното представяне & Не \\
 Стойности & типизирани заместители \code{Placeholder<T>} и \code{ph<T, \_N>} & Да, само като данни \\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+Името на колоната не е променлива. Листинг~\ref{lst:enf-property} показва, че
+\code{column\_name} е статична функция, която връща аргумента на шаблона. В нея
+няма място, през което да влезе вход по време на изпълнение.
+
+\begin{lstlisting}[language=C++,caption={Името на колоната е аргумент на шаблона (съкратено)},label={lst:enf-property}]
+template <typename T, detail::string_literal Name>
+struct property
+{
+    using value_type = T;
+
+    [[nodiscard]] static constexpr std::string_view column_name() noexcept
+    {
+        return Name.view();
+    }
+    // ...
+};
+\end{lstlisting}
 
 Таблицата съдържа твърдение, което не следва автоматично от синтаксиса на
 листинга: че няма \textit{друг} път, по който стойност да достигне заявката. Това
@@ -99,17 +117,17 @@ auto rows = db.execute(q, input);
 \centering
 \caption{Как стойността достига драйвера при всеки конектор}
 \label{tab:enf-mechanisms}
-\begin{tabularx}{\textwidth}{L{2.1cm}L{4.0cm}L{2.9cm}Y}
+\begin{tabularx}{\textwidth}{L{2.6cm}L{6.6cm}Y}
 \toprule
-\textbf{Хранилище} & \textbf{Механизъм} & \textbf{Вид} & \textbf{Място в кода} \\
+\textbf{Хранилище} & \textbf{Механизъм} & \textbf{Вид} \\
 \midrule
-PostgreSQL & \code{PQexecParams} с масиви от параметри & свързване в сървъра & \code{postgresql\_live.hpp:552, 615} \\
-MySQL & подготвени заявки с \code{MYSQL\_BIND} & свързване в сървъра & \code{mysql\_live.hpp:316} \\
-SQLite & \code{sqlite3\_prepare\_v2} и \code{sqlite3\_bind\_*} & свързване & \code{sqlite\_db.hpp:62, 67, 72} \\
-Cassandra & \code{cass\_statement\_bind\_*} & свързване в сървъра & \code{cassandra\_live.hpp:200-221} \\
-Neo4j & параметри на Bolt чрез \code{neo4j\_map\_entry} & типизирани параметри на драйвера & \code{neo4j\_live.hpp:174} \\
-Redis & форми с форматиращ низ и \code{argv} на \code{hiredis} & кодиране на протоколно ниво & \code{redis\_live.hpp:109, 180, 257} \\
-MongoDB & построител на документи \code{bsoncxx} & структурно, без текстов език & \code{mongodb\_live.hpp:214-238} \\
+PostgreSQL & \code{PQexecParams} с масиви от параметри & свързване в сървъра \\
+MySQL & подготвени заявки с \code{MYSQL\_BIND} & свързване в сървъра \\
+SQLite & \code{sqlite3\_prepare\_v2} и \code{sqlite3\_bind\_*} & свързване \\
+Cassandra & \code{cass\_statement\_bind\_*} & свързване в сървъра \\
+Neo4j & параметри на Bolt чрез \code{neo4j\_map\_entry} & типизирани параметри на драйвера \\
+Redis & форми с форматиращ низ и \code{argv} на \code{hiredis} & кодиране на протоколно ниво \\
+MongoDB & построител на документи \code{bsoncxx} & структурно, без текстов език \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -119,6 +137,45 @@ MongoDB & построител на документи \code{bsoncxx} & стру
 разчита на кодирането на протокола. MongoDB изобщо не изгражда текст. Изводът е,
 че една и съща абстракция се защитава пред четири различни протокола и
 аргументът за сигурност трябва да е валиден поотделно за всеки от тях.
+
+\subsubsection{Хранилища със свързване на параметри}
+
+При PostgreSQL текстът на заявката и стойностите са отделни аргументи на една
+функция (листинг~\ref{lst:enf-postgres}). Текстът съдържа само маркери, а
+стойностите пътуват в собствен масив. Сървърът анализира текста, без изобщо да
+вижда стойностите като част от него.
+
+\begin{lstlisting}[language=C++,caption={PostgreSQL: текстът и стойностите са отделни аргументи},label={lst:enf-postgres}]
+std::vector<const char*> param_values;
+param_values.reserve(vals.size());
+for (const auto& v : vals)
+    param_values.push_back(v.c_str());
+
+PGresult* res = PQexecParams(
+    db.native(),
+    sql.c_str(),
+    static_cast<int>(vals.size()),
+    nullptr,  // let server infer param types
+    param_values.data(),
+    nullptr,  // text format
+    nullptr,  // text format
+    0         // result in text format
+);
+\end{lstlisting}
+
+При SQLite заявката се подготвя със \code{sqlite3\_prepare\_v2}, а за всеки тип
+стойност има отделно претоварване на \code{bind\_value}, което извиква
+съответната функция \code{sqlite3\_bind\_*}. Листинг~\ref{lst:enf-sqlite-bind}
+показва, че аргументите се свързват подред, от позиция 1 нататък.
+
+\begin{lstlisting}[language=C++,caption={SQLite: позиционно свързване на аргументите},label={lst:enf-sqlite-bind}]
+template <typename... Params>
+void bind_params([[maybe_unused]] sqlite3_stmt* stmt, Params&&... params)
+{
+    int slot = 1;
+    (bind_value(stmt, slot++, std::forward<Params>(params)), ...);
+}
+\end{lstlisting}
 
 \subsubsection{Хранилища без текстов език за заявки}
 
@@ -132,36 +189,89 @@ MongoDB & построител на документи \code{bsoncxx} & стру
 като допълнение към SQL инжекциите.
 
 Тази позиция е валидна само докато стойността не се интерпретира като оператор.
-При MongoDB конекторът добавя стойността като типизирано поле на документа
-(\code{mongodb\_live.hpp:214-238}), а не разчита произволен документ от входа.
+При MongoDB конекторът избира оператора от фиксиран списък според типа на
+правилото и добавя стойността като поле под него
+(листинг~\ref{lst:enf-mongo}). Той не разчита произволен документ от входа.
 Затова низ, който съдържа обект с оператора {\ttfamily \$ne}, остава низ.
+Стойност, която цялата се чете като число, се записва като число. Това променя
+типа на полето, но не и оператора.
+
+\begin{lstlisting}[language=C++,caption={MongoDB: операторът е от фиксиран списък, стойността е поле (съкратено)},label={lst:enf-mongo}]
+const std::string field = field_name_of(r.lhs_);
+const char* bson_op;
+if      (op_sv == "==") bson_op = "$eq";
+else if (op_sv == ">")  bson_op = "$gt";
+// ...
+else                    bson_op = "$eq";
+
+// ...
+bson_t child;
+BSON_APPEND_DOCUMENT_BEGIN(doc, field.c_str(), &child);
+// ...
+BSON_APPEND_UTF8(&child, bson_op, val.c_str());
+// ...
+bson_append_document_end(doc, &child);
+\end{lstlisting}
+
 
 \subsubsection{Neo4j: форматиране, което не е интерполация}
 
-Конекторът за Neo4j изгражда текста на Cypher чрез \code{std::format}, например
-шаблона \code{MATCH (n:\{\}) RETURN \{\}\{\}} (\code{neo4j\_live.hpp:261}). Това
-изглежда като сглобяване на низ и заслужава внимание. Вмъкваните полета обаче са
+Конекторът за Neo4j изгражда текста на Cypher чрез \code{std::format}
+(листинг~\ref{lst:enf-neo4j}). Това изглежда като сглобяване на низ и заслужава
+внимание. Вмъкваните полета обаче са
 етикетът на възела и проекцията, и двете идват от \code{constexpr} метаданни на
 типа, а не от входа. Стойностите по време на изпълнение се предават отделно,
-като типизирани параметри на Bolt (\code{neo4j\_live.hpp:174}). Форматирането на
+като типизирани параметри на Bolt, в отделната карта от листинга. Форматирането на
 константи от времето на компилация в шаблон не е интерполация на недоверени
 данни. Различието е съществено, но то трябва да се демонстрира, а не да се
 приема. Докъде е стигнала тази демонстрация е разгледано в
 точка~\ref{sec:eval-servers}.
 
+\begin{lstlisting}[language=C++,caption={Neo4j: шаблон от константи и отделна карта с параметри (съкратено)},label={lst:enf-neo4j}]
+const std::string cypher = std::format("MATCH (n:{}) RETURN {}{}",
+    table_name<Entity>(),
+    neo4j_live_detail::render_return(q.selected_properties()),
+    where_clause);
+return exec_select<projected_type<Response>, Response>(db, cypher, ctx.params);
+
+// ...
+for (const auto& [k, v] : params)
+{
+    entries.push_back(neo4j_map_entry(k.c_str(),
+        neo4j_string(v.c_str())));
+}
+\end{lstlisting}
+
 \subsubsection{Redis: форматиращият низ не е \texttt{printf}}
 
 Конекторът за Redis извиква \code{redisCommand} с форматиращ низ, в който
-аргументът е означен с {\ttfamily \%s} (\code{redis\_live.hpp:180}). Въпреки
+аргументът е означен с {\ttfamily \%s} (листинг~\ref{lst:enf-redis}). Въпреки
 сходството с \code{printf}, \code{hiredis} не замества текст. Всеки аргумент се
 кодира като отделен елемент на RESP с префикс за дължина, така че съдържанието му
-не може да бъде прочетено като протокол. Формата с \code{argv}
-(\code{redis\_live.hpp:257}) прави това изрично.
+не може да бъде прочетено като протокол. Формата с \code{argv} прави това
+изрично: всяка стойност е отделен елемент на масива.
+
+\begin{lstlisting}[language=C++,caption={Redis: стойностите са отделни аргументи (съкратено)},label={lst:enf-redis}]
+// четене: аргументът е отделен елемент на командата
+auto r = redis_live_detail::command(db.ctx_, "GET %s", key.c_str());
+
+// запис: HSET key f1 v1 f2 v2 ...
+std::vector<const char*> argv;
+argv.push_back("HSET");
+argv.push_back(key.c_str());
+for (std::size_t i = 0; i < col_names.size() && i < field_vals.size(); ++i)
+{
+    argv.push_back(col_names[i].c_str());
+    argv.push_back(field_vals[i].c_str());
+}
+void* raw = redisCommandArgv(db.ctx_,
+    static_cast<int>(argv.size()), argv.data(), nullptr);
+\end{lstlisting}
 
 \subsubsection{Управление на транзакции}
 
 Командите за транзакции изпращат литералните константи \code{BEGIN},
-\code{COMMIT} и \code{ROLLBACK} (\code{postgresql\_live.hpp:506, 518, 530}). Те
+\code{COMMIT} и \code{ROLLBACK}. Те
 не съдържат потребителски данни и не нарушават гаранцията.
 
 \subsection{Проверка на границата}
@@ -173,6 +283,7 @@ MongoDB & построител на документи \code{bsoncxx} & стру
 бил отрицателен (глава~\ref{sec:case-study}). Затова в библиотеката е добавена
 проверка, извиквана от всяка входна точка, която достига конектор.
 
+\noindent\begin{minipage}{\linewidth}
 \begin{lstlisting}[language=C++,caption={Проверката на границата (съкратено)},label={lst:enf-shape}]
 template <typename Query>
 constexpr void check_query_shape()
@@ -185,6 +296,7 @@ constexpr void check_query_shape()
             "orm: a literal operand reaches execution. ...");
 }
 \end{lstlisting}
+\end{minipage}
 
 Проверката в листинг~\ref{lst:enf-shape} има две части. Първата отхвърля всичко,
 което не е един от четирите вида заявки (\code{select\_query},
@@ -207,12 +319,26 @@ constexpr void check_query_shape()
 \label{sec:enf-residual}
 
 Анализът установи и един път, който е по-слаб от свързването, без да е
-използван. Функцията \code{to\_sql\_literal} (\code{mysql\_live.hpp:249})
-изгражда SQL чрез \textbf{екраниране} и вмъкване на стойността, вместо чрез
-свързване. Коментарът ѝ я описва като предназначена за заявки без подготвени
-изрази. Търсене в каталозите \code{lib} и \code{tests} намира само дефиницията и
-нито едно извикване. Следователно тя е мъртъв код и не засяга текущата гаранция.
+използван. Функцията \code{to\_sql\_literal} от конектора за MySQL
+(листинг~\ref{lst:enf-mysql-literal}) изгражда SQL чрез \textbf{екраниране} и
+вмъкване на стойността, вместо чрез свързване. Коментарът ѝ я описва като
+предназначена за заявки без подготвени изрази. Търсене в библиотеката и в
+тестовете намира само дефиницията и нито едно извикване. Следователно тя е мъртъв код и не засяга текущата гаранция.
 Тя е отбелязана, защото екранирането е по-слаб механизъм
 (точка~\ref{sec:theory-remedies}) и бъдещо използване би отслабило гаранцията за
 MySQL, без това да е видимо от интерфейса. Препоръката е функцията да бъде
 премахната или изрично изолирана.
+
+\begin{lstlisting}[language=C++,caption={Неизползваната функция с екраниране (съкратено)},label={lst:enf-mysql-literal}]
+// Build SQL with inline parameter substitution
+// (for queries without prepared statements)
+template <typename T>
+[[nodiscard]] std::string to_sql_literal(MYSQL* conn, const T& v)
+{
+    using D = std::decay_t<T>;
+    // ...
+    else if constexpr (std::is_same_v<D, std::string>)
+        return "'" + escape_string(conn, v) + "'";
+    // ...
+}
+\end{lstlisting}

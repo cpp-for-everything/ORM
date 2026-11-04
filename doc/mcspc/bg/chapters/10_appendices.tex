@@ -22,38 +22,46 @@ ctest --test-dir build-security -L security --output-on-failure
 Компилационните тестове изискват GCC или Clang. За изпълнение с Clang
 променливите на средата \code{CC} и \code{CXX} се задават съответно на
 \code{clang-18} и \code{clang++-18} преди конфигурирането. Резултатите се записват
-в \code{security/evidence/}. Описание на набора има в \code{security/README.md}.
+в хранилището, заедно с изходния код на набора.
 
 Програмите за сървърните хранилища се изграждат, когато съответният конектор е
 включен, например с \code{-DORM\_ENABLE\_POSTGRESQL=ON}, и изискват работещ сървър,
 достъпен през променливите \code{ORM\_*} на интеграционните тестове. Най-лесният
-начин е образът \code{test-all} с услугите от \code{docker/docker-compose.yml}, както
-го изпълнява работният процес \code{Docker Integration Tests}. Той качва
-каталога \code{security/evidence/} като артефакт \code{security-evidence}.
+начин е образът \code{test-all} с услугите на Docker Compose, както го изпълнява
+работният процес \code{Docker Integration Tests}. Той качва записаните резултати
+като артефакт \code{security-evidence}.
 
-\subsection*{Приложение Б. Файлове на набора за оценка}
+\subsection*{Приложение Б. Състав на набора за оценка}
 
 \begin{table}[H]
 \centering
-\caption{Съдържание на каталога \code{security}}
+\caption{Части на набора за оценка}
 \label{tab:app-files}
 \begin{tabularx}{\textwidth}{L{5.4cm}Y}
 \toprule
-\textbf{Път} & \textbf{Съдържание} \\
+\textbf{Част} & \textbf{Съдържание} \\
 \midrule
-\code{compile\_fail/} & 18 компилационни теста и общата им постановка \\
-\code{cmake/check\_compile.cmake} & проверка на изхода и на диагностиката на всеки компилационен тест \\
-\code{corpus/payloads.csv} & 66 полезни товара с колони за идентификатор, клас, диалект, техника, текст, очакван ефект и източник \\
-\code{corpus/sources.bib} & 11 източника на корпуса \\
-\code{runtime/differential\_sqlite.cpp} & диференциалният тест със SQLite \\
-\code{runtime/differential\_postgresql.cpp} и четири съседни & диференциалните тестове със сървърите на PostgreSQL, MySQL, MongoDB, Redis и Cassandra \\
-\code{runtime/differential\_common.hpp} & общият драйвер на сървърните тестове: контрол, оракул, резюме и правило за неуспех \\
-\code{runtime/test\_injection\_sqlite.cpp} & четири именувани теста на пътя през заместител \\
-\code{probes/} & двете програми, възпроизвеждащи пропуска преди поправката \\
-\code{evidence/} & всички записани резултати \\
+компилационни тестове & 18 програми и общата им постановка \\
+проверка на компилационните тестове & проверка на изхода и на диагностиката на всеки компилационен тест \\
+корпус & 66 полезни товара с колони за идентификатор, клас, диалект, техника, текст, очакван ефект и източник \\
+източници на корпуса & 11 публични източника \\
+тест със SQLite & диференциалният тест със SQLite \\
+тестове със сървъри & пет програми: диференциалните тестове със сървърите на PostgreSQL, MySQL, MongoDB, Redis и Cassandra \\
+общ драйвер & общият драйвер на сървърните тестове: контрол, оракул, резюме и правило за неуспех \\
+именувани тестове & четири именувани теста на пътя през заместител \\
+програми за възпроизвеждане & двете програми, възпроизвеждащи пропуска преди поправката \\
+записани резултати & резюмета, записи по полезни товари и диагностики на компилаторите \\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+Листинг~\ref{lst:app-corpus} показва вида на корпуса.
+
+\begin{lstlisting}[language={},deletekeywords={orm},caption={Заглавен ред и първи запис на корпуса (записът е пренесен)},label={lst:app-corpus}]
+"id","class","dialect","technique","payload","expected_effect","source_id"
+"SQL-001","sql","generic","tautology","' OR '1'='1'--",
+    "bypasses WHERE clause, returns all rows","patt_sqli"
+\end{lstlisting}
 
 \subsection*{Приложение В. Терминологичен речник}
 
