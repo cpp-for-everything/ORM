@@ -26,12 +26,17 @@ SQLite, Cassandra, MongoDB, Neo4j и Redis.
 запазено успешно изпълнение на 314-те съществуващи и 23-те нови теста. При SQLite
 наивната заявка беше компрометирана от 4 от 22 приложими полезни товара,
 включително с извличане на съхранена идентификационна информация, а библиотеката
-от нито един.
+от нито един. Тестът беше изпълнен и срещу работещи сървъри на PostgreSQL, MySQL,
+MongoDB, Redis и Cassandra в система за непрекъсната интеграция. Общо за шестте
+хранилища нито един от 92-та приложими полезни товара не е имал ефект през
+библиотеката. Наивният път е компрометиран от по 2 полезни товара при
+PostgreSQL, MySQL, MongoDB и Redis. При Cassandra той не е компрометиран от нито
+един и сравнението е неубедително. Neo4j не е измерен.
 
 Приносите на работата са аргумент за предотвратяване на инжекциите чрез
 конструиране по време на компилация, разширен извън SQL; възпроизводим набор за
 оценка с корпус с посочени източници; и открит и затворен пропуск в гаранцията.
-Измерването при сървърните хранилища остава бъдеща работа.
+Измерването при Neo4j остава бъдеща работа.
 
 \bigskip
 \noindent\textbf{Ключови думи:} инжекционни атаки, предотвратяване на
@@ -64,12 +69,17 @@ placeholder was accepted but never bound, and the query silently returned wrong
 results. The gap is closed by a compile-time check at all seven entry points,
 with all 314 existing and 23 new tests passing. On SQLite the vulnerable query
 was compromised by 4 of 22 applicable payloads, including the theft of a stored
-credential, and the library by none.
+credential, and the library by none. The test was then run against live servers
+of PostgreSQL, MySQL, MongoDB, Redis and Cassandra in a continuous integration
+system. Across the six stores, none of the 92 applicable payloads had an effect
+through the library. The naive path was compromised by 2 payloads each on
+PostgreSQL, MySQL, MongoDB and Redis. On Cassandra it was never compromised, so
+the comparison is inconclusive. Neo4j was not measured.
 
 The contributions are an argument for preventing injection by compile-time
 construction, extended beyond SQL; a reproducible evaluation suite with a sourced
-corpus; and a gap in the guarantee, found and closed. Measurement on the server
-stores remains future work.
+corpus; and a gap in the guarantee, found and closed. Measurement on Neo4j
+remains future work.
 
 \bigskip
 \noindent\textbf{Keywords:} injection attacks, cybercrime prevention, secure by

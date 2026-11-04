@@ -185,8 +185,25 @@ Stated so the model is falsifiable. The suite lives in
    applicable payloads, the naive query compromised by 4, the library by 0
    (`security/evidence/differential_sqlite.csv`). The naive path must be
    compromised at least once or the test fails, because otherwise the comparison
-   proves nothing. **Pending** for the server backends, which run through the
-   dockerised integration stack.
+   proves nothing. **Done for five server backends**, in CI against the
+   dockerised stack, with the failure rule reversed on purpose: a server
+   harness fails only if a payload has an effect through the library.
+
+   | Backend (server) | Applicable | Naive compromised | Library with any effect | Conclusive |
+   |-|-|-|-|-|
+   | PostgreSQL 15.19 | 22 | 2 | 0 | yes |
+   | MySQL (MariaDB 10.11.19) | 24 | 2 | 0 | yes |
+   | MongoDB 7.0.45 | 15 | 2 | 0 | yes |
+   | Redis 7.2.17 | 5 | 2 | 0 | yes |
+   | Cassandra 4.1.12 | 4 | 0 | 0 | **no** |
+
+   Evidence: `security/evidence/differential_<backend>.csv` and
+   `differential_<backend>_summary.txt`. Cassandra is inconclusive because the
+   naive path was never compromised. **Not measured:** Neo4j (6 payloads), because
+   the CI image has no `libneo4j-client` and the compose file has no Neo4j
+   service (`security/evidence/differential_neo4j_summary.txt`). The MongoDB naive
+   path uses five constructions and keeps the most severe outcome, because the
+   corpus mixes payloads for different contexts.
 3. **A payload corpus per backend, every payload sourced. Done:** 66 payloads
    from 11 sources (`security/corpus/`). Three are published templates with an
    unfilled slot, and are run exactly as published.

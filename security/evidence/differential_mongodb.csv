@@ -1,0 +1,16 @@
+id,dialect,technique,template,naive_outcome,naive_rows,orm_outcome,orm_rows
+NOSQL-001,mongodb,operator,no,SYNTAX_ALTERED,0,NO_EFFECT,0
+NOSQL-002,mongodb,operator,no,SYNTAX_ALTERED,0,NO_EFFECT,0
+NOSQL-003,mongodb,operator,no,SYNTAX_ALTERED,0,NO_EFFECT,0
+NOSQL-004,mongodb,operator,no,SYNTAX_ALTERED,0,NO_EFFECT,0
+NOSQL-005,mongodb,operator,no,SYNTAX_ALTERED,0,NO_EFFECT,0
+NOSQL-006,mongodb,operator,no,SYNTAX_ALTERED,0,NO_EFFECT,0
+NOSQL-007,mongodb,operator,no,COMPROMISED_ROWS,3,NO_EFFECT,0
+NOSQL-008,mongodb,operator,no,SYNTAX_ALTERED,0,NO_EFFECT,0
+NOSQL-009,mongodb,operator,no,SYNTAX_ALTERED,0,NO_EFFECT,0
+NOSQL-010,mongodb,operator,no,SYNTAX_ALTERED,0,NO_EFFECT,0
+NOSQL-011,mongodb,operator,no,SYNTAX_ALTERED,0,NO_EFFECT,0
+NOSQL-012,mongodb,operator,no,SYNTAX_ALTERED,0,NO_EFFECT,0
+NOSQL-013,mongodb,operator,no,SYNTAX_ALTERED,0,NO_EFFECT,0
+NOSQL-014,mongodb,operator,no,COMPROMISED_EXEC,0,NO_EFFECT,0
+NOSQL-015,mongodb,operator,no,SYNTAX_ALTERED,0,NO_EFFECT,0

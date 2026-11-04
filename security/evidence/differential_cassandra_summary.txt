@@ -1,0 +1,13 @@
+backend: cassandra
+server: Cassandra 4.1.12
+naive path: CQL built by concatenation and sent as an unprepared statement, one statement per request
+control (benign lookup of 1): naive rows 1, library rows 1
+applicable payloads: 4
+naive compromised: 0
+orm with any effect: 0
+
+naive NO_EFFECT: 1
+naive SYNTAX_ALTERED: 3
+orm   NO_EFFECT: 4
+
+comparison inconclusive for this backend: the naive path was never compromised

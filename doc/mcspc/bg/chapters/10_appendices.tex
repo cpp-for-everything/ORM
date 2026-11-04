@@ -21,6 +21,13 @@ ctest --test-dir build-security -L security --output-on-failure
 \code{clang-18} и \code{clang++-18} преди конфигурирането. Резултатите се записват
 в \code{security/evidence/}. Описание на набора има в \code{security/README.md}.
 
+Програмите за сървърните хранилища се изграждат, когато съответният конектор е
+включен, например с \code{-DORM\_ENABLE\_POSTGRESQL=ON}, и изискват работещ сървър,
+достъпен през променливите \code{ORM\_*} на интеграционните тестове. Най-лесният
+начин е образът \code{test-all} с услугите от \code{docker/docker-compose.yml}, както
+го изпълнява работният процес \code{Docker Integration Tests}. Той качва
+каталога \code{security/evidence/} като артефакт \code{security-evidence}.
+
 \subsection*{Приложение Б. Файлове на набора за оценка}
 
 \begin{table}[H]
@@ -36,6 +43,8 @@ ctest --test-dir build-security -L security --output-on-failure
 \code{corpus/payloads.csv} & 66 полезни товара с колони за идентификатор, клас, диалект, техника, текст, очакван ефект и източник \\
 \code{corpus/sources.bib} & 11 източника на корпуса \\
 \code{runtime/differential\_sqlite.cpp} & диференциалният тест със SQLite \\
+\code{runtime/differential\_postgresql.cpp} и четири съседни & диференциалните тестове със сървърите на PostgreSQL, MySQL, MongoDB, Redis и Cassandra \\
+\code{runtime/differential\_common.hpp} & общият драйвер на сървърните тестове: контрол, оракул, резюме и правило за неуспех \\
 \code{runtime/test\_injection\_sqlite.cpp} & четири именувани теста на пътя през заместител \\
 \code{probes/} & двете програми, възпроизвеждащи пропуска преди поправката \\
 \code{evidence/} & всички записани резултати \\

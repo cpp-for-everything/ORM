@@ -110,6 +110,26 @@ The claims above are tested, not only argued. See [`security/`](security/README.
 - **A differential test.** Every applicable payload from a sourced corpus goes
   through a deliberately naive string built query and through the library. On
   SQLite, 22 payloads: the naive query was compromised by 4, the library by 0.
+- **The same differential against live servers**, run in CI in the `test-all`
+  image against the compose services. Each backend has a naive path that is the
+  realistic vulnerable construction for that store.
+
+  | Backend (server) | Applicable | Naive compromised | Library with any effect | Conclusive |
+  |-|-|-|-|-|
+  | PostgreSQL 15.19 | 22 | 2 | 0 | yes |
+  | MySQL (MariaDB 10.11.19) | 24 | 2 | 0 | yes |
+  | MongoDB 7.0.45 | 15 | 2 | 0 | yes |
+  | Redis 7.2.17 | 5 | 2 | 0 | yes |
+  | Cassandra 4.1.12 | 4 | 0 | 0 | **no** |
+  | Neo4j | 6 | not measured | not measured | no |
+
+  Numbers are from `security/evidence/differential_<backend>_summary.txt`. On
+  Cassandra the naive path was never compromised, so the library result there
+  proves nothing by comparison. Neo4j is not measured: the CI image has no
+  `libneo4j-client` and the compose file has no Neo4j service. For both, the
+  guarantee rests on the source analysis above. The oracle sees effects only and
+  the naive constructions are the author's choice, so the naive counts are lower
+  bounds.
 
 The suite runs in CI with `ORM_ENABLE_SECURITY=ON`.
 
