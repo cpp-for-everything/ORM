@@ -374,6 +374,7 @@ RUN mkdir -p build && cd build \
         -DORM_ENABLE_CASSANDRA=ON \
         -DORM_ENABLE_NEO4J=OFF \
         -DORM_ENABLE_SQLITE=ON \
+        -DORM_ENABLE_SECURITY=ON \
     && cmake --build . -j$(nproc)
 
 CMD ["bash", "-c", "cd build && ctest --output-on-failure"]

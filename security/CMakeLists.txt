@@ -88,3 +88,27 @@ if(TARGET orm::sqlite)
 else()
     message(STATUS "ORM security: runtime tests need ORM_ENABLE_SQLITE=ON, skipped.")
 endif()
+
+# ── 3. differential tests against live servers ───────────────────────────────
+#  One harness per backend, registered only when its live connector was built.
+#  They need a running server, reached through the same ORM_<BACKEND>_* variables
+#  as tests/integration. docker/docker-compose.yml provides them in CI.
+#  A server harness fails only when a payload has an effect through the library.
+#  If the naive path is never compromised it passes and the summary says the
+#  comparison is inconclusive.
+foreach(_b postgresql mysql mongodb redis cassandra)
+    if(TARGET orm::${_b}_live)
+        add_executable(security_differential_${_b} runtime/differential_${_b}.cpp)
+        target_link_libraries(security_differential_${_b} PRIVATE orm::${_b}_live)
+        add_test(NAME security.differential.${_b}
+            COMMAND security_differential_${_b}
+                "${CMAKE_CURRENT_SOURCE_DIR}/corpus/payloads.csv"
+                "${ORM_SEC_EVIDENCE}/differential_${_b}.csv"
+                "${ORM_SEC_EVIDENCE}/differential_${_b}_summary.txt")
+        set_tests_properties(security.differential.${_b} PROPERTIES
+            LABELS "security;${_b};differential;server"
+            TIMEOUT 900)
+    else()
+        message(STATUS "ORM security: ${_b} differential skipped, orm::${_b}_live is not built.")
+    endif()
+endforeach()

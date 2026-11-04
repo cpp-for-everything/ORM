@@ -61,7 +61,9 @@ jobs:
       - name: Run ctest in test-all
         run: |
           set +e
-          docker compose -f docker/docker-compose.yml run --rm -T test-all \
+          mkdir -p security/evidence
+          docker compose -f docker/docker-compose.yml run --rm -T \
+            -v "${GITHUB_WORKSPACE}/security/evidence:/workspace/security/evidence" test-all \
             bash -lc 'echo "----- compiler -----"; g++ --version; echo "----- ctest -----"; cd /workspace/build && ctest --output-on-failure' \
             | tee docker-ctest.log
           exit_code=${PIPESTATUS[0]}
@@ -91,6 +93,14 @@ jobs:
             docker-logs.txt
             docker-ctest.log
             docker-compose-run-exit.txt
+
+      - name: Upload security evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-evidence
+          path: security/evidence/
+          if-no-files-found: warn
 
       - name: Shutdown services
         if: always()
