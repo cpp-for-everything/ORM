@@ -15,7 +15,11 @@
 #include <unordered_map>
 #include <stdexcept>
 #include <format>
+#include <cerrno>
 #include <cstdint>
+#include <cstring>
+#include <deque>
+#include <variant>
 
 namespace orm {
 
@@ -84,15 +88,21 @@ namespace orm {
     // ── Cypher rendering helpers ───────────────────────────────────────────────
     namespace neo4j_live_detail {
 
+        // A parameter with the type it was declared with. Cypher `=` does not
+        // convert: 1 = "1" is false, so an int bound as text never matches.
+        using scalar_value = std::variant<std::int64_t, double, bool, std::string>;
+        using param_value  = std::variant<scalar_value, std::vector<scalar_value>>;
+        using param_map    = std::unordered_map<std::string, param_value>;
+
         struct CypherCtx
         {
-            int                                          next_param{1};
-            std::unordered_map<std::string, std::string> params;
+            int       next_param{1};
+            param_map params;
 
-            [[nodiscard]] std::string add_param(std::string val)
+            [[nodiscard]] std::string add_param()
             {
                 std::string key = "p" + std::to_string(next_param++);
-                params[key] = std::move(val);
+                params[key] = param_value{};
                 return "$" + key;
             }
         };
@@ -118,25 +128,51 @@ namespace orm {
             else if constexpr (detail::is_raw_mem_ptr<T>)
                 return "n." + std::string(detail::column_name_of<T>());
             else if constexpr (is_placeholder_v<T>)
-                return ctx.add_param("?");
+                return ctx.add_param();
             else
                 return "NULL";
+        }
+
+        // ORM operator symbols to Cypher.
+        [[nodiscard]] constexpr std::string_view cypher_op(std::string_view op) noexcept
+        {
+            if (op == "==") return "=";
+            if (op == "!=") return "<>";
+            if (op == "&&") return "AND";
+            if (op == "||") return "OR";
+            return op;
         }
 
         template <typename T1, detail::string_literal Op, typename T2>
         [[nodiscard]] std::string render_where_rule(const Rule<T1, Op, T2>& r, CypherCtx& ctx)
         {
-            if constexpr (is_rule<T1> && is_rule<T2>)
+            constexpr std::string_view op = static_cast<std::string_view>(Op);
+            if constexpr (is_list_placeholder_v<T2>)
             {
-                return render_where_rule(r.lhs_, ctx)
-                    + " " + std::string(static_cast<std::string_view>(Op)) + " "
-                    + render_where_rule(r.rhs_, ctx);
+                // The list is one Bolt value: `n.col IN $p1`. Its length never
+                // touches the statement text.
+                std::string lhs = render_leaf(r.lhs_, ctx);
+                std::string rhs = ctx.add_param();
+                return (op == "NOT IN" ? "NOT " : "") + lhs + " IN " + rhs;
+            }
+            else if constexpr (std::is_same_v<T2, std::nullptr_t>)
+            {
+                return render_leaf(r.lhs_, ctx)
+                    + (op == "==" ? " IS NULL" : " IS NOT NULL");
+            }
+            else if constexpr (is_rule<T1> && is_rule<T2>)
+            {
+                // Two statements on purpose: $pN is assigned as a side effect and
+                // the operands of + are unsequenced.
+                std::string lhs = render_where_rule(r.lhs_, ctx);
+                std::string rhs = render_where_rule(r.rhs_, ctx);
+                return lhs + " " + std::string(cypher_op(op)) + " " + rhs;
             }
             else
             {
-                return render_leaf(r.lhs_, ctx)
-                    + " " + std::string(static_cast<std::string_view>(Op)) + " "
-                    + render_leaf(r.rhs_, ctx);
+                std::string lhs = render_leaf(r.lhs_, ctx);
+                std::string rhs = render_leaf(r.rhs_, ctx);
+                return lhs + " " + std::string(cypher_op(op)) + " " + rhs;
             }
         }
 
@@ -159,30 +195,94 @@ namespace orm {
         }
 
         template <typename T>
-        [[nodiscard]] std::string stringify(const T& v)
+        [[nodiscard]] scalar_value to_scalar(const T& v)
         {
             using D = std::decay_t<T>;
-            if constexpr (std::is_arithmetic_v<D>)             return std::to_string(v);
-            else if constexpr (std::is_same_v<D, std::string>) return v;
+            if constexpr (std::is_same_v<D, bool>)                 return scalar_value{v};
+            else if constexpr (std::is_integral_v<D>)              return scalar_value{static_cast<std::int64_t>(v)};
+            else if constexpr (std::is_floating_point_v<D>)        return scalar_value{static_cast<double>(v)};
+            else if constexpr (std::is_same_v<D, std::string>)     return scalar_value{v};
+            else if constexpr (std::is_same_v<D, std::u8string>)
+                return scalar_value{std::string(reinterpret_cast<const char*>(v.data()), v.size())};
             else if constexpr (std::is_same_v<D, const char*> || std::is_same_v<D, char*>)
-                return std::string(v);
-            else return {};
+                return scalar_value{std::string(v)};
+            else
+                static_assert(sizeof(D) == 0, "orm: this type cannot be bound to a Neo4j parameter");
         }
 
-        // Build a neo4j_map_entry array from the CypherCtx param map.
-        // Returns the entries vector (caller must keep strings alive).
-        [[nodiscard]] inline std::vector<neo4j_map_entry_t> build_map_entries(
-            const std::unordered_map<std::string, std::string>& params)
+        template <typename T>
+        [[nodiscard]] param_value to_param(const T& v)
         {
-            std::vector<neo4j_map_entry_t> entries;
-            entries.reserve(params.size());
-            for (const auto& [k, v] : params)
+            if constexpr (detail::is_std_vector_v<T>)
             {
-                entries.push_back(neo4j_map_entry(k.c_str(),
-                    neo4j_string(v.c_str())));
+                std::vector<scalar_value> out;
+                out.reserve(v.size());
+                for (const auto& element : v)
+                    out.push_back(to_scalar(element));
+                return param_value{std::move(out)};
             }
-            return entries;
+            else
+                return param_value{to_scalar(v)};
         }
+
+        // Fills $p1, $p2, ... in argument order.
+        template <typename... Params>
+        void fill_params(CypherCtx& ctx, const Params&... params)
+        {
+            int pi = 1;
+            auto one = [&](const auto& v)
+            {
+                std::string key = "p" + std::to_string(pi++);
+                if (ctx.params.count(key))
+                    ctx.params[key] = to_param(v);
+            };
+            (one(params), ...);
+        }
+
+        [[nodiscard]] inline neo4j_value_t to_bolt(const scalar_value& v)
+        {
+            return std::visit([]<typename V>(const V& x) -> neo4j_value_t
+            {
+                if constexpr (std::is_same_v<V, std::int64_t>)  return neo4j_int(x);
+                else if constexpr (std::is_same_v<V, double>)   return neo4j_float(x);
+                else if constexpr (std::is_same_v<V, bool>)     return neo4j_bool(x);
+                else return neo4j_ustring(x.data(), static_cast<unsigned int>(x.size()));
+            }, v);
+        }
+
+        // The Bolt map of one statement. It points into the param_map and into its
+        // own list storage, so it must outlive neo4j_run. A deque, because each
+        // list value keeps a pointer to its array.
+        struct bolt_params
+        {
+            std::deque<std::vector<neo4j_value_t>> lists;
+            std::vector<neo4j_map_entry_t>         entries;
+
+            explicit bolt_params(const param_map& params)
+            {
+                entries.reserve(params.size());
+                for (const auto& [k, v] : params)
+                {
+                    neo4j_value_t value;
+                    if (const auto* list = std::get_if<std::vector<scalar_value>>(&v))
+                    {
+                        auto& array = lists.emplace_back();
+                        array.reserve(list->size());
+                        for (const auto& element : *list)
+                            array.push_back(to_bolt(element));
+                        value = neo4j_list(array.data(), static_cast<unsigned int>(array.size()));
+                    }
+                    else
+                        value = to_bolt(std::get<scalar_value>(v));
+                    entries.push_back(neo4j_map_entry(k.c_str(), value));
+                }
+            }
+
+            [[nodiscard]] neo4j_value_t value() const
+            {
+                return neo4j_map(entries.data(), static_cast<unsigned int>(entries.size()));
+            }
+        };
 
         // Convert a neo4j_value_t to a C++ typed value.
         template <typename T>
@@ -238,6 +338,7 @@ namespace orm {
     struct connector_trait<Neo4jLiveDB>
     {
         using supports_transactions = void;
+        using supports_list_placeholder = void;
 
         template <typename T>
         struct wire_type { using type = T; };
@@ -258,10 +359,10 @@ namespace orm {
             using Entity = typename Response::template orm_type<0>::table_type;
             neo4j_live_detail::CypherCtx ctx;
             const std::string where_clause = neo4j_live_detail::render_where(q.where_clauses(), ctx);
-            const std::string cypher = std::format("MATCH (n:{}) RETURN {}{}",
+            const std::string cypher = std::format("MATCH (n:{}){} RETURN {}",
                 table_name<Entity>(),
-                neo4j_live_detail::render_return(q.selected_properties()),
-                where_clause);
+                where_clause,
+                neo4j_live_detail::render_return(q.selected_properties()));
             return exec_select<projected_type<Response>, Response>(db, cypher, ctx.params);
         }
 
@@ -278,18 +379,11 @@ namespace orm {
             using Entity = typename Response::template orm_type<0>::table_type;
             neo4j_live_detail::CypherCtx ctx;
             const std::string where_clause = neo4j_live_detail::render_where(q.where_clauses(), ctx);
-            const std::string cypher = std::format("MATCH (n:{}) RETURN {}{}",
+            const std::string cypher = std::format("MATCH (n:{}){} RETURN {}",
                 table_name<Entity>(),
-                neo4j_live_detail::render_return(q.selected_properties()),
-                where_clause);
-            // Substitute placeholder values into param map.
-            int pi = 1;
-            ([&](auto&& v)
-            {
-                std::string key = "p" + std::to_string(pi++);
-                if (ctx.params.count(key))
-                    ctx.params[key] = neo4j_live_detail::stringify(v);
-            }(std::forward<Params>(params)), ...);
+                where_clause,
+                neo4j_live_detail::render_return(q.selected_properties()));
+            neo4j_live_detail::fill_params(ctx, params...);
             return exec_select<projected_type<Response>, Response>(db, cypher, ctx.params);
         }
 
@@ -320,14 +414,14 @@ namespace orm {
                     std::string(q.signature().template get<Is>().column_name()))), ...);
             }(std::make_index_sequence<Properties::size>{});
 
-            std::unordered_map<std::string, std::string> param_map;
+            neo4j_live_detail::param_map param_map;
             std::size_t pi = 1;
             ([&](auto&& v)
             {
                 if (pi <= col_names.size())
                 {
                     std::string key = "p" + std::to_string(pi);
-                    param_map[key] = neo4j_live_detail::stringify(v);
+                    param_map[key] = neo4j_live_detail::to_param(v);
                 }
                 ++pi;
             }(std::forward<Params>(params)), ...);
@@ -353,7 +447,7 @@ namespace orm {
         {
             neo4j_live_detail::CypherCtx ctx;
             const std::string where_clause = neo4j_live_detail::render_where(q.wheres(), ctx);
-            const std::string cypher = std::format("MATCH (n:{}){}DETACH DELETE n",
+            const std::string cypher = std::format("MATCH (n:{}){} DETACH DELETE n",
                 table_name<Table>(), where_clause);
             exec_no_result(db, cypher, ctx.params);
             return result<std::tuple<>>{};
@@ -366,15 +460,9 @@ namespace orm {
         {
             neo4j_live_detail::CypherCtx ctx;
             const std::string where_clause = neo4j_live_detail::render_where(q.wheres(), ctx);
-            const std::string cypher = std::format("MATCH (n:{}){}DETACH DELETE n",
+            const std::string cypher = std::format("MATCH (n:{}){} DETACH DELETE n",
                 table_name<Table>(), where_clause);
-            int pi = 1;
-            ([&](auto&& v)
-            {
-                std::string key = "p" + std::to_string(pi++);
-                if (ctx.params.count(key))
-                    ctx.params[key] = neo4j_live_detail::stringify(v);
-            }(std::forward<Params>(params)), ...);
+            neo4j_live_detail::fill_params(ctx, params...);
             exec_no_result(db, cypher, ctx.params);
             return result<std::tuple<>>{};
         }
@@ -383,15 +471,11 @@ namespace orm {
         static void exec_no_result(
             Neo4jLiveDB& db,
             const std::string& cypher,
-            const std::unordered_map<std::string, std::string>& params)
+            const neo4j_live_detail::param_map& params)
         {
-            auto entries = neo4j_live_detail::build_map_entries(params);
-            neo4j_value_t params_val = entries.empty()
-                ? neo4j_map(nullptr, 0)
-                : neo4j_map(entries.data(), static_cast<unsigned int>(entries.size()));
-
+            const neo4j_live_detail::bolt_params bolt(params);
             neo4j_result_stream_t* stream = neo4j_run(
-                db.conn_, cypher.c_str(), params_val);
+                db.conn_, cypher.c_str(), bolt.value());
             if (!stream)
                 throw std::runtime_error(std::format("neo4j_run failed: {}", strerror(errno)));
 
@@ -409,16 +493,12 @@ namespace orm {
         static auto exec_select(
             Neo4jLiveDB& db,
             const std::string& cypher,
-            const std::unordered_map<std::string, std::string>& params)
+            const neo4j_live_detail::param_map& params)
             -> result<Row, Response>
         {
-            auto entries = neo4j_live_detail::build_map_entries(params);
-            neo4j_value_t params_val = entries.empty()
-                ? neo4j_map(nullptr, 0)
-                : neo4j_map(entries.data(), static_cast<unsigned int>(entries.size()));
-
+            const neo4j_live_detail::bolt_params bolt(params);
             neo4j_result_stream_t* stream = neo4j_run(
-                db.conn_, cypher.c_str(), params_val);
+                db.conn_, cypher.c_str(), bolt.value());
             if (!stream)
                 throw std::runtime_error(std::format("neo4j_run failed: {}", strerror(errno)));
 

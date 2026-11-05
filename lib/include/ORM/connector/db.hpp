@@ -29,6 +29,7 @@ namespace orm {
         auto operator<<(Query q)
         {
             detail::check_query_shape<Query>();
+            detail::check_no_list<Query>();
             if constexpr (is_select_query<Query>)
             {
                 if constexpr (decltype(q.join_clauses())::size > 0)
@@ -47,6 +48,7 @@ namespace orm {
         auto execute(Query q, Params&&... params)
         {
             detail::check_query_params<Query, Params...>();
+            detail::check_list_capability<DB, Query>();
             return connector_trait<DB>::execute(
                 *conn_, std::move(q), std::forward<Params>(params)...);
         }
@@ -57,6 +59,7 @@ namespace orm {
         auto find_one(Query q)
         {
             detail::check_query_shape<Query>();
+            detail::check_no_list<Query>();
             auto res = connector_trait<DB>::execute(*conn_, std::move(q));
             using Row = typename decltype(res)::value_type;
             if (res.empty())

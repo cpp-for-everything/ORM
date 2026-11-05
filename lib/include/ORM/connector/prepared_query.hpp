@@ -29,6 +29,7 @@ namespace orm {
         auto execute(Params&&... params) const
         {
             detail::check_query_params<Query, Params...>();
+            detail::check_list_capability<DB, Query>();
             return connector_trait<DB>::execute(
                 conn_, query_, std::forward<Params>(params)...);
         }
@@ -37,6 +38,7 @@ namespace orm {
         auto execute() const
         {
             detail::check_query_shape<Query>();
+            detail::check_no_list<Query>();
             return connector_trait<DB>::execute(conn_, query_);
         }
 

@@ -163,6 +163,27 @@ namespace
         const bool tripped = sw.ms() >= kExecGuardMs;
         return classify(tripped, !(before == snapshot(admin)), rows, errored);
     }
+
+    Run run_library_list(PGconn* admin, orm::db<orm::PostgreSQLLiveDB>& db, const std::string& payload)
+    {
+        fresh(admin);
+        const Snapshot before = snapshot(admin);
+        constexpr auto q = orm::select(orm::field<&Item::id>, orm::field<&Item::name>)
+                               .where(orm::in(orm::field<&Item::name>, orm::PlaceholderList<std::string>{}));
+        long rows = 0;
+        bool errored = false;
+        const Stopwatch sw;
+        try
+        {
+            rows = static_cast<long>(db.execute(q, as_list(payload)).to_vector().size());
+        }
+        catch (const std::exception&)
+        {
+            errored = true;
+        }
+        const bool tripped = sw.ms() >= kExecGuardMs;
+        return classify(tripped, !(before == snapshot(admin)), rows, errored);
+    }
 } // namespace
 
 int main(int argc, char** argv)
@@ -190,6 +211,7 @@ int main(int argc, char** argv)
         };
         b.naive   = [&](const std::string& p) { return run_naive(admin.c, naive.c, p); };
         b.library = [&](const std::string& p) { return run_library(admin.c, db, p); };
+        b.library_list = [&](const std::string& p) { return run_library_list(admin.c, db, p); };
         return run_differential(argc, argv, b);
     }
     catch (const std::exception& e)

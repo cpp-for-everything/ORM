@@ -234,6 +234,27 @@ namespace
         return classify(tripped, !(before == snapshot(cl)), rows, errored);
     }
 
+    Run run_library_list(mongoc_client_t* cl, orm::db<orm::MongoDBLive>& db, const std::string& payload)
+    {
+        fresh(cl);
+        const Snapshot before = snapshot(cl);
+        constexpr auto q = orm::select(orm::field<&Item::id>, orm::field<&Item::name>)
+                               .where(orm::in(orm::field<&Item::name>, orm::PlaceholderList<std::string>{}));
+        long rows = 0;
+        bool errored = false;
+        const Stopwatch sw;
+        try
+        {
+            rows = static_cast<long>(db.execute(q, as_list(payload)).to_vector().size());
+        }
+        catch (const std::exception&)
+        {
+            errored = true;
+        }
+        const bool tripped = sw.ms() >= kExecGuardMs;
+        return classify(tripped, !(before == snapshot(cl)), rows, errored);
+    }
+
     std::string server_version(mongoc_client_t* cl)
     {
         bson_error_t err;
@@ -274,6 +295,7 @@ int main(int argc, char** argv)
         b.applies    = [](const Payload& p) { return p.cls == "nosql"; };
         b.naive      = [&](const std::string& p) { return run_naive(cl, p); };
         b.library    = [&](const std::string& p) { return run_library(cl, db, p); };
+        b.library_list = [&](const std::string& p) { return run_library_list(cl, db, p); };
         return run_differential(argc, argv, b);
     }
     catch (const std::exception& e)

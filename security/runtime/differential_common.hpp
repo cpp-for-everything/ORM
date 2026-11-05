@@ -28,6 +28,7 @@
 #include <functional>
 #include <map>
 #include <string>
+#include <vector>
 
 namespace orm_security
 {
@@ -85,7 +86,16 @@ namespace orm_security
         std::function<bool(const Payload&)>       applies;
         std::function<Run(const std::string&)>    naive;
         std::function<Run(const std::string&)>    library;
+        // The same question through IN. Left empty by a backend without list support.
+        std::function<Run(const std::string&)>    library_list;
     };
+
+    // The list the IN path sends: the payload between two values no row holds, so
+    // that it sits at a position that only exists at run time.
+    inline std::vector<std::string> as_list(const std::string& payload)
+    {
+        return {"orm-no-such-value-1", payload, "orm-no-such-value-2"};
+    }
 
     inline int run_differential(int argc, char** argv, const Backend& b)
     {
@@ -99,36 +109,46 @@ namespace orm_security
         // Control. A benign lookup of a seeded value must find exactly one row on both
         // paths. Otherwise the seed or the query is broken and every NO_EFFECT below
         // would mean nothing.
-        long control_naive = -1, control_library = -1;
+        long control_naive = -1, control_library = -1, control_list = -1;
         if (!b.control.empty())
         {
             control_naive   = b.naive(b.control).rows;
             control_library = b.library(b.control).rows;
-            std::printf("control %s: naive rows %ld, library rows %ld\n",
-                        b.control.c_str(), control_naive, control_library);
-            if (control_naive != 1 || control_library != 1)
+            if (b.library_list) control_list = b.library_list(b.control).rows;
+            std::printf("control %s: naive rows %ld, library rows %ld, list rows %ld\n",
+                        b.control.c_str(), control_naive, control_library, control_list);
+            if (control_naive != 1 || control_library != 1 ||
+                (b.library_list && control_list != 1))
             {
                 std::ofstream cs(argv[3], std::ios::binary);
                 cs << "backend: " << b.name << "\nserver: " << b.server << "\n"
                    << "CONTROL FAILED: a benign lookup of " << b.control << " returned naive rows "
-                   << control_naive << " and library rows " << control_library
-                   << ", expected 1 and 1\n";
+                   << control_naive << ", library rows " << control_library
+                   << " and list rows " << control_list << ", expected 1 on each path\n";
                 std::fprintf(stderr, "FAIL: control lookup did not return one row on both paths\n");
                 return 1;
             }
         }
 
         std::ofstream out(argv[2], std::ios::binary);
-        out << "id,dialect,technique,template,naive_outcome,naive_rows,orm_outcome,orm_rows\n";
+        out << "id,dialect,technique,template,naive_outcome,naive_rows,orm_outcome,orm_rows,"
+               "orm_list_outcome,orm_list_rows\n";
 
-        std::map<std::string, int> naive_n, orm_n, naive_by_note;
-        int applicable = 0, orm_effect = 0, naive_compromised = 0;
+        std::map<std::string, int> naive_n, orm_n, list_n, naive_by_note;
+        int applicable = 0, orm_effect = 0, list_effect = 0, naive_compromised = 0;
         for (const auto& p : corpus)
         {
             if (!b.applies(p)) continue;
             ++applicable;
             const Run n = b.naive(p.payload);
             const Run o = b.library(p.payload);
+            Run l;
+            if (b.library_list)
+            {
+                l = b.library_list(p.payload);
+                ++list_n[l.outcome];
+                if (l.outcome != "NO_EFFECT") ++list_effect;
+            }
             ++naive_n[n.outcome];
             ++orm_n[o.outcome];
             if (o.outcome != "NO_EFFECT") ++orm_effect;
@@ -139,10 +159,13 @@ namespace orm_security
             }
             out << p.id << ',' << p.dialect << ',' << p.technique << ','
                 << (p.is_template ? "yes" : "no") << ',' << n.outcome << ',' << n.rows << ','
-                << o.outcome << ',' << o.rows << '\n';
-            std::printf("%-10s %-16s naive=%-18s%s%s orm=%s\n",
+                << o.outcome << ',' << o.rows << ','
+                << (b.library_list ? l.outcome : std::string("-")) << ','
+                << (b.library_list ? std::to_string(l.rows) : std::string("-")) << '\n';
+            std::printf("%-10s %-16s naive=%-18s%s%s orm=%s list=%s\n",
                         p.id.c_str(), p.technique.c_str(), n.outcome.c_str(),
-                        n.note.empty() ? "" : " via ", n.note.c_str(), o.outcome.c_str());
+                        n.note.empty() ? "" : " via ", n.note.c_str(), o.outcome.c_str(),
+                        b.library_list ? l.outcome.c_str() : "-");
             std::fflush(stdout);
         }
 
@@ -152,12 +175,18 @@ namespace orm_security
         sum << "naive path: " << b.naive_desc << "\n";
         if (!b.control.empty())
             sum << "control (benign lookup of " << b.control << "): naive rows " << control_naive
-                << ", library rows " << control_library << "\n";
+                << ", library rows " << control_library << ", list rows " << control_list << "\n";
         sum << "applicable payloads: " << applicable << "\n";
         sum << "naive compromised: " << naive_compromised << "\n";
-        sum << "orm with any effect: " << orm_effect << "\n\n";
+        sum << "orm with any effect: " << orm_effect << "\n";
+        if (b.library_list)
+            sum << "orm list with any effect: " << list_effect << "\n";
+        else
+            sum << "orm list: not supported by this connector\n";
+        sum << "\n";
         for (const auto& [k, v] : naive_n) sum << "naive " << k << ": " << v << "\n";
         for (const auto& [k, v] : orm_n)   sum << "orm   " << k << ": " << v << "\n";
+        for (const auto& [k, v] : list_n)  sum << "list  " << k << ": " << v << "\n";
         for (const auto& [k, v] : naive_by_note) sum << "naive compromised via " << k << ": " << v << "\n";
         if (naive_compromised == 0)
             sum << "\ncomparison inconclusive for this backend: the naive path was never compromised\n";
@@ -171,9 +200,10 @@ namespace orm_security
         }
         if (naive_compromised == 0)
             std::printf("comparison inconclusive for this backend: the naive path was never compromised\n");
-        if (orm_effect != 0)
+        if (orm_effect != 0 || list_effect != 0)
         {
-            std::fprintf(stderr, "FAIL: %d payload(s) had an observable effect through the ORM\n", orm_effect);
+            std::fprintf(stderr, "FAIL: %d payload(s) had an observable effect through the ORM, "
+                                 "%d through a list\n", orm_effect, list_effect);
             return 1;
         }
         return 0;

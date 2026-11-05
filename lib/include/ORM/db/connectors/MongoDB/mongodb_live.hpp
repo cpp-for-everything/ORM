@@ -178,13 +178,37 @@ namespace orm {
             else return {};
         }
 
-        template <typename... Params>
-        [[nodiscard]] std::vector<std::string> collect_params(Params&&... params)
+        // Scalars and list elements in argument order, plus each list's length.
+        struct bound_params : std::vector<std::string>
         {
-            std::vector<std::string> out;
+            detail::list_cursor lists;
+        };
+
+        template <typename... Params>
+        [[nodiscard]] bound_params collect_params(Params&&... params)
+        {
+            bound_params out;
+            out.lists = detail::list_sizes(params...);
             out.reserve(sizeof...(params));
-            (out.push_back(param_to_string(std::forward<Params>(params))), ...);
+            auto add = [&out](const auto& v) { out.push_back(param_to_string(v)); };
+            (detail::for_each_bound(add, params), ...);
             return out;
+        }
+
+        // Appends a value with the BSON type of the C++ type it was declared with.
+        // The type is known at compile time, so the value's text never decides it:
+        // a string that reads as a number stays a string.
+        template <typename V>
+        void append_typed(bson_t* doc, const char* key, const std::string& val)
+        {
+            if constexpr (std::is_same_v<V, bool>)
+                BSON_APPEND_BOOL(doc, key, val == "1");
+            else if constexpr (std::is_integral_v<V>)
+                BSON_APPEND_INT64(doc, key, std::stoll(val));
+            else if constexpr (std::is_floating_point_v<V>)
+                BSON_APPEND_DOUBLE(doc, key, std::stod(val));
+            else
+                BSON_APPEND_UTF8(doc, key, val.c_str());
         }
 
         // Convert a BSON iterator value to string for hydration.
@@ -212,17 +236,37 @@ namespace orm {
         // Build a BSON filter document from a Rule tree and positional params.
         template <typename T1, detail::string_literal Op, typename T2>
         void append_rule(bson_t* doc, const Rule<T1, Op, T2>& r,
-                         const std::vector<std::string>& params, int& pi);
+                         const bound_params& params, int& pi, detail::list_cursor& lists);
 
         template <typename T1, detail::string_literal Op, typename T2>
         void append_rule(bson_t* doc, const Rule<T1, Op, T2>& r,
-                         const std::vector<std::string>& params, int& pi)
+                         const bound_params& params, int& pi, detail::list_cursor& lists)
         {
             constexpr std::string_view op_sv = static_cast<std::string_view>(Op);
 
-            if constexpr (is_rule<T1> && is_rule<T2>)
+            if constexpr (is_list_placeholder_v<T2>)
             {
-                const char* logical = (op_sv == "AND") ? "$and" : "$or";
+                // { field: { $in: [v, v, v] } }. An empty array is valid here and
+                // means what the SQL constants mean: $in matches nothing, $nin
+                // matches everything.
+                const std::string field = field_name_of(r.lhs_);
+                const std::size_t length = lists.take();
+                bson_t child;
+                bson_t array;
+                BSON_APPEND_DOCUMENT_BEGIN(doc, field.c_str(), &child);
+                BSON_APPEND_ARRAY_BEGIN(&child, op_sv == "IN" ? "$in" : "$nin", &array);
+                for (std::size_t i = 0; i < length; ++i)
+                {
+                    const std::string key = std::to_string(i);
+                    append_typed<typename T2::element_type>(
+                        &array, key.c_str(), params[static_cast<std::size_t>(pi++)]);
+                }
+                bson_append_array_end(&child, &array);
+                bson_append_document_end(doc, &child);
+            }
+            else if constexpr (is_rule<T1> && is_rule<T2>)
+            {
+                const char* logical = (op_sv == "&&") ? "$and" : "$or";
                 
                 bson_t child_array;
                 BSON_APPEND_ARRAY_BEGIN(doc, logical, &child_array);
@@ -231,8 +275,8 @@ namespace orm {
                 bson_init(&sub0);
                 bson_init(&sub1);
                 
-                append_rule(&sub0, r.lhs_, params, pi);
-                append_rule(&sub1, r.rhs_, params, pi);
+                append_rule(&sub0, r.lhs_, params, pi, lists);
+                append_rule(&sub1, r.rhs_, params, pi, lists);
                 
                 bson_append_document(&child_array, "0", 1, &sub0);
                 bson_append_document(&child_array, "1", 1, &sub1);
@@ -264,52 +308,28 @@ namespace orm {
                 bson_t child;
                 BSON_APPEND_DOCUMENT_BEGIN(doc, field.c_str(), &child);
                 
-                // Append value with correct BSON type
-                if (!val.empty())
-                {
-                    // Try to parse as integer first
-                    try {
-                        std::size_t pos = 0;
-                        int int_val = std::stoi(val, &pos);
-                        if (pos == val.size()) {
-                            // Successfully parsed entire string as int
-                            BSON_APPEND_INT32(&child, bson_op, int_val);
-                        } else {
-                            // Partial parse, try as double
-                            pos = 0;
-                            double dbl_val = std::stod(val, &pos);
-                            if (pos == val.size()) {
-                                BSON_APPEND_DOUBLE(&child, bson_op, dbl_val);
-                            } else {
-                                // Not a number, use as string
-                                BSON_APPEND_UTF8(&child, bson_op, val.c_str());
-                            }
-                        }
-                    } catch (...) {
-                        // Fall back to string
-                        BSON_APPEND_UTF8(&child, bson_op, val.c_str());
-                    }
-                }
+                // Append value with the BSON type the placeholder declares
+                if constexpr (is_placeholder_v<T2>)
+                    append_typed<typename T2::value_type>(&child, bson_op, val);
                 else
-                {
                     BSON_APPEND_UTF8(&child, bson_op, val.c_str());
-                }
-                
+
                 bson_append_document_end(doc, &child);
             }
         }
 
         template <typename Wheres>
         [[nodiscard]] BsonDoc build_filter(
-            const Wheres& w, const std::vector<std::string>& params)
+            const Wheres& w, const bound_params& params)
         {
             BsonDoc doc;
             int pi = 0;
+            detail::list_cursor lists = params.lists;
             if constexpr (Wheres::size > 0)
             {
                 [&]<std::size_t... Is>(std::index_sequence<Is...>)
                 {
-                    (append_rule(doc.get(), w.template get<Is>(), params, pi), ...);
+                    (append_rule(doc.get(), w.template get<Is>(), params, pi, lists), ...);
                 }(std::make_index_sequence<Wheres::size>{});
             }
             return doc;
@@ -407,6 +427,7 @@ namespace orm {
     template <>
     struct connector_trait<MongoDBLive>
     {
+        using supports_list_placeholder = void;
         template <typename T>
         struct wire_type { using type = T; };
 
@@ -486,7 +507,7 @@ namespace orm {
         static auto exec_select(
             MongoDBLive& db,
             const select_query<Response, Joins, Wheres, Limits, Groups, Orders>& q,
-            const std::vector<std::string>& params)
+            const mongo_live_detail::bound_params& params)
             -> result<Row, Response>
         {
             using Entity = typename Response::template orm_type<0>::table_type;
@@ -557,7 +578,7 @@ namespace orm {
         // partial entities of a joined_row_for<Response>.
         template <typename Response, typename Wheres>
         static auto exec_select_joined(
-            MongoDBLive& db, const Wheres& wheres, const std::vector<std::string>& params)
+            MongoDBLive& db, const Wheres& wheres, const mongo_live_detail::bound_params& params)
             -> result<joined_row_for<Response>, Response>
         {
             using Base = orm::detail::base_table_t<Response>;
@@ -618,7 +639,7 @@ namespace orm {
         template <typename Properties>
         static auto exec_insert(
             MongoDBLive& db,
-            const std::vector<std::string>& params,
+            const mongo_live_detail::bound_params& params,
             insert_query<Properties> q = {})
             -> result<std::tuple<>>
         {
@@ -684,7 +705,7 @@ namespace orm {
         static auto exec_delete(
             MongoDBLive& db,
             const Wheres& wheres,
-            const std::vector<std::string>& params)
+            const mongo_live_detail::bound_params& params)
             -> result<std::tuple<>>
         {
             const std::string coll_name = std::string(table_name<Table>());

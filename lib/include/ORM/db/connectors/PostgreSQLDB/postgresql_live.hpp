@@ -90,6 +90,7 @@ namespace orm {
         {
             int                          next_param{1};
             std::unordered_map<int, int> idx_map;
+            detail::list_cursor*         lists{nullptr};
         };
 
         template <typename T>
@@ -127,6 +128,8 @@ namespace orm {
         {
             if (op == "==") return "=";
             if (op == "!=") return "!=";
+            if (op == "&&") return "AND";   // && is the array overlap operator here
+            if (op == "||") return "OR";    // || is string concatenation here
             return std::string(op);
         }
 
@@ -137,12 +140,22 @@ namespace orm {
         [[nodiscard]] std::string render_rule(const Rule<T1, Op, T2>& r, RenderCtx& ctx)
         {
             std::string sql_op = translate_operator(static_cast<std::string_view>(Op));
-            
-            if constexpr (is_rule<T1> && is_rule<T2>)
+
+            if constexpr (is_list_placeholder_v<T2>)
             {
-                return render_rule(r.lhs_, ctx)
-                    + " " + sql_op + " "
-                    + render_rule(r.rhs_, ctx);
+                return detail::render_in_list(
+                    render_leaf(r.lhs_, ctx),
+                    static_cast<std::string_view>(Op) == "NOT IN",
+                    detail::require_lists(ctx.lists).take(),
+                    [&ctx] { return std::format("${}", ctx.next_param++); });
+            }
+            else if constexpr (is_rule<T1> && is_rule<T2>)
+            {
+                // Two statements on purpose. The operands of + are unsequenced, and
+                // $N is assigned as a side effect, so the left operand goes first.
+                std::string lhs = render_rule(r.lhs_, ctx);
+                std::string rhs = render_rule(r.rhs_, ctx);
+                return lhs + " " + sql_op + " " + rhs;
             }
             else
             {
@@ -280,7 +293,8 @@ namespace orm {
         {
             std::vector<std::string> out;
             out.reserve(sizeof...(params));
-            (out.push_back(param_to_string(std::forward<Params>(params))), ...);
+            auto add = [&out](const auto& v) { out.push_back(param_to_string(v)); };
+            (detail::for_each_bound(add, params), ...);
             return out;
         }
 
@@ -369,6 +383,7 @@ namespace orm {
     template <>
     struct connector_trait<PostgreSQLLiveDB>
     {
+        using supports_list_placeholder = void;
         using supports_joins        = void;
         using supports_transactions = void;
         using supports_aggregation  = void;
@@ -404,7 +419,9 @@ namespace orm {
             Params&&... params)
         {
             constexpr bool inferred = orm::detail::is_multi_table<Response> && Joins::size == 0;
+            auto lists = detail::list_sizes(params...);
             pg_live_detail::RenderCtx ctx;
+            ctx.lists = &lists;
             const std::string sql = build_select_sql<Response, inferred>(q, ctx);
             auto vals = pg_live_detail::collect_params(std::forward<Params>(params)...);
             return exec_select<Response, inferred>(db, sql, vals);
@@ -463,7 +480,9 @@ namespace orm {
                             Params&&... params)
             -> result<std::tuple<>>
         {
+            auto lists = detail::list_sizes(params...);
             pg_live_detail::RenderCtx ctx;
+            ctx.lists = &lists;
             const std::string set_sql = pg_live_detail::render_set(q.updates(), ctx);
             const std::string where_sql = pg_live_detail::render_wheres(q.wheres(), ctx);
             const std::string sql = std::format("UPDATE {} SET {}{}",
@@ -491,7 +510,9 @@ namespace orm {
         static auto execute(PostgreSQLLiveDB& db, delete_query<Table, Wheres> q, Params&&... params)
             -> result<std::tuple<>>
         {
+            auto lists = detail::list_sizes(params...);
             pg_live_detail::RenderCtx ctx;
+            ctx.lists = &lists;
             const std::string sql = std::format("DELETE FROM {}{}",
                 table_name<Table>(),
                 pg_live_detail::render_wheres(q.wheres(), ctx));

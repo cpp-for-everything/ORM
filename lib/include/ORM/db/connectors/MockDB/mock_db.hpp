@@ -49,13 +49,22 @@ namespace orm {
 
         // ── render_rule: recursively walk Rule<T1,Op,T2> tree
         template <typename T1, detail::string_literal Op, typename T2>
-        [[nodiscard]] std::string render_rule(const Rule<T1, Op, T2>& r)
+        [[nodiscard]] std::string render_rule(const Rule<T1, Op, T2>& r,
+                                              detail::list_cursor* lists = nullptr)
         {
-            if constexpr (is_rule<T1> && is_rule<T2>)
+            if constexpr (is_list_placeholder_v<T2>)
             {
-                return render_rule(r.lhs_)
-                    + " " + std::string(static_cast<std::string_view>(Op)) + " "
-                    + render_rule(r.rhs_);
+                return detail::render_in_list(
+                    render_operand(r.lhs_),
+                    static_cast<std::string_view>(Op) == "NOT IN",
+                    detail::require_lists(lists).take(),
+                    [] { return "?"; });
+            }
+            else if constexpr (is_rule<T1> && is_rule<T2>)
+            {
+                std::string lhs = render_rule(r.lhs_, lists);
+                std::string rhs = render_rule(r.rhs_, lists);
+                return lhs + " " + std::string(static_cast<std::string_view>(Op)) + " " + rhs;
             }
             else
             {
@@ -137,7 +146,8 @@ namespace orm {
         // Clang 18 ICE: empty-pack generic-lambda after `if constexpr (size==0)
         // return {}` without `else` still instantiates the lambda (isPackExpansion).
         template <typename Wheres>
-        [[nodiscard]] std::string render_wheres(const Wheres& w)
+        [[nodiscard]] std::string render_wheres(const Wheres& w,
+                                                detail::list_cursor* lists = nullptr)
         {
             if constexpr (Wheres::size == 0)
             {
@@ -149,7 +159,7 @@ namespace orm {
                 [&]<std::size_t... Is>(std::index_sequence<Is...>)
                 {
                     std::size_t idx = 0;
-                    ((void)(out += (idx++ > 0 ? " AND " : "") + render_rule(w.template get<Is>())), ...);
+                    ((void)(out += (idx++ > 0 ? " AND " : "") + render_rule(w.template get<Is>(), lists)), ...);
                 }(std::make_index_sequence<Wheres::size>{});
                 return out;
             }
@@ -286,7 +296,8 @@ namespace orm {
         template <typename Response, typename Joins, typename Wheres,
                   typename Limits, typename Groups, typename Orders>
         [[nodiscard]] std::string render_select(
-            const select_query<Response, Joins, Wheres, Limits, Groups, Orders>& q)
+            const select_query<Response, Joins, Wheres, Limits, Groups, Orders>& q,
+            detail::list_cursor* lists = nullptr)
         {
             if constexpr (orm::detail::is_multi_table<Response> && Joins::size == 0)
             {
@@ -295,7 +306,7 @@ namespace orm {
                     render_qualified_columns<Response>(),
                     std::string(orm::table_name<Base>()),
                     render_inferred_joins<Response>(),
-                    render_wheres(q.where_clauses()),
+                    render_wheres(q.where_clauses(), lists),
                     render_group_by(q.group_clauses()),
                     render_order_by(q.order_clauses()),
                     render_limits(q.limit_clauses()));
@@ -305,7 +316,7 @@ namespace orm {
                 return std::format("SELECT {} FROM ?{}{}{}{}{}",
                     render_columns(q.selected_properties()),
                     render_joins(q.join_clauses()),
-                    render_wheres(q.where_clauses()),
+                    render_wheres(q.where_clauses(), lists),
                     render_group_by(q.group_clauses()),
                     render_order_by(q.order_clauses()),
                     render_limits(q.limit_clauses()));
@@ -380,7 +391,8 @@ namespace orm {
         {
             std::vector<std::string> out;
             out.reserve(sizeof...(params));
-            (out.push_back(stringify_param(params)), ...);
+            auto add = [&out](const auto& v) { out.push_back(stringify_param(v)); };
+            (detail::for_each_bound(add, params), ...);
             return out;
         }
 
@@ -397,6 +409,7 @@ namespace orm {
         using supports_bulk_insert         = void;
         using supports_concurrent_execute  = void; // required by connection_pool<MockDB, N>
         using supports_constexpr_sql       = void; // required by wire_protocol constexpr SQL tests
+        using supports_list_placeholder    = void;
 
         template <typename T>
         struct wire_type { using type = T; };
@@ -429,7 +442,8 @@ namespace orm {
             Params&&... params)
             -> result<projected_type<Response>, Response>
         {
-            db.last_sql = mockdb::render_select(q);
+            auto lists = detail::list_sizes(params...);
+            db.last_sql = mockdb::render_select(q, &lists);
             db.last_params = mockdb::collect_params(std::forward<Params>(params)...);
             return result<projected_type<Response>, Response>{};
         }
@@ -476,10 +490,11 @@ namespace orm {
         static auto execute(MockDB& db, update_query<Table, Statements, Wheres> q, Params&&... params)
             -> result<std::tuple<>>
         {
+            auto lists = detail::list_sizes(params...);
             db.last_sql = std::format("UPDATE {} SET {}{}",
                 table_name<Table>(),
                 mockdb::render_set(q.updates()),
-                mockdb::render_wheres(q.wheres()));
+                mockdb::render_wheres(q.wheres(), &lists));
             db.last_params = mockdb::collect_params(std::forward<Params>(params)...);
             return result<std::tuple<>>{};
         }
@@ -501,9 +516,10 @@ namespace orm {
         static auto execute(MockDB& db, delete_query<Table, Wheres> q, Params&&... params)
             -> result<std::tuple<>>
         {
+            auto lists = detail::list_sizes(params...);
             db.last_sql = std::format("DELETE FROM {}{}",
                 table_name<Table>(),
-                mockdb::render_wheres(q.wheres()));
+                mockdb::render_wheres(q.wheres(), &lists));
             db.last_params = mockdb::collect_params(std::forward<Params>(params)...);
             return result<std::tuple<>>{};
         }

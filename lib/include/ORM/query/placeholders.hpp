@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include <type_traits>
+#include <vector>
 
 namespace orm {
 
@@ -46,6 +47,33 @@ namespace orm {
 
     template <typename T>
     concept is_placeholder = is_placeholder_v<T>;
+
+    // ── PlaceholderList<T>: a run-time list of values for IN / NOT IN ───────────
+    // Usage: orm::in(field<&T::col>, orm::PlaceholderList<V>{}), with a
+    // std::vector<V> passed to execute() in that position.
+    //
+    // Deliberately NOT a placeholder in the sense of is_placeholder_v: an ordinary
+    // placeholder is one value in one position, and every comparison, SET clause
+    // and binder written against that trait assumes so. Keeping the two apart
+    // means a list cannot reach any of them by accident. A list is anonymous only,
+    // because a list has no single position an index could name. std::vector<bool>
+    // hands out proxies rather than values, so a list of bool is rejected.
+    template <typename T>
+        requires (!std::is_same_v<T, bool>)
+    struct PlaceholderList
+    {
+        using value_type   = std::vector<T>;
+        using element_type = T;
+    };
+
+    template <typename T>
+    struct is_list_placeholder_trait : std::false_type {};
+
+    template <typename T>
+    struct is_list_placeholder_trait<PlaceholderList<T>> : std::true_type {};
+
+    template <typename T>
+    inline constexpr bool is_list_placeholder_v = is_list_placeholder_trait<T>::value;
 
     // ── placeholder_index<T> — 0 for anonymous, 1-based N for indexed ─────────
     template <typename T>

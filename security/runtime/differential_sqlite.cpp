@@ -39,6 +39,7 @@
 #include <fstream>
 #include <map>
 #include <string>
+#include <vector>
 
 struct Item
 {
@@ -177,6 +178,29 @@ namespace
         sqlite3_progress_handler(c.handle, 0, nullptr, nullptr);
         return classify(rc, rows, g.tripped, before, snapshot(c.handle));
     }
+
+    Run run_orm_list(const std::string& payload)
+    {
+        orm::SQLiteDB c = fresh();
+        orm::db<orm::SQLiteDB> db{c};
+        const Snapshot before = snapshot(c.handle);
+        Guard g;
+        sqlite3_progress_handler(c.handle, 1000, on_progress, &g);
+        constexpr auto q = orm::select(orm::field<&Item::id>, orm::field<&Item::name>)
+                               .where(orm::in(orm::field<&Item::name>, orm::PlaceholderList<std::string>{}));
+        long rows = 0;
+        int rc    = SQLITE_OK;
+        try
+        {
+            rows = static_cast<long>(db.execute(q, std::vector<std::string>{"orm-no-such-value-1", payload, "orm-no-such-value-2"}).to_vector().size());
+        }
+        catch (const std::exception&)
+        {
+            rc = SQLITE_ERROR;
+        }
+        sqlite3_progress_handler(c.handle, 0, nullptr, nullptr);
+        return classify(rc, rows, g.tripped, before, snapshot(c.handle));
+    }
 } // namespace
 
 int main(int argc, char** argv)
@@ -189,34 +213,40 @@ int main(int argc, char** argv)
     const auto corpus = orm_security::load_corpus(argv[1]);
 
     std::ofstream out(argv[2], std::ios::binary);
-    out << "id,dialect,technique,template,naive_outcome,naive_rows,orm_outcome,orm_rows\n";
+    out << "id,dialect,technique,template,naive_outcome,naive_rows,orm_outcome,orm_rows,orm_list_outcome,orm_list_rows\n";
 
-    std::map<std::string, int> naive_n, orm_n;
-    int applicable = 0, orm_effect = 0, naive_compromised = 0;
+    std::map<std::string, int> naive_n, orm_n, list_n;
+    int applicable = 0, orm_effect = 0, list_effect = 0, naive_compromised = 0;
     for (const auto& p : corpus)
     {
         if (p.cls != "sql" || (p.dialect != "generic" && p.dialect != "sqlite")) continue;
         ++applicable;
         const Run n = run_naive(p.payload);
         const Run o = run_orm(p.payload);
+        const Run l = run_orm_list(p.payload);
         ++naive_n[n.outcome];
         ++orm_n[o.outcome];
+        ++list_n[l.outcome];
         if (o.outcome != "NO_EFFECT") ++orm_effect;
+        if (l.outcome != "NO_EFFECT") ++list_effect;
         if (n.outcome.rfind("COMPROMISED", 0) == 0) ++naive_compromised;
         out << p.id << ',' << p.dialect << ',' << p.technique << ','
             << (p.is_template ? "yes" : "no") << ',' << n.outcome << ',' << n.rows << ','
-            << o.outcome << ',' << o.rows << '\n';
-        std::printf("%-8s %-16s naive=%-18s orm=%s\n",
-                    p.id.c_str(), p.technique.c_str(), n.outcome.c_str(), o.outcome.c_str());
+            << o.outcome << ',' << o.rows << ',' << l.outcome << ',' << l.rows << '\n';
+        std::printf("%-8s %-16s naive=%-18s orm=%s list=%s\n",
+                    p.id.c_str(), p.technique.c_str(), n.outcome.c_str(), o.outcome.c_str(),
+                    l.outcome.c_str());
     }
 
     std::ofstream sum(argv[3], std::ios::binary);
     sum << "backend: sqlite\n";
     sum << "applicable payloads: " << applicable << "\n";
     sum << "naive compromised: " << naive_compromised << "\n";
-    sum << "orm with any effect: " << orm_effect << "\n\n";
+    sum << "orm with any effect: " << orm_effect << "\n";
+    sum << "orm list with any effect: " << list_effect << "\n\n";
     for (const auto& [k, v] : naive_n) sum << "naive " << k << ": " << v << "\n";
     for (const auto& [k, v] : orm_n)   sum << "orm   " << k << ": " << v << "\n";
+    for (const auto& [k, v] : list_n)  sum << "list  " << k << ": " << v << "\n";
 
     std::printf("\napplicable %d, naive compromised %d, orm with any effect %d\n",
                 applicable, naive_compromised, orm_effect);
@@ -230,9 +260,10 @@ int main(int argc, char** argv)
         std::fprintf(stderr, "FAIL: the naive path was never compromised, so the comparison proves nothing\n");
         return 1;
     }
-    if (orm_effect != 0)
+    if (orm_effect != 0 || list_effect != 0)
     {
-        std::fprintf(stderr, "FAIL: %d payload(s) had an observable effect through the ORM\n", orm_effect);
+        std::fprintf(stderr, "FAIL: %d payload(s) had an observable effect through the ORM, "
+                             "%d through a list\n", orm_effect, list_effect);
         return 1;
     }
     return 0;

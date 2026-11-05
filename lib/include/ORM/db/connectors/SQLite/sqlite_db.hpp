@@ -211,7 +211,8 @@ namespace orm {
         void bind_params([[maybe_unused]] sqlite3_stmt* stmt, Params&&... params)
         {
             int slot = 1;
-            (bind_value(stmt, slot++, std::forward<Params>(params)), ...);
+            auto bind_one = [&](const auto& v) { bind_value(stmt, slot++, v); };
+            (detail::for_each_bound(bind_one, params), ...);
         }
 
         // Renders WHERE clause as " WHERE col op ?, ..." from a Wheres orm_tuple.
@@ -219,7 +220,7 @@ namespace orm {
         // This reuses the same render_rule logic already in MockDB but inline here
         // to avoid a dependency on the MockDB header.
         template <typename T1, detail::string_literal Op, typename T2>
-        std::string render_rule_sqlite(const Rule<T1, Op, T2>& r);
+        std::string render_rule_sqlite(const Rule<T1, Op, T2>& r, detail::list_cursor* lists);
 
         // Detects raw member pointer types (T Class::*) — what Rule stores as lhs.
         template <typename T>
@@ -271,13 +272,24 @@ namespace orm {
         }
 
         template <typename T1, detail::string_literal Op, typename T2>
-        std::string render_rule_sqlite(const Rule<T1, Op, T2>& r)
+        std::string render_rule_sqlite(const Rule<T1, Op, T2>& r, detail::list_cursor* lists)
         {
-            if constexpr (is_rule<T1> && is_rule<T2>)
+            if constexpr (is_list_placeholder_v<T2>)
             {
-                return render_rule_sqlite(r.lhs_)
-                    + " " + std::string(sql_op(static_cast<std::string_view>(Op))) + " "
-                    + render_rule_sqlite(r.rhs_);
+                return detail::render_in_list(
+                    render_operand_sqlite(r.lhs_),
+                    static_cast<std::string_view>(Op) == "NOT IN",
+                    detail::require_lists(lists).take(),
+                    [] { return "?"; });
+            }
+            else if constexpr (is_rule<T1> && is_rule<T2>)
+            {
+                // Two statements on purpose. The operands of + are unsequenced, and
+                // list lengths are consumed in order, left operand first.
+                std::string lhs = render_rule_sqlite(r.lhs_, lists);
+                std::string rhs = render_rule_sqlite(r.rhs_, lists);
+                return lhs + " " + std::string(sql_op(static_cast<std::string_view>(Op)))
+                    + " " + rhs;
             }
             else
             {
@@ -288,7 +300,7 @@ namespace orm {
         }
 
         template <typename Wheres>
-        std::string render_wheres_sqlite(const Wheres& w)
+        std::string render_wheres_sqlite(const Wheres& w, detail::list_cursor* lists = nullptr)
         {
             if constexpr (Wheres::size == 0)
             {
@@ -301,7 +313,7 @@ namespace orm {
                 {
                     std::size_t idx = 0;
                     ((void)(out += (idx++ > 0 ? " AND " : "")
-                        + render_rule_sqlite(w.template get<Is>())), ...);
+                        + render_rule_sqlite(w.template get<Is>(), lists)), ...);
                 }(std::make_index_sequence<Wheres::size>{});
                 return out;
             }
@@ -364,7 +376,8 @@ namespace orm {
         // emit table-qualified columns + the inferred JOIN chain. Otherwise the
         // bare single-table form.
         template <typename Response, bool Inferred, typename Query>
-        [[nodiscard]] std::string build_select_sql(const Query& q)
+        [[nodiscard]] std::string build_select_sql(const Query& q,
+                                                   detail::list_cursor* lists = nullptr)
         {
             if constexpr (Inferred)
             {
@@ -373,7 +386,7 @@ namespace orm {
                     render_qualified_columns<Response>(),
                     std::string(orm::table_name<Base>()),
                     render_inferred_joins<Response>(),
-                    render_wheres_sqlite(q.where_clauses()));
+                    render_wheres_sqlite(q.where_clauses(), lists));
             }
             else
             {
@@ -381,7 +394,7 @@ namespace orm {
                 return std::format("SELECT {} FROM {}{}",
                     render_columns<Response>(),
                     std::string(orm::table_name<Entity>()),
-                    render_wheres_sqlite(q.where_clauses()));
+                    render_wheres_sqlite(q.where_clauses(), lists));
             }
         }
 
@@ -421,6 +434,7 @@ namespace orm {
         using supports_joins        = void;
         using supports_transactions = void;
         using supports_aggregation  = void;
+        using supports_list_placeholder = void;
 
         template <typename T>
         struct wire_type { using type = T; };
@@ -458,7 +472,8 @@ namespace orm {
             Params&&... params)
         {
             constexpr bool inferred = orm::detail::is_multi_table<Response> && Joins::size == 0;
-            const std::string sql = sqlite_detail::build_select_sql<Response, inferred>(q);
+            auto lists = detail::list_sizes(params...);
+            const std::string sql = sqlite_detail::build_select_sql<Response, inferred>(q, &lists);
 
             sqlite3_stmt* stmt = nullptr;
             if (sqlite3_prepare_v2(db.handle, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
@@ -514,10 +529,11 @@ namespace orm {
             const std::string set_clause =
                 build_update_set_clause<Statements>(std::make_index_sequence<Statements::size>{});
 
+            auto lists = detail::list_sizes(params...);
             const std::string sql = std::format("UPDATE {} SET {}{}",
                 table_name<Table>(),
                 set_clause,
-                sqlite_detail::render_wheres_sqlite(q.wheres()));
+                sqlite_detail::render_wheres_sqlite(q.wheres(), &lists));
             sqlite3_stmt* stmt = nullptr;
             if (sqlite3_prepare_v2(db.handle, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
                 throw std::runtime_error(sqlite3_errmsg(db.handle));
@@ -533,9 +549,10 @@ namespace orm {
                             Params&&... params)
             -> result<std::tuple<>>
         {
+            auto lists = detail::list_sizes(params...);
             const std::string sql = std::format("DELETE FROM {}{}",
                 table_name<Table>(),
-                sqlite_detail::render_wheres_sqlite(q.wheres()));
+                sqlite_detail::render_wheres_sqlite(q.wheres(), &lists));
             sqlite3_stmt* stmt = nullptr;
             if (sqlite3_prepare_v2(db.handle, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
                 throw std::runtime_error(sqlite3_errmsg(db.handle));

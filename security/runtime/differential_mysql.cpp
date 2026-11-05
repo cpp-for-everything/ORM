@@ -174,6 +174,27 @@ namespace
         const bool tripped = sw.ms() >= kExecGuardMs;
         return classify(tripped, !(before == snapshot(admin)), rows, errored);
     }
+
+    Run run_library_list(MYSQL* admin, orm::db<orm::MySQLLiveDB>& db, const std::string& payload)
+    {
+        fresh(admin);
+        const Snapshot before = snapshot(admin);
+        constexpr auto q = orm::select(orm::field<&Item::id>, orm::field<&Item::name>)
+                               .where(orm::in(orm::field<&Item::name>, orm::PlaceholderList<std::string>{}));
+        long rows = 0;
+        bool errored = false;
+        const Stopwatch sw;
+        try
+        {
+            rows = static_cast<long>(db.execute(q, as_list(payload)).to_vector().size());
+        }
+        catch (const std::exception&)
+        {
+            errored = true;
+        }
+        const bool tripped = sw.ms() >= kExecGuardMs;
+        return classify(tripped, !(before == snapshot(admin)), rows, errored);
+    }
 } // namespace
 
 int main(int argc, char** argv)
@@ -202,6 +223,7 @@ int main(int argc, char** argv)
         };
         b.naive   = [&](const std::string& s) { return run_naive(admin.c, naive.c, s); };
         b.library = [&](const std::string& s) { return run_library(admin.c, db, s); };
+        b.library_list = [&](const std::string& s) { return run_library_list(admin.c, db, s); };
         return run_differential(argc, argv, b);
     }
     catch (const std::exception& e)

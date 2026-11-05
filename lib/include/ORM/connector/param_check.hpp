@@ -19,6 +19,7 @@
 //    • the query is an INSERT — parameter expansion is connector-specific
 //      (e.g. Redis binds extra values per field).
 // ─────────────────────────────────────────────────────────────────────────────
+#include "ORM/connector/capabilities.hpp"
 #include "ORM/query/rules.hpp"
 #include "ORM/query/select.hpp"
 #include "ORM/query/update.hpp"
@@ -72,7 +73,8 @@ namespace orm::detail {
     template <typename T>
     struct phs_in
     {
-        using type = std::conditional_t<is_placeholder_v<T>, tlist<T>, tlist<>>;
+        using type = std::conditional_t<is_placeholder_v<T> || is_list_placeholder_v<T>,
+                                        tlist<T>, tlist<>>;
     };
     template <typename A, string_literal Op, typename B>
     struct phs_in<Rule<A, Op, B>>
@@ -170,6 +172,18 @@ namespace orm::detail {
     };
 
     template <typename TL>
+    struct any_list;
+    template <typename... P>
+    struct any_list<tlist<P...>>
+    {
+        static constexpr bool value = (is_list_placeholder_v<P> || ...);
+    };
+
+    // Does this query carry a PlaceholderList anywhere?
+    template <typename Q>
+    inline constexpr bool query_has_list_v = any_list<typename query_placeholders<Q>::type>::value;
+
+    template <typename TL>
     struct tl_size;
     template <typename... P>
     struct tl_size<tlist<P...>>
@@ -204,7 +218,8 @@ namespace orm::detail {
     // and a literal operand reaching execution is a compile error.
     template <typename T>
     inline constexpr bool is_literal_operand_v =
-        !is_placeholder_v<T> && !std::is_member_pointer_v<T> && !is_field<T> &&
+        !is_placeholder_v<T> && !is_list_placeholder_v<T> &&
+        !std::is_member_pointer_v<T> && !is_field<T> &&
         !std::is_same_v<T, std::nullptr_t> && !is_rule<T>;
 
     template <typename T>
@@ -251,7 +266,8 @@ namespace orm::detail {
     };
     template <typename Tag, typename V>
     struct literal_in_stmt<UpdateStatement<Tag, V>>
-        : std::bool_constant<is_literal_operand_v<std::remove_cvref_t<V>>>
+        : std::bool_constant<is_literal_operand_v<std::remove_cvref_t<V>> ||
+                             is_list_placeholder_v<std::remove_cvref_t<V>>>
     {
     };
     template <typename Tuple>
@@ -338,6 +354,30 @@ namespace orm::detail {
         }
     }
 
+    // ── entry point: paths that take no arguments ─────────────────────────────
+    // db::operator<<, db::find_one and prepared_query::execute() have nothing to
+    // supply a list from, so a list reaching them could only render unbound.
+    template <typename Query>
+    constexpr void check_no_list()
+    {
+        static_assert(
+            !query_has_list_v<std::remove_cvref_t<Query>>,
+            "orm: a list placeholder needs its argument. A query with "
+            "orm::PlaceholderList must run through execute(query, values...), "
+            "where the std::vector supplies the list.");
+    }
+
+    // ── entry point: connector support for lists ──────────────────────────────
+    template <typename DB, typename Query>
+    constexpr void check_list_capability()
+    {
+        static_assert(
+            !query_has_list_v<std::remove_cvref_t<Query>> ||
+                has_capability<DB, cap::supports_list_placeholder>,
+            "orm: this connector does not support IN / NOT IN. It does not declare "
+            "`using supports_list_placeholder = void;`.");
+    }
+
     // ── entry point: called from db::execute and prepared_query::execute ──────
     template <typename Query, typename... Params>
     constexpr void check_query_params()
@@ -349,6 +389,12 @@ namespace orm::detail {
         if constexpr (QP::checkable)
         {
             using PH = typename QP::type;
+            static_assert(
+                !any_list<PH>::value || all_anonymous<PH>::value,
+                "orm: a list placeholder cannot share a query with indexed "
+                "placeholders (orm::ph<T,_N>). A list expands to a run-time number "
+                "of positions, so indexed positions would no longer line up. Use "
+                "orm::Placeholder<T> for the other values.");
             if constexpr (all_anonymous<PH>::value)
             {
                 constexpr std::size_t n_ph = tl_size<PH>::value;

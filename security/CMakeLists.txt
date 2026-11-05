@@ -65,6 +65,19 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
                13_literal_constant)
         orm_compile_check(${_c} fail "literal operand")
     endforeach()
+
+    # IN / NOT IN. The list has a control of its own, then one case per way a value
+    # could get round the placeholder.
+    orm_compile_check(18_control_list               pass "")
+    orm_compile_check(19_list_literal_values        fail "no matching|no viable|deduction failed|could not convert")
+    orm_compile_check(20_list_element_type          fail "incompatible element type")
+    orm_compile_check(21_list_argument_type         fail "incompatible with the")
+    orm_compile_check(22_list_scalar_argument       fail "incompatible with the")
+    orm_compile_check(23_list_in_update_set         fail "literal operand")
+    orm_compile_check(24_list_with_indexed          fail "cannot share a query")
+    orm_compile_check(25_list_without_argument      fail "needs its argument")
+    orm_compile_check(26_list_unsupported_connector fail "does not support IN")
+    orm_compile_check(27_list_equals                fail "incompatible operand types")
 else()
     message(STATUS "ORM security: negative compilation tests need GCC or Clang, skipped for ${CMAKE_CXX_COMPILER_ID}.")
 endif()
@@ -76,6 +89,12 @@ if(TARGET orm::sqlite)
     gtest_discover_tests(security_sqlite_unit
         TEST_PREFIX "security.sqlite."
         PROPERTIES LABELS "security;sqlite")
+
+    add_executable(security_list_sqlite runtime/test_list_sqlite.cpp)
+    target_link_libraries(security_list_sqlite PRIVATE orm::sqlite GTest::gtest_main)
+    gtest_discover_tests(security_list_sqlite
+        TEST_PREFIX "security.list."
+        PROPERTIES LABELS "security;sqlite;list")
 
     add_executable(security_differential_sqlite runtime/differential_sqlite.cpp)
     target_link_libraries(security_differential_sqlite PRIVATE orm::sqlite)
@@ -96,7 +115,7 @@ endif()
 #  A server harness fails only when a payload has an effect through the library.
 #  If the naive path is never compromised it passes and the summary says the
 #  comparison is inconclusive.
-foreach(_b postgresql mysql mongodb redis cassandra)
+foreach(_b postgresql mysql mongodb redis cassandra neo4j)
     if(TARGET orm::${_b}_live)
         add_executable(security_differential_${_b} runtime/differential_${_b}.cpp)
         target_link_libraries(security_differential_${_b} PRIVATE orm::${_b}_live)

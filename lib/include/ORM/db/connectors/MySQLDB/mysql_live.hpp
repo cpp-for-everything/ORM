@@ -15,6 +15,7 @@
 #include <mysql/mysql.h>
 #include <string>
 #include <string_view>
+#include <deque>
 #include <vector>
 #include <stdexcept>
 #include <format>
@@ -111,19 +112,32 @@ namespace orm {
         {
             if (op == "==") return "=";
             if (op == "!=") return "!=";
+            if (op == "&&") return "AND";
+            if (op == "||") return "OR";
             return std::string(op);
         }
 
         template <typename T1, detail::string_literal Op, typename T2>
-        [[nodiscard]] std::string render_rule(const Rule<T1, Op, T2>& r)
+        [[nodiscard]] std::string render_rule(const Rule<T1, Op, T2>& r,
+                                              detail::list_cursor* lists = nullptr)
         {
             std::string sql_op = translate_operator(static_cast<std::string_view>(Op));
-            
-            if constexpr (is_rule<T1> && is_rule<T2>)
+
+            if constexpr (is_list_placeholder_v<T2>)
             {
-                return render_rule(r.lhs_)
-                    + " " + sql_op + " "
-                    + render_rule(r.rhs_);
+                return detail::render_in_list(
+                    render_operand(r.lhs_),
+                    static_cast<std::string_view>(Op) == "NOT IN",
+                    detail::require_lists(lists).take(),
+                    [] { return "?"; });
+            }
+            else if constexpr (is_rule<T1> && is_rule<T2>)
+            {
+                // Two statements on purpose. The operands of + are unsequenced, and
+                // list lengths are consumed in order, left operand first.
+                std::string lhs = render_rule(r.lhs_, lists);
+                std::string rhs = render_rule(r.rhs_, lists);
+                return lhs + " " + sql_op + " " + rhs;
             }
             else
             {
@@ -147,7 +161,8 @@ namespace orm {
         }
 
         template <typename Wheres>
-        [[nodiscard]] std::string render_wheres(const Wheres& w)
+        [[nodiscard]] std::string render_wheres(const Wheres& w,
+                                                detail::list_cursor* lists = nullptr)
         {
             if constexpr (Wheres::size == 0)
                 return {};
@@ -157,7 +172,7 @@ namespace orm {
                 [&]<std::size_t... Is>(std::index_sequence<Is...>)
                 {
                     std::size_t idx = 0;
-                    ((void)(out += (idx++ > 0 ? " AND " : "") + render_rule(w.template get<Is>())), ...);
+                    ((void)(out += (idx++ > 0 ? " AND " : "") + render_rule(w.template get<Is>(), lists)), ...);
                 }(std::make_index_sequence<Wheres::size>{});
                 return out;
             }
@@ -277,21 +292,40 @@ namespace orm {
         template <> struct mysql_type_traits<std::string> { static constexpr enum_field_types type = MYSQL_TYPE_STRING; };
         template <> struct mysql_type_traits<const char*> { static constexpr enum_field_types type = MYSQL_TYPE_STRING; };
         
+        // Number of parameter markers a call fills: a list fills one per element.
+        template <typename... Params>
+        [[nodiscard]] std::size_t bound_count(const Params&... params)
+        {
+            std::size_t n = 0;
+            auto count = [&n]<typename P>(const P& p)
+            {
+                if constexpr (detail::is_std_vector_v<P>)
+                    n += p.size();
+                else
+                    ++n;
+            };
+            (count(params), ...);
+            return n;
+        }
+
         // Helper struct to hold parameter binding data with stable storage
         template <typename... Params>
         struct param_binder
         {
             std::tuple<Params...> param_values;
             std::vector<MYSQL_BIND> binds;
-            std::vector<std::string> str_storage;
-            std::vector<unsigned long> len_storage;
-            
+            // deque, not vector: each MYSQL_BIND keeps a pointer into these, and a
+            // vector moves its elements when it grows.
+            std::deque<std::string> str_storage;
+            std::deque<unsigned long> len_storage;
+
             explicit param_binder(const Params&... args) : param_values(args...)
             {
-                binds.resize(sizeof...(Params));
+                binds.resize(bound_count(args...));
                 std::size_t idx = 0;
+                auto bind_next = [&](auto& v) { bind_one(binds[idx++], v); };
                 std::apply([&](auto&... ps) {
-                    (bind_one(binds[idx++], ps), ...);
+                    (detail::for_each_bound(bind_next, ps), ...);
                 }, param_values);
             }
             
@@ -412,6 +446,7 @@ namespace orm {
     template <>
     struct connector_trait<MySQLLiveDB>
     {
+        using supports_list_placeholder = void;
         using supports_joins        = void;
         using supports_transactions = void;
         using supports_aggregation  = void;
@@ -447,7 +482,8 @@ namespace orm {
         {
             constexpr bool inferred = orm::detail::is_multi_table<Response> && Joins::size == 0;
             // Build SQL with ? placeholders for prepared statement
-            const std::string sql = build_select_sql<Response, inferred>(q);
+            auto lists = detail::list_sizes(params...);
+            const std::string sql = build_select_sql<Response, inferred>(q, &lists);
             return exec_select_prepared<Response, inferred>(db, sql, std::forward<Params>(params)...);
         }
 
@@ -472,10 +508,11 @@ namespace orm {
                             Params&&... params)
             -> result<std::tuple<>>
         {
+            auto lists = detail::list_sizes(params...);
             const std::string sql = std::format("UPDATE {} SET {}{}",
                 table_name<Table>(),
                 mysql_live_detail::render_set(q.updates()),
-                mysql_live_detail::render_wheres(q.wheres()));
+                mysql_live_detail::render_wheres(q.wheres(), &lists));
             
             return exec_prepared(db, sql, std::forward<Params>(params)...);
         }
@@ -486,10 +523,11 @@ namespace orm {
                             Params&&... params)
             -> result<std::tuple<>>
         {
+            auto lists = detail::list_sizes(params...);
             const std::string sql = std::format("DELETE FROM {}{}",
                 table_name<Table>(),
-                mysql_live_detail::render_wheres(q.wheres()));
-            
+                mysql_live_detail::render_wheres(q.wheres(), &lists));
+
             return exec_prepared(db, sql, std::forward<Params>(params)...);
         }
 
@@ -498,7 +536,8 @@ namespace orm {
         // explicit .join(): table-qualified columns + the inferred JOIN chain (shared
         // renderer). Otherwise the bare single-table form.
         template <typename Response, bool Inferred, typename Query>
-        static std::string build_select_sql(const Query& q)
+        static std::string build_select_sql(const Query& q,
+                                            detail::list_cursor* lists = nullptr)
         {
             if constexpr (Inferred)
             {
@@ -507,7 +546,7 @@ namespace orm {
                     mysql_live_detail::render_qualified_columns<Response>(),
                     std::string(table_name<Base>()),
                     mysql_live_detail::render_inferred_joins<Response>(),
-                    mysql_live_detail::render_wheres(q.where_clauses()),
+                    mysql_live_detail::render_wheres(q.where_clauses(), lists),
                     mysql_live_detail::render_order_by(q.order_clauses()),
                     mysql_live_detail::render_limits(q.limit_clauses()));
             }
@@ -517,7 +556,7 @@ namespace orm {
                 return std::format("SELECT {} FROM {}{}{}{}",
                     mysql_live_detail::render_columns(q.selected_properties()),
                     std::string(table_name<Entity>()),
-                    mysql_live_detail::render_wheres(q.where_clauses()),
+                    mysql_live_detail::render_wheres(q.where_clauses(), lists),
                     mysql_live_detail::render_order_by(q.order_clauses()),
                     mysql_live_detail::render_limits(q.limit_clauses()));
             }
@@ -593,11 +632,12 @@ namespace orm {
             }
             
             unsigned long param_count = mysql_stmt_param_count(stmt);
-            if (param_count != sizeof...(Params))
+            const std::size_t bound = mysql_live_detail::bound_count(params...);
+            if (param_count != bound)
             {
                 mysql_stmt_close(stmt);
-                throw std::runtime_error(std::format("Parameter count mismatch: SQL has {} placeholders but {} parameters provided (SQL: {})", 
-                    param_count, sizeof...(Params), sql));
+                throw std::runtime_error(std::format("Parameter count mismatch: SQL has {} placeholders but {} parameters provided (SQL: {})",
+                    param_count, bound, sql));
             }
             
             // Bind parameters

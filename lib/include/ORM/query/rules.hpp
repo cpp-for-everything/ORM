@@ -2,6 +2,7 @@
 #include "ORM/details/string_literal.hpp"
 #include "ORM/query/field.hpp"
 #include "ORM/query/placeholders.hpp"
+#include "ORM/query/list_render.hpp"
 #include <concepts>
 #include <type_traits>
 #include <string_view>
@@ -38,6 +39,8 @@ namespace orm {
             else if constexpr (s == "<")   return string_literal(">=");
             else if constexpr (s == ">=")  return string_literal("<");
             else if constexpr (s == "<=")  return string_literal(">");
+            else if constexpr (s == "IN")  return string_literal("NOT IN");
+            else if constexpr (s == "NOT IN") return string_literal("IN");
             else if constexpr (s == "&&")  return string_literal("||");
             else                           return string_literal("&&");
         }
@@ -136,6 +139,29 @@ namespace orm {
     [[nodiscard]] constexpr auto operator!=(mem_ptr<P> /*a*/, std::nullptr_t)
     {
         return Rule<decltype(P), "!=", std::nullptr_t>(P, nullptr);
+    }
+
+    // ── Membership in a run-time list ─────────────────────────────────────────
+    // The right-hand side can only be a PlaceholderList, so there is no form of
+    // this operator that carries a value inside the query.
+    template <auto P, typename V>
+    [[nodiscard]] constexpr auto in(mem_ptr<P> /*a*/, PlaceholderList<V> list)
+    {
+        static_assert(
+            detail::comparable_value_types<detail::operand_value_type_t<mem_ptr<P>>, V>,
+            "orm: incompatible element type in IN. The list's element type is not "
+            "convertible to (or from) the column's C++ type.");
+        return Rule<decltype(P), "IN", PlaceholderList<V>>(P, list);
+    }
+
+    template <auto P, typename V>
+    [[nodiscard]] constexpr auto not_in(mem_ptr<P> /*a*/, PlaceholderList<V> list)
+    {
+        static_assert(
+            detail::comparable_value_types<detail::operand_value_type_t<mem_ptr<P>>, V>,
+            "orm: incompatible element type in NOT IN. The list's element type is "
+            "not convertible to (or from) the column's C++ type.");
+        return Rule<decltype(P), "NOT IN", PlaceholderList<V>>(P, list);
     }
 
     // ── Logical combination of rules ──────────────────────────────────────────
