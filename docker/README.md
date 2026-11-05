@@ -12,7 +12,7 @@ This directory contains a comprehensive Docker-based testing environment for the
    - mongo-cxx-driver 4.0.0
    - hiredis 1.2.0 (Redis)
    - cassandra-cpp-driver 2.17.1
-   - libneo4j-client 2.2.0
+   - libneo4j-omni (the maintained libneo4j-client fork)
    - SQLite3
 
 2. **Database Services**: Live database instances for integration testing

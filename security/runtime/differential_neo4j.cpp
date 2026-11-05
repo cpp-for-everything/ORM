@@ -28,6 +28,7 @@
 #include "ORM/connector/trait.hpp"
 #include "ORM/db/connectors/Neo4jDB/neo4j_live.hpp"
 #include "differential_common.hpp"
+#include "list_semantics.hpp"
 #include <algorithm>
 #include <format>
 #include <functional>
@@ -216,6 +217,9 @@ int main(int argc, char** argv)
                                     .where(orm::field<&Item::name> == orm::Placeholder<std::string>{});
         constexpr auto list = orm::select(orm::field<&Item::id>, orm::field<&Item::name>)
                                   .where(orm::in(orm::field<&Item::name>, orm::PlaceholderList<std::string>{}));
+
+        check_list_semantics<&Item::id, &Item::name>(db, [&] { fresh(admin.conn_); });
+        std::puts("list semantics: passed");
 
         Backend b;
         b.name       = "neo4j";

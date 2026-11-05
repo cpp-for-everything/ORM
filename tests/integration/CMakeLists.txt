@@ -126,17 +126,7 @@ if(TARGET orm::neo4j_live AND ORM_NEO4J_LIVE_ENABLED)
         $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -Wpedantic>
     )
 
-    add_test(
-        NAME IntegrationNeo4j
-        COMMAND ${CMAKE_COMMAND}
-            -DDB=neo4j
-            -DIMAGE=neo4j:5
-            -DHOST_PORT=7688
-            -DCONTAINER_PORT=7687
-            "-DEXTRA_DOCKER_ARGS=-e;NEO4J_AUTH=neo4j/orm_test_password"
-            "-DEXTRA_ENV_ARGS=ORM_NEO4J_USER=neo4j;ORM_NEO4J_PASSWORD=orm_test_password;ORM_NEO4J_PORT=7688"
-            -DTEST_BINARY=$<TARGET_FILE:test_neo4j_live>
-            -P ${ORM_DOCKER_RUN_SCRIPT}
-    )
-    set_tests_properties(IntegrationNeo4j PROPERTIES TIMEOUT 240)
+    # Direct test for docker-compose environment (uses existing services)
+    add_test(NAME Neo4jLive COMMAND test_neo4j_live)
+    set_tests_properties(Neo4jLive PROPERTIES TIMEOUT 60)
 endif()

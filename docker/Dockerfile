@@ -311,6 +311,21 @@ RUN mkdir -p build && cd build \
 CMD ["bash", "-c", "cd build && ctest --output-on-failure"]
 
 # ══════════════════════════════════════════════════════════════════════════════
+# Neo4j driver
+# ══════════════════════════════════════════════════════════════════════════════
+
+# libneo4j-omni is the maintained fork of libneo4j-client, the same C API, and speaks
+# the Bolt versions Neo4j 5 accepts. Pinned to the commit it was first measured with.
+FROM base-builder AS neo4j-builder
+RUN apt-get update && apt-get install -y autoconf automake libtool
+RUN git clone https://github.com/majensen/libneo4j-omni.git \
+    && cd libneo4j-omni \
+    && git checkout ec6fa41 \
+    && ./autogen.sh \
+    && ./configure --prefix=/usr/local --disable-tools --disable-werror --without-tls \
+    && make -j$(nproc) install
+
+# ══════════════════════════════════════════════════════════════════════════════
 # Combined Runtime (All Drivers)
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -337,6 +352,9 @@ COPY --from=mongodb-builder /usr/local/include/bsoncxx /usr/local/include/bsoncx
 COPY --from=mongodb-builder /usr/local/include/mongocxx /usr/local/include/mongocxx
 COPY --from=cassandra-builder /usr/local/lib/ /usr/local/lib/
 COPY --from=cassandra-builder /usr/local/include/cassandra.h /usr/local/include/
+COPY --from=neo4j-builder /usr/local/lib/libneo4j-client* /usr/local/lib/
+COPY --from=neo4j-builder /usr/local/lib/pkgconfig/neo4j-client.pc /usr/local/lib/pkgconfig/
+COPY --from=neo4j-builder /usr/local/include/neo4j-client.h /usr/local/include/
 RUN ldconfig
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -372,7 +390,7 @@ RUN mkdir -p build && cd build \
         -DORM_ENABLE_MONGODB=ON \
         -DORM_ENABLE_REDIS=ON \
         -DORM_ENABLE_CASSANDRA=ON \
-        -DORM_ENABLE_NEO4J=OFF \
+        -DORM_ENABLE_NEO4J=ON \
         -DORM_ENABLE_SQLITE=ON \
         -DORM_ENABLE_SECURITY=ON \
     && cmake --build . -j$(nproc)

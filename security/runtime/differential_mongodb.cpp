@@ -30,6 +30,7 @@
 #include "ORM/connector/trait.hpp"
 #include "ORM/db/connectors/MongoDB/mongodb_live.hpp"
 #include "differential_common.hpp"
+#include "list_semantics.hpp"
 #include <algorithm>
 #include <cstdlib>
 #include <vector>
@@ -285,6 +286,9 @@ int main(int argc, char** argv)
         orm::MongoDBLive lib = orm::MongoDBLive::connect(uri.c_str(), db_name().c_str());
         orm::db<orm::MongoDBLive> db{lib};
         mongoc_client_t* cl = lib.native();
+
+        check_list_semantics<&Item::id, &Item::name>(db, [&] { fresh(cl); });
+        std::puts("list semantics: passed");
 
         Backend b;
         b.name       = "mongodb";

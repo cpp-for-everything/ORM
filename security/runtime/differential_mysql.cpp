@@ -18,6 +18,7 @@
 #include "ORM/connector/trait.hpp"
 #include "ORM/db/connectors/MySQLDB/mysql_live.hpp"
 #include "differential_common.hpp"
+#include "list_semantics.hpp"
 #include <cstdlib>
 
 struct Item
@@ -213,6 +214,9 @@ int main(int argc, char** argv)
 
         fresh(admin.c);
         if (!snapshot(admin.c).ok()) throw std::runtime_error("a snapshot query failed, the oracle would be blind");
+        check_list_semantics<&Item::id, &Item::name>(db, [&] { fresh(admin.c); });
+        std::puts("list semantics: passed");
+
         Backend b;
         b.name       = "mysql";
         b.control    = "apple";

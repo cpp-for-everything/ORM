@@ -82,6 +82,24 @@ services:
     networks:
       - orm-network
 
+  # The transaction timeout keeps a slow payload in the differential test from
+  # hanging the run.
+  neo4j:
+    image: neo4j:5.26
+    environment:
+      NEO4J_AUTH: neo4j/orm_test_password
+      NEO4J_db_transaction_timeout: 6s
+      NEO4J_server_bolt_tls__level: DISABLED
+    ports:
+      - "7687:7687"
+    healthcheck:
+      test: ["CMD-SHELL", "cypher-shell -u neo4j -p orm_test_password 'RETURN 1'"]
+      interval: 5s
+      timeout: 10s
+      retries: 30
+    networks:
+      - orm-network
+
   # ══════════════════════════════════════════════════════════════════════════════
   # Unit + MockDB Tests (no external DB required)
   # ══════════════════════════════════════════════════════════════════════════════
@@ -209,6 +227,8 @@ services:
         condition: service_healthy
       cassandra:
         condition: service_healthy
+      neo4j:
+        condition: service_healthy
     environment:
       ORM_MYSQL_HOST: mariadb
       ORM_MYSQL_PORT: 3306
@@ -229,6 +249,10 @@ services:
       ORM_REDIS_PORT: 6379
       ORM_CASSANDRA_CONTACT_POINTS: cassandra
       ORM_CASSANDRA_PORT: 9042
+      ORM_NEO4J_HOST: neo4j
+      ORM_NEO4J_PORT: 7687
+      ORM_NEO4J_USER: neo4j
+      ORM_NEO4J_PASSWORD: orm_test_password
       # Probe is compiled whenever mysql live is on; run it instead of GTEST_SKIP.
       ORM_TEST_MYSQL_LIVE: "1"
     networks:

@@ -16,6 +16,7 @@
 #include "ORM/connector/trait.hpp"
 #include "ORM/db/connectors/PostgreSQLDB/postgresql_live.hpp"
 #include "differential_common.hpp"
+#include "list_semantics.hpp"
 #include <cstdlib>
 #include <format>
 #include <memory>
@@ -201,6 +202,9 @@ int main(int argc, char** argv)
 
         fresh(admin.c);
         if (!snapshot(admin.c).ok()) throw std::runtime_error("a snapshot query failed, the oracle would be blind");
+        check_list_semantics<&Item::id, &Item::name>(db, [&] { fresh(admin.c); });
+        std::puts("list semantics: passed");
+
         Backend b;
         b.name       = "postgresql";
         b.control    = "apple";
