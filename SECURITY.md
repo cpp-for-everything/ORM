@@ -88,18 +88,6 @@ The claim above is deliberately narrow. These are outside it.
 5. **The driver is trusted.** A flaw in libpq, hiredis, bsoncxx, libneo4j-client or the Cassandra
    driver is outside this boundary.
 
-## Latent risk being tracked
-
-`to_sql_literal` in
-[`MySQLDB/mysql_live.hpp:249`](lib/include/ORM/db/connectors/MySQLDB/mysql_live.hpp) builds SQL by
-**escaping and inlining** a value instead of binding it. Its own comment describes it as being for
-queries without prepared statements.
-
-**It is currently dead code.** A search of `lib/` and `tests/` finds the definition and no call
-site, so no live path uses it. It is recorded here because escaping is a weaker mechanism than
-binding, and because a future contributor could wire it up without realising the guarantee is
-different on that path. It should be removed or quarantined behind an explicit opt in.
-
 ## Verification
 
 The claims above are tested, not only argued. See [`security/`](security/README.md).

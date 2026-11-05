@@ -160,7 +160,7 @@ Honest limits. A model that only lists successes is not a model.
 
 | Risk | Status | Why |
 |---|---|---|
-| `to_sql_literal` escaping path | **Dead code, tracked** | `MySQLDB/mysql_live.hpp:249` escapes and inlines rather than binds. Searching `lib/` and `tests/` finds the definition and no caller. Escaping is weaker than binding. It should be removed or put behind an explicit opt in before someone wires it up. |
+| `to_sql_literal` escaping path | **Removed, November 2026** | The MySQL connector held an unused function that escaped and inlined a value instead of binding it. It had no caller. It is gone, so no connector contains an escaping path. |
 | Literal operands in the IR | **Fixed, November 2026** | Silently compared against NULL. Now a compile error at every entry point. See section 2, level 1. |
 | Second order injection | **Out of scope** | A value read from the database and later used as an identifier by application code is invisible here. |
 | Application logic flaws | **Out of scope** | Missing authorisation and over broad filters are not injection. |

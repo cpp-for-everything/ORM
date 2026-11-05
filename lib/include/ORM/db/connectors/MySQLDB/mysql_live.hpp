@@ -236,40 +236,6 @@ namespace orm {
             }
         }
 
-        // Escape string for MySQL
-        [[nodiscard]] inline std::string escape_string(MYSQL* conn, const std::string& s)
-        {
-            std::vector<char> buf(s.size() * 2 + 1);
-            mysql_real_escape_string(conn, buf.data(), s.c_str(), s.size());
-            return std::string(buf.data());
-        }
-
-        // Build SQL with inline parameter substitution (for queries without prepared statements)
-        template <typename T>
-        [[nodiscard]] std::string to_sql_literal(MYSQL* conn, const T& v)
-        {
-            using D = std::decay_t<T>;
-            if constexpr (std::is_same_v<D, std::nullptr_t>)
-                return "NULL";
-            else if constexpr (std::is_same_v<D, bool>)
-                return v ? "1" : "0";
-            else if constexpr (std::is_integral_v<D>)
-                return std::to_string(v);
-            else if constexpr (std::is_floating_point_v<D>)
-                return std::to_string(v);
-            else if constexpr (std::is_same_v<D, std::string>)
-                return "'" + escape_string(conn, v) + "'";
-            else if constexpr (std::is_same_v<D, std::u8string>)
-            {
-                std::string s(reinterpret_cast<const char*>(v.data()), v.size());
-                return "'" + escape_string(conn, s) + "'";
-            }
-            else if constexpr (std::is_same_v<D, const char*> || std::is_same_v<D, char*>)
-                return "'" + escape_string(conn, std::string(v)) + "'";
-            else
-                return "NULL";
-        }
-
         // Convert MySQL field to typed column T
         template <typename T>
         [[nodiscard]] T convert_field(const char* field, unsigned long length)
