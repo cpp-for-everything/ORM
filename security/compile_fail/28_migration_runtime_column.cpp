@@ -3,9 +3,9 @@
 #include "common.hpp"
 #include "ORM/db/migration/ddl.hpp"
 
-int main(int argc, char**)
+int main()
 {
-    auto column = argc > 1 ? &Item::id : &Item::owner;
+    auto column = &Item::id;                       // right type, but not a constant
     auto meta   = orm::entity_meta_of<column>();   // must not compile
     (void)meta;
     return 0;
