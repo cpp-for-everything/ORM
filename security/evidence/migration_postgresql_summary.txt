@@ -1,6 +1,6 @@
 backend: postgresql
 server: PostgreSQL 15.19 (Debian 15.19-1.pgdg13+2)
-control (add columns, keyword name, idempotent, create table): passed
+control (add columns, keyword name, idempotent, create table, one statement per call): passed
 inputs: 30 (22 corpus, 8 constructed)
 runs: 120 (inputs times 4 positions)
 naive compromised: 4 (4 by constructed inputs)

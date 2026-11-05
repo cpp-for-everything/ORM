@@ -1,6 +1,6 @@
 backend: mysql
 server: MySQL-compatible server 10.11.19-MariaDB-ubu2204
-control (add columns, keyword name, idempotent, create table): passed
+control (add columns, keyword name, idempotent, create table, one statement per call): passed
 inputs: 32 (24 corpus, 8 constructed)
 runs: 128 (inputs times 4 positions)
 naive compromised: 3 (3 by constructed inputs)
