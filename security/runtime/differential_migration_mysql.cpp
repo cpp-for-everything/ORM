@@ -94,6 +94,9 @@ int main(int argc, char** argv)
             orm::migrate<orm::MySQLLiveDB> m{lib};
             return m.sync(std::span<const orm::entity_meta>(&e, 1), orm::destructive_ops::allow);
         };
+        s.execute_ddl = [&](const std::string& sql) {
+            orm::connector_trait<orm::MySQLLiveDB>::execute_ddl(lib, sql);
+        };
         const int rc = run_migration_differential(argc, argv, s);
         mysql_close(c);
         return rc;

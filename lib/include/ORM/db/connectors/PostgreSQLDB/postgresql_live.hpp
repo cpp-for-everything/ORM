@@ -575,8 +575,8 @@ namespace orm {
         [[nodiscard]] static live_schema read_schema(PostgreSQLLiveDB& db)
         {
             PGresult* res = PQexec(db.native(),
-                "SELECT table_name, column_name, data_type FROM information_schema.columns "
-                "WHERE table_schema = current_schema()");
+                "SELECT table_name, column_name, data_type, character_maximum_length "
+                "FROM information_schema.columns WHERE table_schema = current_schema()");
             if (PQresultStatus(res) != PGRES_TUPLES_OK)
             {
                 std::string err = PQerrorMessage(db.native());
@@ -585,7 +585,13 @@ namespace orm {
             }
             live_schema out;
             for (int i = 0; i < PQntuples(res); ++i)
-                out[PQgetvalue(res, i, 0)][PQgetvalue(res, i, 1)] = ddl::upper(PQgetvalue(res, i, 2));
+            {
+                // The server's name for VARCHAR(n), with the length in its own column.
+                std::string type = ddl::upper(PQgetvalue(res, i, 2));
+                if (type == "CHARACTER VARYING" && !PQgetisnull(res, i, 3))
+                    type = std::format("VARCHAR({})", PQgetvalue(res, i, 3));
+                out[PQgetvalue(res, i, 0)][PQgetvalue(res, i, 1)] = std::move(type);
+            }
             PQclear(res);
             return out;
         }

@@ -231,6 +231,21 @@ TEST_F(MigrateSqlite, ExecuteDdlRefusesASecondStatement)
     EXPECT_FALSE(has_table("a"));
 }
 
+// The checks pass and the server refuses the second statement, a duplicate column, after
+// the first has run. Nothing of the migration may remain.
+TEST_F(MigrateSqlite, AFailureOnTheServerRollsTheWholeMigrationBack)
+{
+    exec("CREATE TABLE t (id INTEGER)");
+    const std::vector<entity_meta> entities{
+        {"t", {{"id", "INTEGER"}, {"added", "TEXT"}}},
+        {"u", {{"a", "TEXT"}, {"a", "TEXT"}}},
+    };
+    EXPECT_THROW((void)mig.sync(entities), std::runtime_error);
+    EXPECT_FALSE(has_column("t", "added"));
+    EXPECT_FALSE(has_table("u"));
+    EXPECT_EQ(mig.state(), migration_state::Failed);
+}
+
 TEST_F(MigrateSqlite, ChangingATypeIsRefusedHere)
 {
     exec("CREATE TABLE t (id INTEGER)");

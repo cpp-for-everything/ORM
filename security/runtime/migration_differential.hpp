@@ -57,6 +57,7 @@ namespace orm_security
         std::function<bool(const std::string&)>     naive_exec;  // stacked statements allowed
         std::function<bool(const std::string&)>     plant_column;// add a column of exactly this name
         std::function<int(const orm::entity_meta&)> migrate;     // orm::migrate<DB>::sync, drops allowed
+        std::function<void(const std::string&)>     execute_ddl; // connector_trait<DB>::execute_ddl
     };
 
     struct MigrationRun
@@ -136,7 +137,8 @@ namespace orm_security
     }
 
     // The migration must still do its job: add a column, create a table, handle a name
-    // that is a keyword, and find nothing to do the second time.
+    // that is a keyword, and find nothing to do the second time. And the connector's
+    // own rule must hold with the checks out of the way: one call, one statement.
     inline bool control(const MigrationStore& s, std::string& why)
     {
         try
@@ -149,10 +151,29 @@ namespace orm_security
                 { why = "columns were not added"; return false; }
             s.migrate(keyword);
             if (s.catalogue() != after) { why = "a second run changed the schema"; return false; }
-            s.migrate({"sec_created", {{"id", "INTEGER"}, {"note", "VARCHAR(40)"}}});
-            if (s.catalogue().find("sec_created") == std::string::npos)
+            const orm::entity_meta created{"sec_created", {{"id", "INTEGER"}, {"note", "VARCHAR(40)"}}};
+            s.migrate(created);
+            const std::string with_table = s.catalogue();
+            if (with_table.find("sec_created") == std::string::npos)
                 { why = "the table was not created"; return false; }
+            s.migrate(created);
+            if (s.catalogue() != with_table) { why = "a second run changed a VARCHAR column"; return false; }
             s.naive_exec("DROP TABLE sec_created");
+
+            s.reset();
+            const std::string before = s.protected_state();
+            bool refused = false;
+            try
+            {
+                s.execute_ddl("CREATE TABLE sec_second (a TEXT); DROP TABLE sec_users");
+            }
+            catch (const std::exception&)
+            {
+                refused = true;
+            }
+            if (!refused) { why = "a call with two statements was accepted"; return false; }
+            if (s.protected_state() != before || s.catalogue().find("sec_second") != std::string::npos)
+                { why = "part of a two statement call ran"; return false; }
             return true;
         }
         catch (const std::exception& e)
@@ -210,7 +231,7 @@ namespace orm_security
 
         std::ofstream sum(argv[4], std::ios::binary);
         sum << "backend: " << s.name << "\nserver: " << s.server << "\n";
-        sum << "control (add columns, keyword name, idempotent, create table): passed\n";
+        sum << "control (add columns, keyword name, idempotent, create table, one statement per call): passed\n";
         sum << "inputs: " << inputs.size() << " (" << sourced << " corpus, "
             << inputs.size() - sourced << " constructed)\n";
         sum << "runs: " << runs << " (inputs times 4 positions)\n";

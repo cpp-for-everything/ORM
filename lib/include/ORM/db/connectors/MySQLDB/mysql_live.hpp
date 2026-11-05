@@ -549,8 +549,8 @@ namespace orm {
         [[nodiscard]] static live_schema read_schema(MySQLLiveDB& db)
         {
             constexpr const char* sql =
-                "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE FROM information_schema.COLUMNS "
-                "WHERE TABLE_SCHEMA = DATABASE()";
+                "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH "
+                "FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE()";
             if (mysql_query(db.native(), sql) != 0)
                 throw std::runtime_error(std::format("MySQL schema read failed: {}", mysql_error(db.native())));
             MYSQL_RES* res = mysql_store_result(db.native());
@@ -558,16 +558,17 @@ namespace orm {
                 throw std::runtime_error(std::format("MySQL schema read failed: {}", mysql_error(db.native())));
             live_schema out;
             while (MYSQL_ROW row = mysql_fetch_row(res))
-                out[row[0]][row[1]] = canonical_type(row[2]);
+                out[row[0]][row[1]] = canonical_type(row[2], row[3]);
             mysql_free_result(res);
             return out;
         }
 
     private:
         // The server reports its own spelling of the types a migration asks for.
-        [[nodiscard]] static std::string canonical_type(std::string_view reported)
+        [[nodiscard]] static std::string canonical_type(std::string_view reported, const char* length)
         {
             const std::string t = ddl::upper(reported);
+            if (t == "VARCHAR" && length != nullptr) return std::format("VARCHAR({})", length);
             if (t == "INT")     return "INTEGER";
             if (t == "DOUBLE")  return "DOUBLE PRECISION";
             if (t == "TINYINT") return "BOOLEAN";
