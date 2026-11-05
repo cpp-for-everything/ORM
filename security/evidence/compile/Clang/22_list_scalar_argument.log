@@ -1,0 +1,9 @@
+case:     22_list_scalar_argument
+expected: fail
+result:   rejected
+regex:    incompatible with the
+verdict:  TRUE
+compiler: Clang 18.1.3
+
+<repo>/lib/include/ORM/connector/param_check.hpp:412:25: error: static assertion failed due to requirement 'positional_types_ok<std::tuple<orm::PlaceholderList<std::basic_string<char, std::char_traits<char>, std::allocator<char>>>>, std::tuple<std::basic_string<char, std::char_traits<char>, std::allocator<char>>>>(std::integer_sequence<unsigned long, 0>{})': orm: a runtime parameter type is incompatible with the placeholder it binds to. Check the argument types passed to execute() against the Placeholder<T> types declared in the query (parameters bind positionally in clause order).
+1 error generated.

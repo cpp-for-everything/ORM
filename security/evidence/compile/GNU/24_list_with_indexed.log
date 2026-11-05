@@ -1,0 +1,8 @@
+case:     24_list_with_indexed
+expected: fail
+result:   rejected
+regex:    cannot share a query
+verdict:  TRUE
+compiler: GNU 14.2.0
+
+<repo>/lib/include/ORM/connector/param_check.hpp:393:38: error: static assertion failed: orm: a list placeholder cannot share a query with indexed placeholders (orm::ph<T,_N>). A list expands to a run-time number of positions, so indexed positions would no longer line up. Use orm::Placeholder<T> for the other values.

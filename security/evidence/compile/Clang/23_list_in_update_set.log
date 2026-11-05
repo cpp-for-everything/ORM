@@ -1,0 +1,10 @@
+case:     23_list_in_update_set
+expected: fail
+result:   rejected
+regex:    literal operand
+verdict:  TRUE
+compiler: Clang 18.1.3
+
+<repo>/lib/include/ORM/connector/param_check.hpp:345:17: error: static assertion failed due to requirement '!query_has_literal<orm::update_query<Item, orm::detail::orm_tuple<orm::UpdateStatement<orm::mem_ptr<&Item::name>, orm::PlaceholderList<std::basic_string<char, std::char_traits<char>, std::allocator<char>>>>>, orm::detail::orm_tuple<orm::Rule<orm::property<int, orm::detail::string_literal<3>{"id"}> Item::*, orm::detail::string_literal<3>{"=="}, orm::Placeholder<int>>>>>::value': orm: a literal operand reaches execution. A value was written directly into the query, as in `field<&T::col> == value` or `.set(field<&T::col>, value)`. No connector binds such a value: it is left as an unbound parameter that the database reads as NULL, so the query silently returns wrong results. Pass the value through a typed placeholder instead, `field<&T::col> == orm::Placeholder<V>{}`, and supply it to execute(), or use orm::ph<V, _N>.
+<repo>/lib/include/ORM/connector/param_check.hpp:402:21: error: static assertion failed due to requirement 'n_ph == sizeof...(Params)': orm: wrong number of runtime parameters passed to execute(). The argument count does not match the number of anonymous placeholders (orm::Placeholder<T>) in the query's clauses. Note: queries with no placeholders should be executed via `db << query`, and indexed placeholders (orm::ph<T,_N>) are validated by the connector.
+2 errors generated.

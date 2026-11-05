@@ -1,0 +1,20 @@
+backend: postgresql
+server: PostgreSQL 15.19 (Debian 15.19-1.pgdg13+2)
+control (add columns, keyword name, idempotent, create table): passed
+inputs: 30 (22 corpus, 8 constructed)
+runs: 120 (inputs times 4 positions)
+naive compromised: 4 (4 by constructed inputs)
+orm unsafe: no
+
+naive column COMPROMISED_STATE: 1
+naive column SYNTAX_ALTERED: 29
+naive live_column COMPROMISED_STATE: 1
+naive live_column SYNTAX_ALTERED: 29
+naive table COMPROMISED_STATE: 1
+naive table SYNTAX_ALTERED: 29
+naive type COMPROMISED_STATE: 1
+naive type SYNTAX_ALTERED: 29
+orm   column REFUSED: 30
+orm   live_column REFUSED: 30
+orm   table REFUSED: 30
+orm   type REFUSED: 30

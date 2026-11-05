@@ -1,0 +1,21 @@
+backend: mysql
+server: MySQL-compatible server 10.11.19-MariaDB-ubu2204
+control (add columns, keyword name, idempotent, create table): passed
+inputs: 32 (24 corpus, 8 constructed)
+runs: 128 (inputs times 4 positions)
+naive compromised: 3 (3 by constructed inputs)
+orm unsafe: no
+
+naive column COMPROMISED_STATE: 1
+naive column SYNTAX_ALTERED: 31
+naive live_column COMPROMISED_STATE: 1
+naive live_column SKIPPED: 3
+naive live_column SYNTAX_ALTERED: 28
+naive table COMPROMISED_STATE: 1
+naive table SYNTAX_ALTERED: 31
+naive type SYNTAX_ALTERED: 32
+orm   column REFUSED: 32
+orm   live_column REFUSED: 29
+orm   live_column SKIPPED: 3
+orm   table REFUSED: 32
+orm   type REFUSED: 32

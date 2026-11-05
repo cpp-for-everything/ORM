@@ -1,0 +1,8 @@
+case:     25_list_without_argument
+expected: fail
+result:   rejected
+regex:    needs its argument
+verdict:  TRUE
+compiler: GNU 14.2.0
+
+<repo>/lib/include/ORM/connector/param_check.hpp:364:14: error: static assertion failed: orm: a list placeholder needs its argument. A query with orm::PlaceholderList must run through execute(query, values...), where the std::vector supplies the list.

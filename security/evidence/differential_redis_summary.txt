@@ -1,10 +1,11 @@
 backend: redis
 server: Redis 7.2.17
 naive path: command text built by concatenation and sent in the inline protocol, CR LF ends a command
-control (benign lookup of apple): naive rows 1, library rows 1
+control (benign lookup of apple): naive rows 1, library rows 1, list rows -1
 applicable payloads: 5
 naive compromised: 2
 orm with any effect: 0
+orm list: not supported by this connector
 
 naive COMPROMISED_STATE: 2
 naive SYNTAX_ALTERED: 3

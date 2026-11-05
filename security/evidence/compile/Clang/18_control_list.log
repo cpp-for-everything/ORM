@@ -1,0 +1,7 @@
+case:     18_control_list
+expected: pass
+result:   compiled
+regex:    
+verdict:  TRUE
+compiler: Clang 18.1.3
+

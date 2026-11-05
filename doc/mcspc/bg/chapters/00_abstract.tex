@@ -13,8 +13,8 @@ SQLite, Cassandra, MongoDB, Neo4j и Redis.
 структура на заявката е формулиран аргумент: когато имената на таблици и колони и
 формата на заявката са аргументи на шаблони, а стойностите достигат заявката само
 чрез свързани типизирани заместители, недоверен вход не може да промени
-структурата. Аргументът е проверен с три независими метода: 15 отрицателни
-компилационни теста и 3 контролни случая, с проверка на диагностиката при GCC 14.2
+структурата. Аргументът е проверен с три независими метода: 26 отрицателни
+компилационни теста и 5 контролни случая, с проверка на диагностиката при GCC 14.2
 и Clang 18.1; диференциален тест, при който всеки приложим полезен товар от корпус
 от 66 публикувани полезни товара от 11 източника се подава към съзнателно уязвима
 заявка и към библиотеката; и анализ на изходния код на всеки конектор.
@@ -23,20 +23,29 @@ SQLite, Cassandra, MongoDB, Neo4j и Redis.
 пропуск в нея: стойност, записана направо в заявката вместо чрез заместител, се
 приемаше, но не се свързваше, и заявката тихо връщаше грешни резултати. Пропускът
 е затворен с проверка по време на компилация във всички седем входни точки, при
-запазено успешно изпълнение на 314-те съществуващи и 23-те нови теста. При SQLite
+запазено успешно изпълнение на всички съществуващи тестове. При SQLite
 наивната заявка беше компрометирана от 4 от 22 приложими полезни товара,
 включително с извличане на съхранена идентификационна информация, а библиотеката
 от нито един. Тестът беше изпълнен и срещу работещи сървъри на PostgreSQL, MySQL,
-MongoDB, Redis и Cassandra в система за непрекъсната интеграция. Общо за шестте
-хранилища през библиотеката не е имала ефект нито една от 92-те двойки на
-полезен товар и хранилище, съставени от 60 различни полезни товара. Наивният път е компрометиран от по 2 полезни товара при
-PostgreSQL, MySQL, MongoDB и Redis. При Cassandra той не е компрометиран от нито
-един и сравнението е неубедително. Neo4j не е измерен.
+MongoDB, Redis, Cassandra и Neo4j в система за непрекъсната интеграция. Общо за
+седемте хранилища през библиотеката не е имала ефект нито една от 98-те
+двойки на полезен товар и хранилище, съставени от всички 66 полезни товара.
+Наивният път е компрометиран от по 2 полезни товара при PostgreSQL, MySQL,
+MongoDB, Redis и Neo4j. При Cassandra той не е компрометиран от нито един и
+сравнението е неубедително.
+
+Библиотеката беше разширена в две посоки, в които гаранцията не е очевидна. При
+условия \code{IN} и \code{NOT IN} вход по време на изпълнение определя дължината
+на списък, но текстът на заявката получава само броя на маркерите. Миграциите
+работят с имена, прочетени обратно от самото хранилище, затова там гаранцията е
+проверка по време на изпълнение, а не компилация. Тя е измерена и при инжекция от
+втори ред: наивният DDL е компрометиран при 14 от 368 изпълнения,
+всички от съставени входове, а библиотеката при нито едно.
 
 Приносите на работата са аргумент за предотвратяване на инжекциите чрез
 конструиране по време на компилация, разширен извън SQL; възпроизводим набор за
-оценка с корпус с посочени източници; и открит и затворен пропуск в гаранцията.
-Измерването при Neo4j остава бъдеща работа.
+оценка с корпус с посочени източници; открит и затворен пропуск в гаранцията; и
+определена граница на гаранцията при списъци и операции по схемата.
 
 \bigskip
 \noindent\textbf{Ключови думи:} инжекционни атаки, предотвратяване на
@@ -57,8 +66,8 @@ Building on the definition of injection as a change to the syntactic structure
 of a query, the thesis argues that when table names, column names and the shape
 of the query are template arguments, and values reach the query only through
 bound, typed placeholders, untrusted input cannot change that structure. The
-argument is tested by three independent methods: 15 negative compilation tests
-and 3 control cases, with diagnostic matching under GCC 14.2 and Clang 18.1; a
+argument is tested by three independent methods: 26 negative compilation tests
+and 5 control cases, with diagnostic matching under GCC 14.2 and Clang 18.1; a
 differential test that sends every applicable payload from a corpus of 66
 published payloads from 11 sources both to a deliberately vulnerable query and to
 the library; and an analysis of the source of every connector.
@@ -67,19 +76,26 @@ The analysis found that the guarantee is achieved by four different mechanisms,
 and found a gap in it: a value written directly into a query instead of through a
 placeholder was accepted but never bound, and the query silently returned wrong
 results. The gap is closed by a compile-time check at all seven entry points,
-with all 314 existing and 23 new tests passing. On SQLite the vulnerable query
+with all existing tests still passing. On SQLite the vulnerable query
 was compromised by 4 of 22 applicable payloads, including the theft of a stored
 credential, and the library by none. The test was then run against live servers
-of PostgreSQL, MySQL, MongoDB, Redis and Cassandra in a continuous integration
-system. Across the six stores, none of the 92 pairs of payload and store, made up
-of 60 distinct payloads, had an effect through the library. The naive path was compromised by 2 payloads each on
-PostgreSQL, MySQL, MongoDB and Redis. On Cassandra it was never compromised, so
-the comparison is inconclusive. Neo4j was not measured.
+of PostgreSQL, MySQL, MongoDB, Redis, Cassandra and Neo4j in a continuous
+integration system. Across the seven stores, none of the 98 pairs of payload
+and store, covering all 66 payloads, had an effect through the library. The naive
+path was compromised by 2 payloads each on PostgreSQL, MySQL, MongoDB, Redis and
+Neo4j. On Cassandra it was never compromised, so the comparison is inconclusive.
+
+The library was extended in two directions where the guarantee is not obvious. For
+\code{IN} and \code{NOT IN}, run-time input sets the length of a list, but the query
+text receives only the number of markers. Migrations work with names read back from
+the store itself, so there the guarantee is a run-time check and not a compile-time
+one. It was measured, including second order injection: the naive DDL was compromised
+in 14 of 368 runs, all by constructed inputs, and the library in none.
 
 The contributions are an argument for preventing injection by compile-time
 construction, extended beyond SQL; a reproducible evaluation suite with a sourced
-corpus; and a gap in the guarantee, found and closed. Measurement on Neo4j
-remains future work.
+corpus; a gap in the guarantee, found and closed; and the boundary of the guarantee
+for lists and schema operations, located and measured.
 
 \bigskip
 \noindent\textbf{Keywords:} injection attacks, cybercrime prevention, secure by

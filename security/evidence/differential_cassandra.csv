@@ -1,5 +1,5 @@
-id,dialect,technique,template,naive_outcome,naive_rows,orm_outcome,orm_rows
-CQL-001,cassandra,comment,no,NO_EFFECT,0,NO_EFFECT,0
-CQL-002,cassandra,auth-bypass,no,SYNTAX_ALTERED,0,NO_EFFECT,0
-CQL-003,cassandra,auth-bypass,no,SYNTAX_ALTERED,0,NO_EFFECT,0
-CQL-004,cassandra,auth-bypass,no,SYNTAX_ALTERED,0,NO_EFFECT,0
+id,dialect,technique,template,naive_outcome,naive_rows,orm_outcome,orm_rows,orm_list_outcome,orm_list_rows
+CQL-001,cassandra,comment,no,NO_EFFECT,0,NO_EFFECT,0,-,-
+CQL-002,cassandra,auth-bypass,no,SYNTAX_ALTERED,0,NO_EFFECT,0,-,-
+CQL-003,cassandra,auth-bypass,no,SYNTAX_ALTERED,0,NO_EFFECT,0,-,-
+CQL-004,cassandra,auth-bypass,no,SYNTAX_ALTERED,0,NO_EFFECT,0,-,-

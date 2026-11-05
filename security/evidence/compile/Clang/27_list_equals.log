@@ -1,0 +1,9 @@
+case:     27_list_equals
+expected: fail
+result:   rejected
+regex:    incompatible operand types
+verdict:  TRUE
+compiler: Clang 18.1.3
+
+<repo>/lib/include/ORM/query/rules.hpp:124:5: error: static assertion failed due to requirement 'detail::comparable_value_types<std::basic_string<char, std::char_traits<char>, std::allocator<char>>, orm::PlaceholderList<std::basic_string<char, std::char_traits<char>, std::allocator<char>>>>': orm: incompatible operand types in a field comparison. The right-hand value's C++ type is not convertible to (or from) the column's C++ type. Check the literal/placeholder type against the property<> declaration of the field.
+1 error generated.

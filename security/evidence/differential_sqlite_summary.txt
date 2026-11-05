@@ -2,8 +2,10 @@ backend: sqlite
 applicable payloads: 22
 naive compromised: 4
 orm with any effect: 0
+orm list with any effect: 0
 
 naive COMPROMISED_ROWS: 4
 naive NO_EFFECT: 8
 naive SYNTAX_ALTERED: 10
 orm   NO_EFFECT: 22
+list  NO_EFFECT: 22

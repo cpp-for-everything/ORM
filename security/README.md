@@ -64,5 +64,15 @@ command sent in the inline protocol so that CR LF starts a second command (Redis
 The failure rule differs from SQLite on purpose. A server harness fails only if a
 payload has an effect through the library. If the naive path is never compromised
 the harness passes and the summary says the comparison is inconclusive for that
-backend. Neo4j is not measured: the image has no `libneo4j-client` and the compose
-file has no Neo4j service. See `evidence/differential_neo4j_summary.txt`.
+backend. Every harness also sends each payload through `IN`, and the server harnesses
+check what `IN` and `NOT IN` mean on the live server before the corpus runs
+(`runtime/list_semantics.hpp`).
+
+## Migrations
+
+`runtime/migration_differential.hpp` sends every SQL payload and the inputs in
+`corpus/identifier_cases.csv` through four positions: table name, column name, column
+type, and a column planted in the live database and read back, the second order case.
+Those eight inputs were constructed for this test, because the published payloads target
+value positions. They are kept out of `corpus/payloads.csv` and are never counted as
+corpus payloads.

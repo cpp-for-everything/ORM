@@ -1,0 +1,8 @@
+case:     26_list_unsupported_connector
+expected: fail
+result:   rejected
+regex:    does not support IN
+verdict:  TRUE
+compiler: GNU 14.2.0
+
+<repo>/lib/include/ORM/connector/param_check.hpp:375:59: error: static assertion failed: orm: this connector does not support IN / NOT IN. It does not declare `using supports_list_placeholder = void

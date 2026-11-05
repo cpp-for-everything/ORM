@@ -1,0 +1,9 @@
+case:     28_migration_runtime_column
+expected: fail
+result:   rejected
+regex:    no matching function for call to.*entity_meta_of
+verdict:  TRUE
+compiler: Clang 18.1.3
+
+<repo>/security/compile_fail/28_migration_runtime_column.cpp:9:19: error: no matching function for call to 'entity_meta_of'
+1 error generated.

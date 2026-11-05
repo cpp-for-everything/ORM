@@ -1,0 +1,7 @@
+case:     18_control_list
+expected: pass
+result:   compiled
+regex:    
+verdict:  TRUE
+compiler: GNU 14.2.0
+

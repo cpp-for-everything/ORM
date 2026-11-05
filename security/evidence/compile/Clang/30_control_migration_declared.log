@@ -1,0 +1,7 @@
+case:     30_control_migration_declared
+expected: pass
+result:   compiled
+regex:    
+verdict:  TRUE
+compiler: Clang 18.1.3
+

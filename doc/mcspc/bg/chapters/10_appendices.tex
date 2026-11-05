@@ -5,11 +5,7 @@
 \subsection*{Приложение А. Възпроизвеждане на резултатите}
 \label{app:reproduce}
 
-Изходният код е публично достъпен в \url{https://github.com/cpp-for-everything/ORM}.
-Резултатите със SQLite и компилационните тестове в глава~\ref{sec:evaluation} са
-получени с версия \code{a17f4e7}. Резултатите със сървърните хранилища са от
-изпълнение \code{41870491654} на работния процес \code{Docker Integration Tests}
-върху комит \code{61255de}.
+Изходният код придружава работата.
 Наборът за оценка се изгражда и изпълнява със следните команди, от корена на
 хранилището:
 
@@ -41,14 +37,16 @@ ctest --test-dir build-security -L security --output-on-failure
 \toprule
 \textbf{Част} & \textbf{Съдържание} \\
 \midrule
-компилационни тестове & 18 програми и общата им постановка \\
+компилационни тестове & 31 програми и общата им постановка \\
 проверка на компилационните тестове & проверка на изхода и на диагностиката на всеки компилационен тест \\
+съставени входове & 8 входа за позиция на идентификатор, отделно от корпуса \\
 корпус & 66 полезни товара с колони за идентификатор, клас, диалект, техника, текст, очакван ефект и източник \\
 източници на корпуса & 11 публични източника \\
 тест със SQLite & диференциалният тест със SQLite \\
-тестове със сървъри & пет програми: диференциалните тестове със сървърите на PostgreSQL, MySQL, MongoDB, Redis и Cassandra \\
+тестове със сървъри & шест програми: диференциалните тестове със сървърите на PostgreSQL, MySQL, MongoDB, Redis, Cassandra и Neo4j \\
+тестове на миграциите & три програми, за SQLite, PostgreSQL и MySQL, с общ драйвер \\
 общ драйвер & общият драйвер на сървърните тестове: контрол, оракул, резюме и правило за неуспех \\
-именувани тестове & четири именувани теста на пътя през заместител \\
+именувани тестове & тестове на пътя през заместител, на списъците и на миграциите \\
 програми за възпроизвеждане & двете програми, възпроизвеждащи пропуска преди поправката \\
 записани резултати & резюмета, записи по полезни товари и диагностики на компилаторите \\
 \bottomrule
@@ -72,23 +70,25 @@ ctest --test-dir build-security -L security --output-on-failure
 \centering
 \caption{Терминологичен речник}
 \label{tab:app-glossary}
+\small\renewcommand{\arraystretch}{1.05}
 \begin{tabularx}{\textwidth}{L{4.4cm}L{4.4cm}Y}
 \toprule
 \textbf{Термин} & \textbf{На английски} & \textbf{В кода} \\
 \midrule
 инжекция & injection & \\
 полезен товар & payload & колона \code{payload} в корпуса \\
-екраниране & escaping & \code{to\_sql\_literal} \\
+екраниране & escaping & \\
 свързване на параметри & parameter binding & \code{sqlite3\_bind\_*}, \code{PQexecParams} \\
 типизиран заместител & typed placeholder & \code{Placeholder<T>}, \code{ph<T, \_N>} \\
+заместител за списък & list placeholder & \code{PlaceholderList<T>} \\
 литерален операнд & literal operand & \code{is\_literal\_operand\_v} \\
 междинно представяне & intermediate representation & \code{select\_query} и сродните \\
 свойство & property & \code{property<T, "name">} \\
 конектор & connector & \code{connector\_trait<DB>} \\
 проверка на границата & boundary check & \code{check\_query\_shape} \\
-контролен случай & control case & случаи 00, 14 и 15 \\
+контролен случай & control case & случаи 00, 14, 15, 18 и 30 \\
 оракул & oracle & функцията \code{classify} \\
-затворен отказ & fail closed & \\
+затворен отказ & fail closed & \code{migration\_refused} \\
 объркване на параметрите & parameter confusion & \\
 \bottomrule
 \end{tabularx}

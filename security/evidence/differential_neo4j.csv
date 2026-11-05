@@ -1,0 +1,7 @@
+id,dialect,technique,template,naive_outcome,naive_rows,orm_outcome,orm_rows,orm_list_outcome,orm_list_rows
+CYPHER-001,neo4j,quote-breaking,no,SYNTAX_ALTERED,0,NO_EFFECT,0,NO_EFFECT,0
+CYPHER-002,neo4j,auth-bypass,no,SYNTAX_ALTERED,0,NO_EFFECT,0,NO_EFFECT,0
+CYPHER-003,neo4j,call-abuse,no,SYNTAX_ALTERED,0,NO_EFFECT,0,NO_EFFECT,0
+CYPHER-004,neo4j,load-csv-exfil,no,COMPROMISED_EXEC,0,NO_EFFECT,0,NO_EFFECT,0
+CYPHER-005,neo4j,load-csv-exfil,no,SYNTAX_ALTERED,0,NO_EFFECT,0,NO_EFFECT,0
+CYPHER-006,neo4j,load-csv-exfil,no,COMPROMISED_EXEC,0,NO_EFFECT,0,NO_EFFECT,0

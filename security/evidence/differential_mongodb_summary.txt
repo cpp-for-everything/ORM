@@ -1,14 +1,16 @@
 backend: mongodb
 server: MongoDB 7.0.45
 naive path: filter built by concatenation and parsed with bson_new_from_json, or a $where expression; five constructions, the most severe outcome is kept
-control (benign lookup of apple): naive rows 1, library rows 1
+control (benign lookup of apple): naive rows 1, library rows 1, list rows 1
 applicable payloads: 15
 naive compromised: 2
 orm with any effect: 0
+orm list with any effect: 0
 
 naive COMPROMISED_EXEC: 1
 naive COMPROMISED_ROWS: 1
 naive SYNTAX_ALTERED: 13
 orm   NO_EFFECT: 15
+list  NO_EFFECT: 15
 naive compromised via json_filter: 1
 naive compromised via where_whole: 1

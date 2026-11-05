@@ -1,0 +1,8 @@
+case:     27_list_equals
+expected: fail
+result:   rejected
+regex:    incompatible operand types
+verdict:  TRUE
+compiler: GNU 14.2.0
+
+<repo>/lib/include/ORM/query/rules.hpp:111:21: error: static assertion failed: orm: incompatible operand types in a field comparison. The right-hand value's C++ type is not convertible to (or from) the column's C++ type. Check the literal/placeholder type against the property<> declaration of the field.

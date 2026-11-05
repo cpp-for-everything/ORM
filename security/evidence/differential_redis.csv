@@ -1,6 +1,6 @@
-id,dialect,technique,template,naive_outcome,naive_rows,orm_outcome,orm_rows
-REDIS-001,redis,crlf,no,COMPROMISED_STATE,2,NO_EFFECT,0
-REDIS-002,redis,crlf,no,COMPROMISED_STATE,2,NO_EFFECT,0
-REDIS-003,redis,crlf,no,SYNTAX_ALTERED,0,NO_EFFECT,0
-REDIS-004,redis,crlf,no,SYNTAX_ALTERED,0,NO_EFFECT,0
-REDIS-005,redis,crlf,no,SYNTAX_ALTERED,0,NO_EFFECT,0
+id,dialect,technique,template,naive_outcome,naive_rows,orm_outcome,orm_rows,orm_list_outcome,orm_list_rows
+REDIS-001,redis,crlf,no,COMPROMISED_STATE,2,NO_EFFECT,0,-,-
+REDIS-002,redis,crlf,no,COMPROMISED_STATE,2,NO_EFFECT,0,-,-
+REDIS-003,redis,crlf,no,SYNTAX_ALTERED,0,NO_EFFECT,0,-,-
+REDIS-004,redis,crlf,no,SYNTAX_ALTERED,0,NO_EFFECT,0,-,-
+REDIS-005,redis,crlf,no,SYNTAX_ALTERED,0,NO_EFFECT,0,-,-

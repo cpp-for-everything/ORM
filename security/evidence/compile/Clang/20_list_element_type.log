@@ -1,0 +1,9 @@
+case:     20_list_element_type
+expected: fail
+result:   rejected
+regex:    incompatible element type
+verdict:  TRUE
+compiler: Clang 18.1.3
+
+<repo>/lib/include/ORM/query/rules.hpp:151:13: error: static assertion failed due to requirement 'detail::comparable_value_types<int, std::basic_string<char, std::char_traits<char>, std::allocator<char>>>': orm: incompatible element type in IN. The list's element type is not convertible to (or from) the column's C++ type.
+1 error generated.

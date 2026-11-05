@@ -1,0 +1,21 @@
+backend: sqlite
+server: SQLite 3.45.1
+control (add columns, keyword name, idempotent, create table): passed
+inputs: 30 (22 corpus, 8 constructed)
+runs: 120 (inputs times 4 positions)
+naive compromised: 7 (7 by constructed inputs)
+orm unsafe: no
+
+naive column COMPROMISED_STATE: 3
+naive column NO_EFFECT: 3
+naive column SYNTAX_ALTERED: 24
+naive live_column SYNTAX_ALTERED: 30
+naive table COMPROMISED_STATE: 1
+naive table SYNTAX_ALTERED: 29
+naive type COMPROMISED_STATE: 3
+naive type NO_EFFECT: 4
+naive type SYNTAX_ALTERED: 23
+orm   column REFUSED: 30
+orm   live_column REFUSED: 30
+orm   table REFUSED: 30
+orm   type REFUSED: 30

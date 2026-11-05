@@ -1,0 +1,8 @@
+case:     29_migration_no_ddl_path
+expected: fail
+result:   rejected
+regex:    no DDL path
+verdict:  TRUE
+compiler: GNU 14.2.0
+
+<repo>/lib/include/ORM/db/migration/migration.hpp:41:23: error: static assertion failed: orm: this connector has no DDL path. It does not provide connector_trait<DB>::ddl_dialect().

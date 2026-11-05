@@ -1,0 +1,9 @@
+case:     28_migration_runtime_column
+expected: fail
+result:   rejected
+regex:    no matching function for call to.*entity_meta_of
+verdict:  TRUE
+compiler: GNU 14.2.0
+
+<repo>/security/compile_fail/28_migration_runtime_column.cpp:9:46: error: no matching function for call to ‘entity_meta_of<column>()’
+<repo>/security/compile_fail/28_migration_runtime_column.cpp:9:46: error: ‘column’ is not a valid template argument for type ‘orm::property<int, orm::detail::string_literal<3>{"id"}> Item::*’

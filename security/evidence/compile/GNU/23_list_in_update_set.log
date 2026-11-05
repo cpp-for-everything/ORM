@@ -1,0 +1,9 @@
+case:     23_list_in_update_set
+expected: fail
+result:   rejected
+regex:    literal operand
+verdict:  TRUE
+compiler: GNU 14.2.0
+
+<repo>/lib/include/ORM/connector/param_check.hpp:402:26: error: static assertion failed: orm: wrong number of runtime parameters passed to execute(). The argument count does not match the number of anonymous placeholders (orm::Placeholder<T>) in the query's clauses. Note: queries with no placeholders should be executed via `db << query`, and indexed placeholders (orm::ph<T,_N>) are validated by the connector.
+<repo>/lib/include/ORM/connector/param_check.hpp:345:40: error: static assertion failed: orm: a literal operand reaches execution. A value was written directly into the query, as in `field<&T::col> == value` or `.set(field<&T::col>, value)`. No connector binds such a value: it is left as an unbound parameter that the database reads as NULL, so the query silently returns wrong results. Pass the value through a typed placeholder instead, `field<&T::col> == orm::Placeholder<V>{}`, and supply it to execute(), or use orm::ph<V, _N>.

@@ -1,0 +1,9 @@
+case:     29_migration_no_ddl_path
+expected: fail
+result:   rejected
+regex:    no DDL path
+verdict:  TRUE
+compiler: Clang 18.1.3
+
+<repo>/lib/include/ORM/db/migration/migration.hpp:41:23: error: static assertion failed due to requirement 'requires { <<error-expression>>
+1 error generated.

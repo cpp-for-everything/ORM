@@ -79,14 +79,41 @@ The claim above is deliberately narrow. These are outside it.
 1. **Dynamic identifiers are not supported, and that is the point.** If you need a table or column
    chosen at runtime, this library will not do it for you. Do not add a string overload to work
    around it. That overload would be the vulnerability.
-2. **Second order injection is not addressed.** If your application reads a value out of the
-   database and then uses it as an identifier somewhere else, that is your code's problem and this
-   library cannot see it.
+2. **Second order injection in your code is not addressed.** If your application reads a value out
+   of the database and then uses it as an identifier somewhere else, that is your code's problem and
+   this library cannot see it. The library's own second order path, a migration reading column names
+   back from the live database, is covered: see below.
 3. **Application logic flaws are out of scope.** Missing authorisation, returning another user's
    rows, and overly broad filters are not injection and are not prevented here.
-4. **Migrations and DDL** are not covered by the statement above and need their own review.
-5. **The driver is trusted.** A flaw in libpq, hiredis, bsoncxx, libneo4j-client or the Cassandra
+4. **The driver is trusted.** A flaw in libpq, hiredis, bsoncxx, libneo4j-client or the Cassandra
    driver is outside this boundary.
+
+## Lists: IN and NOT IN
+
+`orm::in(field, orm::PlaceholderList<T>{})` takes a `std::vector<T>` at `execute()`. On the SQL
+connectors the one thing a list changes in the statement text is the number of parameter markers,
+and the function that writes them receives the list's length, never its elements. MongoDB and Neo4j
+bind the list as one value. A list is refused at compile time in `SET`, beside indexed placeholders,
+without an argument, and on Redis and Cassandra, which do not declare support.
+
+## Migrations and DDL
+
+A migration cannot have compile time identifiers: it reads names back from the live database, where
+anyone with `CREATE` rights can have put a column of any name. `orm::migrate<DB>` therefore treats
+every name and type as untrusted.
+
+- Identifiers must match `[A-Za-z_][A-Za-z0-9_]*`, at most 63 characters, and are then quoted.
+- Types must come from a closed list. Everything else is refused, not escaped.
+- `orm::entity_meta_of<&T::a, &T::b>()` fills the entity side from its declaration, so that side
+  holds no string from anywhere else.
+- Every check runs before any statement does. Statements run one per protocol call, and a connector
+  refuses a second statement in one call.
+- `DROP COLUMN` is refused unless the caller passes `destructive_ops::allow`.
+
+Available on SQLite, PostgreSQL and MySQL. Other connectors have no DDL path, which is a compile
+error. MySQL and MariaDB commit at each DDL statement, so a failure part way through a migration
+leaves the earlier statements applied there. Quoting preserves case, so on PostgreSQL a mixed case
+name created by a migration will not match an unquoted query.
 
 ## Verification
 

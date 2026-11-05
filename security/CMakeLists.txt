@@ -168,3 +168,24 @@ foreach(_b postgresql mysql)
         orm_migration_differential(${_b} orm::${_b}_live "${_b};server")
     endif()
 endforeach()
+
+# ── 4. layout of the thesis PDF ──────────────────────────────────────────────
+#  A clean LaTeX build says nothing about a page that holds one stranded line.
+#  Needs Python with PyMuPDF. Registered only where that is present.
+find_package(Python3 COMPONENTS Interpreter QUIET)
+if(Python3_FOUND)
+    execute_process(COMMAND "${Python3_EXECUTABLE}" -c "import fitz"
+                    RESULT_VARIABLE _orm_no_fitz OUTPUT_QUIET ERROR_QUIET)
+    if(_orm_no_fitz EQUAL 0)
+        set(_orm_doc_tools "${PROJECT_SOURCE_DIR}/doc/mcspc/tools")
+        add_test(NAME thesis.layout.selftest
+            COMMAND "${Python3_EXECUTABLE}" -m unittest test_check_layout
+            WORKING_DIRECTORY "${_orm_doc_tools}")
+        add_test(NAME thesis.layout
+            COMMAND "${Python3_EXECUTABLE}" "${_orm_doc_tools}/check_layout.py"
+                    "${PROJECT_SOURCE_DIR}/doc/mcspc/bg/Main.pdf")
+        set_tests_properties(thesis.layout.selftest thesis.layout PROPERTIES LABELS "thesis")
+    else()
+        message(STATUS "ORM security: thesis layout check needs PyMuPDF, skipped.")
+    endif()
+endif()

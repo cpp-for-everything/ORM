@@ -1,0 +1,8 @@
+case:     20_list_element_type
+expected: fail
+result:   rejected
+regex:    incompatible element type
+verdict:  TRUE
+compiler: GNU 14.2.0
+
+<repo>/lib/include/ORM/query/rules.hpp:151:21: error: static assertion failed: orm: incompatible element type in IN. The list's element type is not convertible to (or from) the column's C++ type.

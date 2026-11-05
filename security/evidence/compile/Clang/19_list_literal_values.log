@@ -1,0 +1,9 @@
+case:     19_list_literal_values
+expected: fail
+result:   rejected
+regex:    no matching|no viable|deduction failed|could not convert
+verdict:  TRUE
+compiler: Clang 18.1.3
+
+<repo>/security/compile_fail/19_list_literal_values.cpp:9:17: error: no matching function for call to 'in'
+1 error generated.

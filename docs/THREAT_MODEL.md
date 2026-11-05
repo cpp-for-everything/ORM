@@ -139,7 +139,7 @@ one, and the distinction is usually lost when NoSQL injection is treated as a fo
 injection.
 
 **Neo4j is the subtle case.** The Cypher text is assembled with `std::format`, for example
-`MATCH (n:{}) RETURN {}{}` at `neo4j_live.hpp:261`. That looks like string building and deserves
+`MATCH (n:{}){} RETURN {}` in `neo4j_live.hpp`. That looks like string building and deserves
 scrutiny. The inserted fields are the label and the projection, both from `constexpr` type
 metadata, not from input. Runtime values go through a separate parameter map transmitted as typed
 Bolt values (`neo4j_live.hpp:174`). **Formatting compile time constants into a template is not
@@ -162,9 +162,9 @@ Honest limits. A model that only lists successes is not a model.
 |---|---|---|
 | `to_sql_literal` escaping path | **Removed, November 2026** | The MySQL connector held an unused function that escaped and inlined a value instead of binding it. It had no caller. It is gone, so no connector contains an escaping path. |
 | Literal operands in the IR | **Fixed, November 2026** | Silently compared against NULL. Now a compile error at every entry point. See section 2, level 1. |
-| Second order injection | **Out of scope** | A value read from the database and later used as an identifier by application code is invisible here. |
+| Second order injection in application code | **Out of scope** | A value read from the database and later used as an identifier by application code is invisible here. The library's own case, a migration reading names back, is handled: see the next row. |
 | Application logic flaws | **Out of scope** | Missing authorisation and over broad filters are not injection. |
-| Migrations and DDL | **Not yet analysed** | The claim in section 2 covers the query path. DDL needs its own pass. |
+| Migrations and DDL | **Handled, November 2026** | `orm::migrate` refuses any name off the allowlist and any type off the closed list, including names read back from the live database. See `SECURITY.md`. On MySQL and MariaDB DDL cannot roll back. |
 | Driver vulnerabilities | **Trusted** | libpq, hiredis, bsoncxx, libneo4j-client, the Cassandra driver and SQLite are assumed correct. |
 | Denial of service | **Out of scope** | Unbounded result sets and expensive queries are a capacity question, not an injection one. |
 
@@ -196,14 +196,18 @@ Stated so the model is falsifiable. The suite lives in
    | MongoDB 7.0.45 | 15 | 2 | 0 | yes |
    | Redis 7.2.17 | 5 | 2 | 0 | yes |
    | Cassandra 4.1.12 | 4 | 0 | 0 | **no** |
+   | Neo4j 5.26.32 | 6 | 2 | 0 | yes |
 
    Evidence: `security/evidence/differential_<backend>.csv` and
    `differential_<backend>_summary.txt`. Cassandra is inconclusive because the
-   naive path was never compromised. **Not measured:** Neo4j (6 payloads), because
-   the CI image has no `libneo4j-client` and the compose file has no Neo4j
-   service (`security/evidence/differential_neo4j_summary.txt`). The MongoDB naive
-   path uses five constructions and keeps the most severe outcome, because the
-   corpus mixes payloads for different contexts.
+   naive path was never compromised. The MongoDB and Neo4j naive paths use several
+   constructions and keep the most severe outcome, because the corpus mixes
+   payloads for different contexts. Each payload also goes through `IN` as a list
+   element on the five backends with list support: 89 of 89 pairs had no effect.
+   Migrations have a differential of their own, through four positions including
+   a column planted in the live database: over 368 runs the naive DDL was
+   compromised 14 times, all by constructed inputs, and the library never
+   (`security/evidence/migration_<backend>_summary.txt`).
 3. **A payload corpus per backend, every payload sourced. Done:** 66 payloads
    from 11 sources (`security/corpus/`). Three are published templates with an
    unfilled slot, and are run exactly as published.

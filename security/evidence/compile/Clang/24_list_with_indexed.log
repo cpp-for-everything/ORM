@@ -1,0 +1,9 @@
+case:     24_list_with_indexed
+expected: fail
+result:   rejected
+regex:    cannot share a query
+verdict:  TRUE
+compiler: Clang 18.1.3
+
+<repo>/lib/include/ORM/connector/param_check.hpp:393:17: error: static assertion failed due to requirement '!any_list<orm::detail::tlist<orm::PlaceholderList<std::basic_string<char, std::char_traits<char>, std::allocator<char>>>, orm::IndexedPlaceholder<int, std::_Placeholder<2>{}>>>::value || all_anonymous<orm::detail::tlist<orm::PlaceholderList<std::basic_string<char, std::char_traits<char>, std::allocator<char>>>, orm::IndexedPlaceholder<int, std::_Placeholder<2>{}>>>::value': orm: a list placeholder cannot share a query with indexed placeholders (orm::ph<T,_N>). A list expands to a run-time number of positions, so indexed positions would no longer line up. Use orm::Placeholder<T> for the other values.
+1 error generated.

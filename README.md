@@ -264,13 +264,13 @@ task.sync_wait();
 - ~~PostgreSQL connector~~ ✓ (sync + async)
 - ~~Cassandra connector~~ ✓ (sync + async)
 - ~~Redis connector~~ ✓ (sync + async)
-- MongoDB connector
-- io_uring backend (Linux)
-- IOCP backend (Windows)
+- ~~MongoDB connector~~ ✓ (sync, async through the thread pool)
+- ~~io_uring backend (Linux)~~ ✓ (epoll fallback)
+- IOCP backend (Windows) (a WSAPoll reactor today, no completion port)
 - HAVING clause
-- IN / NOT IN rules
+- ~~IN / NOT IN rules~~ ✓ (SQLite, PostgreSQL, MySQL, MongoDB, Neo4j)
 - COUNT(*) aggregate
-- Auto-migration tooling
+- ~~Auto-migration tooling~~ ✓ (SQLite, PostgreSQL, MySQL)
 - C++26 reflection path (column names inferred, no string argument needed)
 - Pipeline mode for PostgreSQL (multi-query concurrency over single connection)
 - Benchmark infrastructure
