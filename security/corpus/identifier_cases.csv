@@ -1,0 +1,9 @@
+id,class,dialect,technique,payload,expected_effect,source_id
+IDENT-001,identifier,generic,stacked,"x; DROP TABLE sec_users; --","ends the DDL statement and starts another",constructed
+IDENT-002,identifier,generic,stacked,"x TEXT; DROP TABLE sec_users; --","completes a column definition, then starts another statement",constructed
+IDENT-003,identifier,generic,stacked,"x (a INTEGER); DROP TABLE sec_users; --","completes a table definition, then starts another statement",constructed
+IDENT-004,identifier,generic,clause-smuggling,"name, DROP COLUMN id","adds a second action to the same ALTER TABLE statement",constructed
+IDENT-005,identifier,generic,quote-breaking,"x"" TEXT); DROP TABLE sec_users; --","closes a double quoted identifier, for code that quotes without checking",constructed
+IDENT-006,identifier,generic,quote-breaking,"x` TEXT); DROP TABLE sec_users; --","closes a backtick quoted identifier, for code that quotes without checking",constructed
+IDENT-007,identifier,generic,comment,"x/**/TEXT","hides a token boundary in a comment",constructed
+IDENT-008,identifier,generic,unicode,"xʼ; DROP TABLE sec_users; --","a modifier letter apostrophe, which a byte level check must not pass as a letter",constructed

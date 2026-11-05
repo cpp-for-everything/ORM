@@ -9,6 +9,7 @@
 #include "ORM/query/field.hpp"
 #include "ORM/result/joined_row.hpp"        // joined_row_for / hydrate_joined (pulls join_infer)
 #include "ORM/entity/table.hpp"
+#include "ORM/db/migration/ddl.hpp"
 #include <sqlite3.h>
 #include <vector>
 #include <string>
@@ -543,6 +544,58 @@ namespace orm {
             return result<std::tuple<>>{};
         }
 
+        // ── Transaction control ───────────────────────────────────────────────
+        static void begin(SQLiteDB& db)    { run_control(db, "BEGIN"); }
+        static void commit(SQLiteDB& db)   { run_control(db, "COMMIT"); }
+        static void rollback(SQLiteDB& db) { run_control(db, "ROLLBACK"); }
+
+        // ── DDL, for orm::migrate<SQLiteDB> ───────────────────────────────────
+        [[nodiscard]] static constexpr sql_dialect ddl_dialect() noexcept
+        {
+            return {'"', alter_type_form::unsupported, true};
+        }
+
+        // Exactly one statement. sqlite3_prepare_v2 stops at the first statement and
+        // reports where it stopped, so anything after it is refused, not ignored.
+        // sqlite3_exec would have run it.
+        static void execute_ddl(SQLiteDB& db, const std::string& sql)
+        {
+            sqlite3_stmt* stmt = nullptr;
+            const char*   tail = nullptr;
+            if (sqlite3_prepare_v2(db.handle, sql.c_str(), -1, &stmt, &tail) != SQLITE_OK)
+                throw std::runtime_error(sqlite3_errmsg(db.handle));
+            if (tail != nullptr && *tail != '\0')
+            {
+                sqlite3_finalize(stmt);
+                throw std::runtime_error("orm: more than one statement in a DDL call");
+            }
+            const int rc = sqlite3_step(stmt);
+            sqlite3_finalize(stmt);
+            if (rc != SQLITE_DONE)
+                throw std::runtime_error(sqlite3_errmsg(db.handle));
+        }
+
+        [[nodiscard]] static live_schema read_schema(SQLiteDB& db)
+        {
+            constexpr const char* sql =
+                "SELECT m.name, p.name, p.type FROM sqlite_master m "
+                "JOIN pragma_table_info(m.name) p "
+                "WHERE m.type = 'table' AND m.name NOT LIKE 'sqlite_%'";
+            sqlite3_stmt* stmt = nullptr;
+            if (sqlite3_prepare_v2(db.handle, sql, -1, &stmt, nullptr) != SQLITE_OK)
+                throw std::runtime_error(sqlite3_errmsg(db.handle));
+            live_schema out;
+            auto text = [&](int col) -> std::string
+            {
+                const auto* v = reinterpret_cast<const char*>(sqlite3_column_text(stmt, col));
+                return v ? v : "";
+            };
+            while (sqlite3_step(stmt) == SQLITE_ROW)
+                out[text(0)][text(1)] = ddl::upper(text(2));
+            sqlite3_finalize(stmt);
+            return out;
+        }
+
         // ── DELETE (with optional runtime WHERE params) ───────────────────────
         template <typename Table, typename Wheres, typename... Params>
         static auto execute(SQLiteDB& db, delete_query<Table, Wheres> q,
@@ -560,6 +613,13 @@ namespace orm {
             sqlite3_step(stmt);
             sqlite3_finalize(stmt);
             return result<std::tuple<>>{};
+        }
+
+    private:
+        static void run_control(SQLiteDB& db, const char* sql)
+        {
+            if (sqlite3_exec(db.handle, sql, nullptr, nullptr, nullptr) != SQLITE_OK)
+                throw std::runtime_error(sqlite3_errmsg(db.handle));
         }
     };
 

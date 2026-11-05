@@ -1,5 +1,6 @@
 #pragma once
 #include "ORM/connector/capabilities.hpp"
+#include "ORM/db/migration/ddl.hpp"
 #include "ORM/result/result.hpp"
 #include "ORM/query/select.hpp"
 #include "ORM/query/insert.hpp"
@@ -556,6 +557,37 @@ namespace orm {
                 throw std::runtime_error("ROLLBACK failed: " + err);
             }
             PQclear(res);
+        }
+
+        // ── DDL, for orm::migrate<PostgreSQLLiveDB> ───────────────────────────
+        [[nodiscard]] static constexpr sql_dialect ddl_dialect() noexcept
+        {
+            return {'"', alter_type_form::alter_column_type, true};
+        }
+
+        // PQexecParams uses the extended protocol, which takes exactly one statement.
+        // PQexec would have run a stacked second one.
+        static void execute_ddl(PostgreSQLLiveDB& db, const std::string& sql)
+        {
+            exec_no_result(db, sql, {});
+        }
+
+        [[nodiscard]] static live_schema read_schema(PostgreSQLLiveDB& db)
+        {
+            PGresult* res = PQexec(db.native(),
+                "SELECT table_name, column_name, data_type FROM information_schema.columns "
+                "WHERE table_schema = current_schema()");
+            if (PQresultStatus(res) != PGRES_TUPLES_OK)
+            {
+                std::string err = PQerrorMessage(db.native());
+                PQclear(res);
+                throw std::runtime_error("PostgreSQL schema read failed: " + err);
+            }
+            live_schema out;
+            for (int i = 0; i < PQntuples(res); ++i)
+                out[PQgetvalue(res, i, 0)][PQgetvalue(res, i, 1)] = ddl::upper(PQgetvalue(res, i, 2));
+            PQclear(res);
+            return out;
         }
 
     private:

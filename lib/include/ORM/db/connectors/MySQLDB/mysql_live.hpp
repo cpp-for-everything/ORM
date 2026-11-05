@@ -1,5 +1,6 @@
 #pragma once
 #include "ORM/connector/capabilities.hpp"
+#include "ORM/db/migration/ddl.hpp"
 #include "ORM/result/result.hpp"
 #include "ORM/query/select.hpp"
 #include "ORM/query/insert.hpp"
@@ -531,7 +532,48 @@ namespace orm {
             return exec_prepared(db, sql, std::forward<Params>(params)...);
         }
 
+        // ── DDL, for orm::migrate<MySQLLiveDB> ────────────────────────────────
+        // MySQL and MariaDB commit at every DDL statement, so nothing here can roll
+        // back: transactional_ddl is false.
+        [[nodiscard]] static constexpr sql_dialect ddl_dialect() noexcept
+        {
+            return {'`', alter_type_form::modify_column, false};
+        }
+
+        // The prepared statement protocol takes exactly one statement.
+        static void execute_ddl(MySQLLiveDB& db, const std::string& sql)
+        {
+            (void)exec_prepared(db, sql);
+        }
+
+        [[nodiscard]] static live_schema read_schema(MySQLLiveDB& db)
+        {
+            constexpr const char* sql =
+                "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE FROM information_schema.COLUMNS "
+                "WHERE TABLE_SCHEMA = DATABASE()";
+            if (mysql_query(db.native(), sql) != 0)
+                throw std::runtime_error(std::format("MySQL schema read failed: {}", mysql_error(db.native())));
+            MYSQL_RES* res = mysql_store_result(db.native());
+            if (!res)
+                throw std::runtime_error(std::format("MySQL schema read failed: {}", mysql_error(db.native())));
+            live_schema out;
+            while (MYSQL_ROW row = mysql_fetch_row(res))
+                out[row[0]][row[1]] = canonical_type(row[2]);
+            mysql_free_result(res);
+            return out;
+        }
+
     private:
+        // The server reports its own spelling of the types a migration asks for.
+        [[nodiscard]] static std::string canonical_type(std::string_view reported)
+        {
+            const std::string t = ddl::upper(reported);
+            if (t == "INT")     return "INTEGER";
+            if (t == "DOUBLE")  return "DOUBLE PRECISION";
+            if (t == "TINYINT") return "BOOLEAN";
+            return t;
+        }
+
         // Build the SELECT SQL. Inferred = multi-table relationship query with no
         // explicit .join(): table-qualified columns + the inferred JOIN chain (shared
         // renderer). Otherwise the bare single-table form.

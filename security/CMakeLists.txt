@@ -78,9 +78,31 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     orm_compile_check(25_list_without_argument      fail "needs its argument")
     orm_compile_check(26_list_unsupported_connector fail "does not support IN")
     orm_compile_check(27_list_equals                fail "incompatible operand types")
+
+    # Migrations.
+    orm_compile_check(30_control_migration_declared pass "")
+    orm_compile_check(28_migration_runtime_column   fail "constant expression|not usable in a constant|not a valid template argument|no matching")
+    orm_compile_check(29_migration_no_ddl_path      fail "no DDL path")
 else()
     message(STATUS "ORM security: negative compilation tests need GCC or Clang, skipped for ${CMAKE_CXX_COMPILER_ID}.")
 endif()
+
+# One migration differential: the corpus and the constructed identifier cases, through
+# the four positions described in runtime/migration_differential.hpp.
+function(orm_migration_differential name target labels)
+    add_executable(security_migration_${name} runtime/differential_migration_${name}.cpp)
+    target_link_libraries(security_migration_${name} PRIVATE ${target})
+    add_test(NAME security.migration.differential.${name}
+        COMMAND security_migration_${name}
+            "${CMAKE_CURRENT_SOURCE_DIR}/corpus/payloads.csv"
+            "${CMAKE_CURRENT_SOURCE_DIR}/corpus/identifier_cases.csv"
+            "${ORM_SEC_EVIDENCE}/migration_${name}.csv"
+            "${ORM_SEC_EVIDENCE}/migration_${name}_summary.txt")
+    set_tests_properties(security.migration.differential.${name} PROPERTIES
+        LABELS "security;migration;differential;${labels}"
+        RESOURCE_LOCK "${name}_server"
+        TIMEOUT 900)
+endfunction()
 
 # ── 2. runtime tests against SQLite ──────────────────────────────────────────
 if(TARGET orm::sqlite)
@@ -96,6 +118,12 @@ if(TARGET orm::sqlite)
         TEST_PREFIX "security.list."
         PROPERTIES LABELS "security;sqlite;list")
 
+    add_executable(security_migration_sqlite_unit runtime/test_migration_sqlite.cpp)
+    target_link_libraries(security_migration_sqlite_unit PRIVATE orm::sqlite GTest::gtest_main)
+    gtest_discover_tests(security_migration_sqlite_unit
+        TEST_PREFIX "security.migration."
+        PROPERTIES LABELS "security;sqlite;migration")
+
     add_executable(security_differential_sqlite runtime/differential_sqlite.cpp)
     target_link_libraries(security_differential_sqlite PRIVATE orm::sqlite)
     add_test(NAME security.differential.sqlite
@@ -104,6 +132,8 @@ if(TARGET orm::sqlite)
             "${ORM_SEC_EVIDENCE}/differential_sqlite.csv"
             "${ORM_SEC_EVIDENCE}/differential_sqlite_summary.txt")
     set_tests_properties(security.differential.sqlite PROPERTIES LABELS "security;sqlite;differential")
+
+    orm_migration_differential(sqlite orm::sqlite sqlite)
 else()
     message(STATUS "ORM security: runtime tests need ORM_ENABLE_SQLITE=ON, skipped.")
 endif()
@@ -126,8 +156,15 @@ foreach(_b postgresql mysql mongodb redis cassandra neo4j)
                 "${ORM_SEC_EVIDENCE}/differential_${_b}_summary.txt")
         set_tests_properties(security.differential.${_b} PROPERTIES
             LABELS "security;${_b};differential;server"
+            RESOURCE_LOCK "${_b}_server"
             TIMEOUT 900)
     else()
         message(STATUS "ORM security: ${_b} differential skipped, orm::${_b}_live is not built.")
+    endif()
+endforeach()
+
+foreach(_b postgresql mysql)
+    if(TARGET orm::${_b}_live)
+        orm_migration_differential(${_b} orm::${_b}_live "${_b};server")
     endif()
 endforeach()
