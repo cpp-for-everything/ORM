@@ -81,7 +81,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 
     # Migrations.
     orm_compile_check(30_control_migration_declared pass "")
-    orm_compile_check(28_migration_runtime_column   fail "no matching function for call to .entity_meta_of")
+    orm_compile_check(28_migration_runtime_column   fail "no matching function for call to.*entity_meta_of")
     orm_compile_check(29_migration_no_ddl_path      fail "no DDL path")
 else()
     message(STATUS "ORM security: negative compilation tests need GCC or Clang, skipped for ${CMAKE_CXX_COMPILER_ID}.")
