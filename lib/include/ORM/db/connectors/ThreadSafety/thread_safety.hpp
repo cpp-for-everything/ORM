@@ -160,8 +160,14 @@ namespace orm {
 
         ~transaction_guard()
         {
+            // A destructor must not throw: it would call std::terminate, also
+            // while another exception unwinds. A failed rollback is dropped here.
+            // The caller sees the earlier error, or the connection is already gone.
             if (!committed_)
-                connector_trait<DB>::rollback(conn_);
+            {
+                try { connector_trait<DB>::rollback(conn_); }
+                catch (...) {}
+            }
         }
 
         void commit()

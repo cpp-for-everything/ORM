@@ -77,6 +77,7 @@ namespace orm {
             {
                 std::string err = mysql_error(db.conn_);
                 mysql_close(db.conn_);
+                db.conn_ = nullptr;   // the destructor must not close it again
                 throw std::runtime_error("MySQL connection failed: " + err);
             }
             return db;
@@ -136,8 +137,8 @@ namespace orm {
             {
                 // Two statements on purpose. The operands of + are unsequenced, and
                 // list lengths are consumed in order, left operand first.
-                std::string lhs = render_rule(r.lhs_, lists);
-                std::string rhs = render_rule(r.rhs_, lists);
+                std::string lhs = detail::wrap_child<T1, Op>(render_rule(r.lhs_, lists));
+                std::string rhs = detail::wrap_child<T2, Op>(render_rule(r.rhs_, lists));
                 return lhs + " " + sql_op + " " + rhs;
             }
             else
@@ -173,7 +174,11 @@ namespace orm {
                 [&]<std::size_t... Is>(std::index_sequence<Is...>)
                 {
                     std::size_t idx = 0;
-                    ((void)(out += (idx++ > 0 ? " AND " : "") + render_rule(w.template get<Is>(), lists)), ...);
+                    ((void)(out += (idx++ > 0 ? " AND " : "")
+                        + detail::wrap_top_clause<
+                              std::remove_cvref_t<decltype(w.template get<Is>())>>(
+                              render_rule(w.template get<Is>(), lists),
+                              Wheres::size > 1)), ...);
                 }(std::make_index_sequence<Wheres::size>{});
                 return out;
             }

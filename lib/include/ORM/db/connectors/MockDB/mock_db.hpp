@@ -62,8 +62,8 @@ namespace orm {
             }
             else if constexpr (is_rule<T1> && is_rule<T2>)
             {
-                std::string lhs = render_rule(r.lhs_, lists);
-                std::string rhs = render_rule(r.rhs_, lists);
+                std::string lhs = detail::wrap_child<T1, Op>(render_rule(r.lhs_, lists));
+                std::string rhs = detail::wrap_child<T2, Op>(render_rule(r.rhs_, lists));
                 return lhs + " " + std::string(static_cast<std::string_view>(Op)) + " " + rhs;
             }
             else
@@ -159,7 +159,11 @@ namespace orm {
                 [&]<std::size_t... Is>(std::index_sequence<Is...>)
                 {
                     std::size_t idx = 0;
-                    ((void)(out += (idx++ > 0 ? " AND " : "") + render_rule(w.template get<Is>(), lists)), ...);
+                    ((void)(out += (idx++ > 0 ? " AND " : "")
+                        + detail::wrap_top_clause<
+                              std::remove_cvref_t<decltype(w.template get<Is>())>>(
+                              render_rule(w.template get<Is>(), lists),
+                              Wheres::size > 1)), ...);
                 }(std::make_index_sequence<Wheres::size>{});
                 return out;
             }
@@ -407,6 +411,7 @@ namespace orm {
         using supports_aggregation         = void;
         using supports_upsert              = void;
         using supports_bulk_insert         = void;
+        using supports_multi_row_insert    = void;
         using supports_concurrent_execute  = void; // required by connection_pool<MockDB, N>
         using supports_constexpr_sql       = void; // required by wire_protocol constexpr SQL tests
         using supports_list_placeholder    = void;
@@ -465,9 +470,9 @@ namespace orm {
         static auto execute(MockDB& db, insert_query<Properties> q, Params&&... params)
             -> result<std::tuple<>>
         {
-            db.last_sql = std::format("INSERT INTO ? ({}) VALUES ({})",
+            db.last_sql = std::format("INSERT INTO ? ({}) VALUES {}",
                 mockdb::render_columns(q.signature()),
-                mockdb::placeholders(Properties::size));
+                detail::multi_row_placeholders(Properties::size, q.rows_));
             db.last_params = mockdb::collect_params(std::forward<Params>(params)...);
             return result<std::tuple<>>{};
         }

@@ -1,4 +1,5 @@
 #include "ORM/async/io_context.hpp"
+#include "timer_queue.hpp"
 
 #if defined(_WIN32)
 
@@ -85,6 +86,8 @@ namespace orm {
         std::mutex callback_mutex_;
         std::queue<std::function<void()>> callbacks_;
 
+        detail::TimerQueue timers_;
+
         // Registrations are pending-list + active-list. New registrations are
         // appended to pending_ from any thread; the reactor moves them into
         // active_ at the top of each poll cycle. Active entries are removed
@@ -121,6 +124,8 @@ namespace orm {
                 }
             }
 
+            timers_.cancel_all();
+
             if (wakeup_) ::CloseHandle(wakeup_);
         }
 
@@ -155,7 +160,7 @@ namespace orm {
         void run_one() override
         {
             promote_pending();
-            poll_once(50);
+            poll_once(timers_.ms_until_next(50));
             process_callbacks();
         }
 
@@ -183,13 +188,10 @@ namespace orm {
             std::chrono::milliseconds delay,
             std::function<void()> callback) override
         {
-            std::thread(
-                [this, delay, cb = std::move(callback)]() mutable
-                {
-                    std::this_thread::sleep_for(delay);
-                    post(std::move(cb));
-                })
-                .detach();
+            // No thread per timer. The reactor loop fires it (see timer_queue.hpp).
+            // The destructor drops timers that are still pending.
+            timers_.add(delay, std::move(callback));
+            wake();
         }
 
         // Reactor: register fd for readiness notification only.
@@ -220,7 +222,7 @@ namespace orm {
             while (!stopped_)
             {
                 promote_pending();
-                poll_once(50);
+                poll_once(timers_.ms_until_next(50));
                 process_callbacks();
             }
         }
@@ -330,6 +332,8 @@ namespace orm {
 
         void process_callbacks()
         {
+            timers_.run_due();
+
             std::function<void()> callback;
             {
                 std::lock_guard<std::mutex> lock(callback_mutex_);

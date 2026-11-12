@@ -1,4 +1,5 @@
 #include "ORM/async/io_context.hpp"
+#include "timer_queue.hpp"
 
 #if defined(__linux__) && defined(ORM_HAS_LIBURING)
 
@@ -56,6 +57,8 @@ namespace orm {
         std::mutex callback_mutex_;
         std::queue<std::function<void()>> callbacks_;
 
+        detail::TimerQueue timers_;
+
     public:
         explicit UringContext(size_t thread_count)
             : thread_count_(thread_count)
@@ -89,6 +92,8 @@ namespace orm {
                 if (worker.joinable()) worker.join();
             }
 
+            timers_.cancel_all();
+
             if (wakeup_fd_ >= 0) ::close(wakeup_fd_);
             ::io_uring_queue_exit(&ring_);
         }
@@ -115,7 +120,7 @@ namespace orm {
 
         void run_one() override
         {
-            poll_once(50);
+            poll_once(timers_.ms_until_next(50));
             process_callbacks();
         }
 
@@ -143,13 +148,10 @@ namespace orm {
             std::chrono::milliseconds delay,
             std::function<void()> callback) override
         {
-            std::thread(
-                [this, delay, cb = std::move(callback)]() mutable
-                {
-                    std::this_thread::sleep_for(delay);
-                    post(std::move(cb));
-                })
-                .detach();
+            // No thread per timer. The reactor loop fires it (see timer_queue.hpp).
+            // The destructor drops timers that are still pending.
+            timers_.add(delay, std::move(callback));
+            wake();
         }
 
         // Reactor: install a one-shot poll for the requested direction on fd.
@@ -199,7 +201,7 @@ namespace orm {
         {
             while (!stopped_)
             {
-                poll_once(50);
+                poll_once(timers_.ms_until_next(50));
                 process_callbacks();
             }
         }
@@ -252,6 +254,8 @@ namespace orm {
 
         void process_callbacks()
         {
+            timers_.run_due();
+
             std::function<void()> callback;
             {
                 std::lock_guard<std::mutex> lock(callback_mutex_);

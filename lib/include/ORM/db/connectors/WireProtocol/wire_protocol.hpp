@@ -10,6 +10,7 @@
 #include <string>
 #include <format>
 #include <coroutine>
+#include <stdexcept>
 
 namespace orm {
 
@@ -160,29 +161,42 @@ namespace orm {
             rows_.push_back(std::move(values));
         }
 
-        // execute(db, query) — send single multi-row INSERT or no-op for empty batch
+        // execute(db, query) sends all stored rows.
+        // A connector that declares supports_multi_row_insert gets ONE call:
+        // one INSERT with a VALUES group per row, every value bound as one flat
+        // list. Any other connector gets one call per row, because it would
+        // otherwise drop all rows but the first. An empty batch sends nothing.
+        // Every row must have one value per column, else std::invalid_argument.
         auto execute(DB& conn, insert_query<Properties> q) -> result<std::tuple<>>
         {
             if (rows_.empty())
                 return result<std::tuple<>>{};
 
-            // Build single multi-row INSERT SQL
-            std::string cols = wire_detail::render_columns(q.signature());
-            std::string vals_row = std::format("({})",
-                wire_detail::positional_placeholders(Properties::size));
+            for (const auto& row : rows_)
+                if (row.size() != Properties::size)
+                    throw std::invalid_argument(
+                        "orm: batch_insert row has the wrong number of values");
 
-            std::string all_vals;
-            for (std::size_t i = 0; i < rows_.size(); ++i)
+            if constexpr (has_capability<DB, cap::supports_multi_row_insert>)
             {
-                if (i > 0) all_vals += ", ";
-                all_vals += vals_row;
+                std::vector<std::string> flat;
+                flat.reserve(rows_.size() * Properties::size);
+                for (const auto& row : rows_)
+                    flat.insert(flat.end(), row.begin(), row.end());
+
+                ++execute_count_;
+                return connector_trait<DB>::execute(conn, q.with_rows(rows_.size()), flat);
             }
-
-            std::string sql = std::format("INSERT INTO ? ({}) VALUES {}", cols, all_vals);
-            execute_count_++;
-
-            // Delegate to connector
-            return connector_trait<DB>::execute(conn, q);
+            else
+            {
+                result<std::tuple<>> last{};
+                for (const auto& row : rows_)
+                {
+                    ++execute_count_;
+                    last = connector_trait<DB>::execute(conn, q, row);
+                }
+                return last;
+            }
         }
 
         [[nodiscard]] int execute_count() const noexcept { return execute_count_; }

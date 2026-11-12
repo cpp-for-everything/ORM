@@ -11,6 +11,7 @@
 #include "ORM/result/joined_row.hpp"  // joined_row_for / hydrate_joined
 #include "ORM/entity/table.hpp"
 #include "ORM/details/member_pointer.hpp"
+#include "ORM/details/number_format.hpp"
 
 #ifdef ORM_MONGODB_LIVE_AVAILABLE
 #include <mongoc/mongoc.h>
@@ -93,6 +94,7 @@ namespace orm {
             if (!ok)
             {
                 mongoc_client_destroy(db.client_);
+                db.client_ = nullptr;   // the destructor must not destroy it again
                 throw std::runtime_error(std::format("MongoDB connection failed: {}", error.message));
             }
             
@@ -171,7 +173,7 @@ namespace orm {
         [[nodiscard]] std::string param_to_string(const T& v)
         {
             using D = std::decay_t<T>;
-            if constexpr (std::is_arithmetic_v<D>)   return std::to_string(v);
+            if constexpr (std::is_arithmetic_v<D>)   return detail::arithmetic_to_string(v);
             else if constexpr (std::is_same_v<D, std::string>) return v;
             else if constexpr (std::is_same_v<D, const char*> || std::is_same_v<D, char*>)
                 return std::string(v);

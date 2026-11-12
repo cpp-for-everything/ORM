@@ -31,6 +31,22 @@ if(TARGET orm::sqlite)
     )
 
     gtest_discover_tests(test_sqlite)
+
+    add_executable(test_sqlite_review
+        test_sqlite_review.cpp
+    )
+
+    target_link_libraries(test_sqlite_review PRIVATE
+        orm::sqlite
+        orm::async
+        GTest::gtest_main
+    )
+
+    target_compile_options(test_sqlite_review PRIVATE
+        $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -Wpedantic>
+    )
+
+    gtest_discover_tests(test_sqlite_review)
 endif()
 
 # ── DockerRun.cmake path (lives beside this file) ─────────────────────────────

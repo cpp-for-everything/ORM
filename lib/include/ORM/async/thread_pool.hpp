@@ -163,20 +163,22 @@ namespace orm {
 
     } // namespace detail
 
+    // func is taken by value on purpose. The task starts lazily, so a reference
+    // parameter would dangle if the caller passed a temporary callable.
     template <typename F>
-    auto run_on_pool(ThreadPool& pool, F&& func) -> Task<std::invoke_result_t<F>>
+    auto run_on_pool(ThreadPool& pool, F func) -> Task<std::invoke_result_t<F>>
     {
         using R = std::invoke_result_t<F>;
 
         if constexpr (std::is_void_v<R>)
         {
             co_await detail::PoolAwaiter<std::decay_t<F>>{
-                pool, std::forward<F>(func), {}, {}};
+                pool, std::move(func), {}, {}};
         }
         else
         {
             co_return co_await detail::PoolAwaiter<std::decay_t<F>>{
-                pool, std::forward<F>(func), {}, {}, {}};
+                pool, std::move(func), {}, {}, {}};
         }
     }
 

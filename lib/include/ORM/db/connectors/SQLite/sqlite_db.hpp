@@ -60,37 +60,62 @@ namespace orm {
     namespace sqlite_detail {
 
         // ── bind one C++ value to a prepared statement parameter slot ─────────
+        // A failed bind (for example SQLITE_RANGE) is an error, not a silent skip.
+        inline void check_bind(sqlite3_stmt* stmt, int rc)
+        {
+            if (rc != SQLITE_OK)
+                throw std::runtime_error(sqlite3_errmsg(sqlite3_db_handle(stmt)));
+        }
+
+        // Reads the error text first, because finalize can reset it, then
+        // finalizes the statement and throws.
+        [[noreturn]] inline void finalize_and_throw(sqlite3_stmt* stmt)
+        {
+            const std::string msg = sqlite3_errmsg(sqlite3_db_handle(stmt));
+            sqlite3_finalize(stmt);
+            throw std::runtime_error(msg);
+        }
+
+        // Runs a statement that returns no rows (INSERT, UPDATE, DELETE) and
+        // requires it to finish with SQLITE_DONE.
+        inline void step_to_done(sqlite3_stmt* stmt)
+        {
+            if (sqlite3_step(stmt) != SQLITE_DONE)
+                finalize_and_throw(stmt);
+            sqlite3_finalize(stmt);
+        }
+
         inline void bind_value(sqlite3_stmt* stmt, int col, int v)
         {
-            sqlite3_bind_int(stmt, col, v);
+            check_bind(stmt, sqlite3_bind_int(stmt, col, v));
         }
 
         inline void bind_value(sqlite3_stmt* stmt, int col, std::int64_t v)
         {
-            sqlite3_bind_int64(stmt, col, v);
+            check_bind(stmt, sqlite3_bind_int64(stmt, col, v));
         }
 
         inline void bind_value(sqlite3_stmt* stmt, int col, double v)
         {
-            sqlite3_bind_double(stmt, col, v);
+            check_bind(stmt, sqlite3_bind_double(stmt, col, v));
         }
 
         inline void bind_value(sqlite3_stmt* stmt, int col, const std::string& v)
         {
-            sqlite3_bind_text(stmt, col,
-                v.data(), static_cast<int>(v.size()), SQLITE_TRANSIENT);
+            check_bind(stmt, sqlite3_bind_text(stmt, col,
+                v.data(), static_cast<int>(v.size()), SQLITE_TRANSIENT));
         }
 
         inline void bind_value(sqlite3_stmt* stmt, int col, const std::u8string& v)
         {
-            sqlite3_bind_text(stmt, col,
+            check_bind(stmt, sqlite3_bind_text(stmt, col,
                 reinterpret_cast<const char*>(v.data()),
-                static_cast<int>(v.size()), SQLITE_TRANSIENT);
+                static_cast<int>(v.size()), SQLITE_TRANSIENT));
         }
 
         inline void bind_value(sqlite3_stmt* stmt, int col, std::nullptr_t)
         {
-            sqlite3_bind_null(stmt, col);
+            check_bind(stmt, sqlite3_bind_null(stmt, col));
         }
 
         // ── read one column from a result row into a C++ value ────────────────
@@ -213,7 +238,15 @@ namespace orm {
         {
             int slot = 1;
             auto bind_one = [&](const auto& v) { bind_value(stmt, slot++, v); };
-            (detail::for_each_bound(bind_one, params), ...);
+            try
+            {
+                (detail::for_each_bound(bind_one, params), ...);
+            }
+            catch (...)
+            {
+                sqlite3_finalize(stmt);
+                throw;
+            }
         }
 
         // Renders WHERE clause as " WHERE col op ?, ..." from a Wheres orm_tuple.
@@ -287,8 +320,8 @@ namespace orm {
             {
                 // Two statements on purpose. The operands of + are unsequenced, and
                 // list lengths are consumed in order, left operand first.
-                std::string lhs = render_rule_sqlite(r.lhs_, lists);
-                std::string rhs = render_rule_sqlite(r.rhs_, lists);
+                std::string lhs = detail::wrap_child<T1, Op>(render_rule_sqlite(r.lhs_, lists));
+                std::string rhs = detail::wrap_child<T2, Op>(render_rule_sqlite(r.rhs_, lists));
                 return lhs + " " + std::string(sql_op(static_cast<std::string_view>(Op)))
                     + " " + rhs;
             }
@@ -314,7 +347,10 @@ namespace orm {
                 {
                     std::size_t idx = 0;
                     ((void)(out += (idx++ > 0 ? " AND " : "")
-                        + render_rule_sqlite(w.template get<Is>(), lists)), ...);
+                        + detail::wrap_top_clause<
+                              std::remove_cvref_t<decltype(w.template get<Is>())>>(
+                              render_rule_sqlite(w.template get<Is>(), lists),
+                              Wheres::size > 1)), ...);
                 }(std::make_index_sequence<Wheres::size>{});
                 return out;
             }
@@ -372,6 +408,105 @@ namespace orm {
             return inferred_joins_impl(static_cast<orm::detail::join_plan_t<Response>*>(nullptr));
         }
 
+        // ── explicit JOIN, GROUP BY, ORDER BY and LIMIT clauses ───────────────
+        template <typename Joins, std::size_t I>
+        void append_join_item(std::string& out, const Joins& j, detail::list_cursor* lists)
+        {
+            const auto& jr = j.template get<I>();
+            using JR = std::remove_cvref_t<decltype(jr)>;
+            out += " " + std::string(join_kind_sql(JR::mode)) + " "
+                 + std::string(orm::table_name<typename JR::table_type>()) + " ON "
+                 + render_rule_sqlite(jr.to_rule(), lists);
+        }
+
+        template <typename Joins, std::size_t... Is>
+        [[nodiscard]] std::string render_joins_impl(const Joins& j, detail::list_cursor* lists,
+                                                    std::index_sequence<Is...>)
+        {
+            std::string out;
+            (append_join_item<Joins, Is>(out, j, lists), ...);
+            return out;
+        }
+
+        template <typename Joins>
+        [[nodiscard]] std::string render_joins(const Joins& j, detail::list_cursor* lists)
+        {
+            if constexpr (Joins::size == 0)
+                return {};
+            else
+                return render_joins_impl(j, lists, std::make_index_sequence<Joins::size>{});
+        }
+
+        template <typename Groups, std::size_t I>
+        void append_group_by_item(std::string& out, bool& first)
+        {
+            using GB = typename Groups::template orm_type<I>;
+            if (!first) out += ", ";
+            out += std::string(mem_ptr<GB::member>::column_name());
+            first = false;
+        }
+
+        template <typename Groups, std::size_t... Is>
+        [[nodiscard]] std::string render_group_by_impl(std::index_sequence<Is...>)
+        {
+            std::string out = " GROUP BY ";
+            bool first = true;
+            (append_group_by_item<Groups, Is>(out, first), ...);
+            return out;
+        }
+
+        template <typename Groups>
+        [[nodiscard]] std::string render_group_by(const Groups& /*g*/)
+        {
+            if constexpr (Groups::size == 0)
+                return {};
+            else
+                return render_group_by_impl<Groups>(std::make_index_sequence<Groups::size>{});
+        }
+
+        template <typename Orders, std::size_t I>
+        void append_order_by_item(std::string& out, bool& first)
+        {
+            using OB = typename Orders::template orm_type<I>;
+            constexpr std::string_view dir =
+                (OB::sort == order::direction::asc) ? "ASC" : "DESC";
+            if (!first) out += ", ";
+            out += std::string(mem_ptr<OB::member>::column_name()) + " " + std::string(dir);
+            first = false;
+        }
+
+        template <typename Orders, std::size_t... Is>
+        [[nodiscard]] std::string render_order_by_impl(std::index_sequence<Is...>)
+        {
+            std::string out = " ORDER BY ";
+            bool first = true;
+            (append_order_by_item<Orders, Is>(out, first), ...);
+            return out;
+        }
+
+        template <typename Orders>
+        [[nodiscard]] std::string render_order_by(const Orders& /*o*/)
+        {
+            if constexpr (Orders::size == 0)
+                return {};
+            else
+                return render_order_by_impl<Orders>(std::make_index_sequence<Orders::size>{});
+        }
+
+        template <typename Limits>
+        [[nodiscard]] std::string render_limits(const Limits& lims)
+        {
+            if constexpr (Limits::size == 0)
+                return {};
+            else
+            {
+                const auto& p = lims.template get<0>();
+                return std::format(" LIMIT {} OFFSET {}",
+                    p.get_elements_per_page(),
+                    p.get_elements_per_page() * p.get_number_of_page());
+            }
+        }
+
         // ── SELECT SQL builder ────────────────────────────────────────────────
         // Inferred = multi-table query with relationships and no explicit .join():
         // emit table-qualified columns + the inferred JOIN chain. Otherwise the
@@ -383,19 +518,29 @@ namespace orm {
             if constexpr (Inferred)
             {
                 using Base = orm::detail::base_table_t<Response>;
-                return std::format("SELECT {} FROM {}{}{}",
+                return std::format("SELECT {} FROM {}{}{}{}{}{}",
                     render_qualified_columns<Response>(),
                     std::string(orm::table_name<Base>()),
                     render_inferred_joins<Response>(),
-                    render_wheres_sqlite(q.where_clauses(), lists));
+                    render_wheres_sqlite(q.where_clauses(), lists),
+                    render_group_by(q.group_clauses()),
+                    render_order_by(q.order_clauses()),
+                    render_limits(q.limit_clauses()));
             }
             else
             {
                 using Entity = entity_of_t<Response>;
-                return std::format("SELECT {} FROM {}{}",
+                // Joins first: list sizes are consumed in the order the SQL text reads.
+                const std::string joins = render_joins(q.join_clauses(), lists);
+                const std::string wheres = render_wheres_sqlite(q.where_clauses(), lists);
+                return std::format("SELECT {} FROM {}{}{}{}{}{}",
                     render_columns<Response>(),
                     std::string(orm::table_name<Entity>()),
-                    render_wheres_sqlite(q.where_clauses(), lists));
+                    joins,
+                    wheres,
+                    render_group_by(q.group_clauses()),
+                    render_order_by(q.order_clauses()),
+                    render_limits(q.limit_clauses()));
             }
         }
 
@@ -410,8 +555,11 @@ namespace orm {
                 using Flat = projected_type<Response>;
                 using Row  = joined_row_for<Response>;
                 std::vector<Row> rows;
-                while (sqlite3_step(stmt) == SQLITE_ROW)
+                int rc = SQLITE_OK;
+                while ((rc = sqlite3_step(stmt)) == SQLITE_ROW)
                     rows.push_back(orm::hydrate_joined<Response>(hydrate_row<Flat>(stmt)));
+                if (rc != SQLITE_DONE)
+                    finalize_and_throw(stmt);
                 sqlite3_finalize(stmt);
                 return result<Row, Response>{ std::move(rows) };
             }
@@ -419,8 +567,11 @@ namespace orm {
             {
                 using Row = projected_type<Response>;
                 std::vector<Row> rows;
-                while (sqlite3_step(stmt) == SQLITE_ROW)
+                int rc = SQLITE_OK;
+                while ((rc = sqlite3_step(stmt)) == SQLITE_ROW)
                     rows.push_back(hydrate_row<Row>(stmt));
+                if (rc != SQLITE_DONE)
+                    finalize_and_throw(stmt);
                 sqlite3_finalize(stmt);
                 return result<Row, Response>{ std::move(rows) };
             }
@@ -436,6 +587,7 @@ namespace orm {
         using supports_transactions = void;
         using supports_aggregation  = void;
         using supports_list_placeholder = void;
+        using supports_multi_row_insert = void;
 
         template <typename T>
         struct wire_type { using type = T; };
@@ -486,20 +638,19 @@ namespace orm {
 
         // ── INSERT (with runtime values for each column placeholder) ──────────
         template <typename Properties, typename... Params>
-        static auto execute(SQLiteDB& db, insert_query<Properties> /*q*/, Params&&... params)
+        static auto execute(SQLiteDB& db, insert_query<Properties> q, Params&&... params)
             -> result<std::tuple<>>
         {
             using Entity = sqlite_detail::entity_of_t<Properties>;
-            const std::string sql = std::format("INSERT INTO {} ({}) VALUES ({})",
+            const std::string sql = std::format("INSERT INTO {} ({}) VALUES {}",
                 table_name<Entity>(),
                 sqlite_detail::render_columns<Properties>(),
-                sqlite_detail::placeholders(Properties::size));
+                detail::multi_row_placeholders(Properties::size, q.rows_));
             sqlite3_stmt* stmt = nullptr;
             if (sqlite3_prepare_v2(db.handle, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
                 throw std::runtime_error(sqlite3_errmsg(db.handle));
             sqlite_detail::bind_params(stmt, std::forward<Params>(params)...);
-            sqlite3_step(stmt);
-            sqlite3_finalize(stmt);
+            sqlite_detail::step_to_done(stmt);
             return result<std::tuple<>>{};
         }
 
@@ -539,8 +690,7 @@ namespace orm {
             if (sqlite3_prepare_v2(db.handle, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
                 throw std::runtime_error(sqlite3_errmsg(db.handle));
             sqlite_detail::bind_params(stmt, std::forward<Params>(params)...);
-            sqlite3_step(stmt);
-            sqlite3_finalize(stmt);
+            sqlite_detail::step_to_done(stmt);
             return result<std::tuple<>>{};
         }
 
@@ -610,8 +760,7 @@ namespace orm {
             if (sqlite3_prepare_v2(db.handle, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
                 throw std::runtime_error(sqlite3_errmsg(db.handle));
             sqlite_detail::bind_params(stmt, std::forward<Params>(params)...);
-            sqlite3_step(stmt);
-            sqlite3_finalize(stmt);
+            sqlite_detail::step_to_done(stmt);
             return result<std::tuple<>>{};
         }
 

@@ -120,9 +120,9 @@ namespace orm {
         {
             if constexpr (is_rule<T1> && is_rule<T2>)
             {
-                return render_rule_ctx(r.lhs_, ctx)
-                    + " " + std::string(static_cast<std::string_view>(Op)) + " "
-                    + render_rule_ctx(r.rhs_, ctx);
+                std::string lhs = detail::wrap_child<T1, Op>(render_rule_ctx(r.lhs_, ctx));
+                std::string rhs = detail::wrap_child<T2, Op>(render_rule_ctx(r.rhs_, ctx));
+                return lhs + " " + std::string(static_cast<std::string_view>(Op)) + " " + rhs;
             }
             else
             {
@@ -161,7 +161,11 @@ namespace orm {
                 [&]<std::size_t... Is>(std::index_sequence<Is...>)
                 {
                     std::size_t i = 0;
-                    ((void)(out += (i++ > 0 ? " AND " : "") + render_rule_ctx(w.template get<Is>(), ctx)), ...);
+                    ((void)(out += (i++ > 0 ? " AND " : "")
+                        + detail::wrap_top_clause<
+                              std::remove_cvref_t<decltype(w.template get<Is>())>>(
+                              render_rule_ctx(w.template get<Is>(), ctx),
+                              Wheres::size > 1)), ...);
                 }(std::make_index_sequence<Wheres::size>{});
                 return out;
             }

@@ -33,6 +33,7 @@ add_executable(test_async_unit
     test_io_context.cpp
     test_thread_pool.cpp
     test_async_connector.cpp
+    test_review_highs.cpp
 )
 
 target_link_libraries(test_async_unit PRIVATE

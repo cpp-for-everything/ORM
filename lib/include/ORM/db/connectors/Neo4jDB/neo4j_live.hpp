@@ -164,8 +164,8 @@ namespace orm {
             {
                 // Two statements on purpose: $pN is assigned as a side effect and
                 // the operands of + are unsequenced.
-                std::string lhs = render_where_rule(r.lhs_, ctx);
-                std::string rhs = render_where_rule(r.rhs_, ctx);
+                std::string lhs = detail::wrap_child<T1, Op>(render_where_rule(r.lhs_, ctx));
+                std::string rhs = detail::wrap_child<T2, Op>(render_where_rule(r.rhs_, ctx));
                 return lhs + " " + std::string(cypher_op(op)) + " " + rhs;
             }
             else
@@ -188,7 +188,10 @@ namespace orm {
                 {
                     std::size_t i = 0;
                     ((void)(out += (i++ > 0 ? " AND " : "")
-                        + render_where_rule(w.template get<Is>(), ctx)), ...);
+                        + detail::wrap_top_clause<
+                              std::remove_cvref_t<decltype(w.template get<Is>())>>(
+                              render_where_rule(w.template get<Is>(), ctx),
+                              Wheres::size > 1)), ...);
                 }(std::make_index_sequence<Wheres::size>{});
                 return out;
             }

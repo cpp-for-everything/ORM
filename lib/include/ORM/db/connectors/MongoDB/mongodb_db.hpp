@@ -75,8 +75,8 @@ namespace orm {
 
             if constexpr (is_rule<T1> && is_rule<T2>)
             {
-                // Compound: AND / OR
-                if (op_sv == "AND")
+                // Compound: && / ||
+                if (op_sv == "&&")
                     return std::format("{{\"$and\":[{},{}]}}", render_filter(r.lhs_), render_filter(r.rhs_));
                 else
                     return std::format("{{\"$or\":[{},{}]}}", render_filter(r.lhs_), render_filter(r.rhs_));

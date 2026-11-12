@@ -1,4 +1,5 @@
 #include "ORM/async/io_context.hpp"
+#include "timer_queue.hpp"
 
 #if defined(__linux__)
 
@@ -38,6 +39,8 @@ namespace orm {
 
         std::mutex callback_mutex_;
         std::queue<std::function<void()>> callbacks_;
+
+        detail::TimerQueue timers_;
 
     public:
         explicit EpollContext(size_t thread_count)
@@ -88,6 +91,8 @@ namespace orm {
                     worker.join();
                 }
             }
+
+            timers_.cancel_all();
 
             if (wakeup_fd_ >= 0) close(wakeup_fd_);
             if (epfd_ >= 0) close(epfd_);
@@ -142,13 +147,10 @@ namespace orm {
             std::chrono::milliseconds delay,
             std::function<void()> callback) override
         {
-            std::thread(
-                [this, delay, cb = std::move(callback)]() mutable
-                {
-                    std::this_thread::sleep_for(delay);
-                    post(std::move(cb));
-                })
-                .detach();
+            // No thread per timer. The reactor loop fires it (see timer_queue.hpp).
+            // The destructor drops timers that are still pending.
+            timers_.add(delay, std::move(callback));
+            wake();
         }
 
         // Reactor: register fd for readiness notification only.
@@ -213,7 +215,7 @@ namespace orm {
         {
             epoll_event events[64];
 
-            int n = epoll_wait(epfd_, events, 64, 50); // 50 ms cadence
+            int n = epoll_wait(epfd_, events, 64, timers_.ms_until_next(50)); // 50 ms cadence, less before a timer
 
             if (n < 0)
             {
@@ -245,6 +247,8 @@ namespace orm {
 
         void process_callbacks()
         {
+            timers_.run_due();
+
             std::function<void()> callback;
             {
                 std::lock_guard<std::mutex> lock(callback_mutex_);

@@ -7,6 +7,7 @@
 #include "ORM/query/field.hpp"
 #include "ORM/query/placeholders.hpp"
 #include "ORM/entity/table.hpp"
+#include "ORM/details/number_format.hpp"
 
 #ifdef ORM_REDIS_LIVE_AVAILABLE
 #include <hiredis/hiredis.h>
@@ -82,7 +83,7 @@ namespace orm {
         [[nodiscard]] std::string to_string(const T& v)
         {
             using D = std::decay_t<T>;
-            if constexpr (std::is_arithmetic_v<D>)   return std::to_string(v);
+            if constexpr (std::is_arithmetic_v<D>)   return detail::arithmetic_to_string(v);
             else if constexpr (std::is_same_v<D, std::string>) return v;
             else if constexpr (std::is_same_v<D, const char*> || std::is_same_v<D, char*>)
                 return std::string(v);

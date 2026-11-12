@@ -5,6 +5,7 @@
 #include "ORM/query/list_render.hpp"
 #include <concepts>
 #include <type_traits>
+#include <string>
 #include <string_view>
 
 namespace orm {
@@ -27,6 +28,44 @@ namespace orm {
     template <typename T>
     concept is_rule = std::derived_from<T, IRule>;
 
+    // ── Parentheses for compound rules ────────────────────────────────────────
+    // A compound rule (both operands are rules) must keep its grouping when a
+    // renderer turns the tree into text. wrap_child() puts parentheses around a
+    // compound operand whose operator differs from its parent's. wrap_top_clause()
+    // does the same for a top level OR clause, because the clauses of one query
+    // are joined with AND.
+    namespace detail {
+        template <typename R>
+        inline constexpr bool is_compound_rule_v = false;
+        template <typename T1, string_literal Op, typename T2>
+        inline constexpr bool is_compound_rule_v<Rule<T1, Op, T2>> =
+            is_rule<T1> && is_rule<T2>;
+
+        template <typename R>
+        inline constexpr std::string_view rule_op_v{};
+        template <typename T1, string_literal Op, typename T2>
+        inline constexpr std::string_view rule_op_v<Rule<T1, Op, T2>> = Op;
+
+        template <typename Child, string_literal ParentOp>
+        [[nodiscard]] std::string wrap_child(std::string s)
+        {
+            if constexpr (is_compound_rule_v<Child> &&
+                          rule_op_v<Child> != static_cast<std::string_view>(ParentOp))
+                return "(" + s + ")";
+            else
+                return s;
+        }
+
+        template <typename R>
+        [[nodiscard]] std::string wrap_top_clause(std::string s, [[maybe_unused]] bool several_clauses)
+        {
+            if constexpr (is_compound_rule_v<R> && rule_op_v<R> == std::string_view("||"))
+                return several_clauses ? "(" + s + ")" : s;
+            else
+                return s;
+        }
+    } // namespace detail
+
     // ── Negation ──────────────────────────────────────────────────────────────
     namespace detail {
         template <string_literal Op>
@@ -42,14 +81,28 @@ namespace orm {
             else if constexpr (s == "IN")  return string_literal("NOT IN");
             else if constexpr (s == "NOT IN") return string_literal("IN");
             else if constexpr (s == "&&")  return string_literal("||");
-            else                           return string_literal("&&");
+            else if constexpr (s == "||")  return string_literal("&&");
+            else
+            {
+                static_assert(!std::is_same_v<decltype(Op), decltype(Op)>,
+                    "orm: operator! is not defined for this rule operator.");
+                return string_literal("&&");
+            }
         }
     } // namespace detail
 
     template <typename T1, detail::string_literal Op, typename T2>
     [[nodiscard]] constexpr auto operator!(const Rule<T1, Op, T2>& r)
     {
-        return Rule<T1, detail::negated_op<Op>(), T2>(r.lhs_, r.rhs_);
+        if constexpr (is_rule<T1> && is_rule<T2>)
+        {
+            // De Morgan: !(a && b) is !a || !b, and !(a || b) is !a && !b.
+            auto nl = !r.lhs_;
+            auto nr = !r.rhs_;
+            return Rule<decltype(nl), detail::negated_op<Op>(), decltype(nr)>(nl, nr);
+        }
+        else
+            return Rule<T1, detail::negated_op<Op>(), T2>(r.lhs_, r.rhs_);
     }
 
     // ── Type compatibility for field comparisons ──────────────────────────────

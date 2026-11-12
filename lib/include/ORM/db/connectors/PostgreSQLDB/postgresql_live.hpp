@@ -11,6 +11,7 @@
 #include "ORM/result/joined_row.hpp"        // joined_row_for / hydrate_joined (pulls join_infer)
 #include "ORM/entity/table.hpp"
 #include "ORM/details/member_pointer.hpp"
+#include "ORM/details/number_format.hpp"
 
 #ifdef ORM_POSTGRESQL_LIVE_AVAILABLE
 #include <libpq-fe.h>
@@ -70,7 +71,10 @@ namespace orm {
             {
                 std::string err = db.conn_ ? PQerrorMessage(db.conn_) : "PQconnectdb failed";
                 if (db.conn_)
+                {
                     PQfinish(db.conn_);
+                    db.conn_ = nullptr;   // the destructor must not finish it again
+                }
                 throw std::runtime_error("PostgreSQL connection failed: " + err);
             }
             return db;
@@ -154,8 +158,8 @@ namespace orm {
             {
                 // Two statements on purpose. The operands of + are unsequenced, and
                 // $N is assigned as a side effect, so the left operand goes first.
-                std::string lhs = render_rule(r.lhs_, ctx);
-                std::string rhs = render_rule(r.rhs_, ctx);
+                std::string lhs = detail::wrap_child<T1, Op>(render_rule(r.lhs_, ctx));
+                std::string rhs = detail::wrap_child<T2, Op>(render_rule(r.rhs_, ctx));
                 return lhs + " " + sql_op + " " + rhs;
             }
             else
@@ -190,7 +194,11 @@ namespace orm {
                 [&]<std::size_t... Is>(std::index_sequence<Is...>)
                 {
                     std::size_t i = 0;
-                    ((void)(out += (i++ > 0 ? " AND " : "") + render_rule(w.template get<Is>(), ctx)), ...);
+                    ((void)(out += (i++ > 0 ? " AND " : "")
+                        + detail::wrap_top_clause<
+                              std::remove_cvref_t<decltype(w.template get<Is>())>>(
+                              render_rule(w.template get<Is>(), ctx),
+                              Wheres::size > 1)), ...);
                 }(std::make_index_sequence<Wheres::size>{});
                 return out;
             }
@@ -278,7 +286,7 @@ namespace orm {
             if constexpr (std::is_same_v<D, bool>)
                 return v ? "t" : "f";
             else if constexpr (std::is_arithmetic_v<D>)
-                return std::to_string(v);
+                return detail::arithmetic_to_string(v);
             else if constexpr (std::is_same_v<D, std::string>)
                 return v;
             else if constexpr (std::is_same_v<D, std::u8string>)
@@ -376,6 +384,64 @@ namespace orm {
         [[nodiscard]] std::string render_inferred_joins()
         {
             return inferred_joins_impl(static_cast<orm::detail::join_plan_t<Response>*>(nullptr));
+        }
+
+        // ── explicit JOIN and GROUP BY clauses ────────────────────────────────
+        // Mirrors the SQLite renderer. The ON rule goes through render_rule, so
+        // its $N markers are numbered in the order the SQL text reads.
+        template <typename Joins, std::size_t I>
+        void append_join_item(std::string& out, const Joins& j, RenderCtx& ctx)
+        {
+            const auto& jr = j.template get<I>();
+            using JR = std::remove_cvref_t<decltype(jr)>;
+            out += " " + std::string(join_kind_sql(JR::mode)) + " "
+                 + std::string(orm::table_name<typename JR::table_type>()) + " ON "
+                 + render_rule(jr.to_rule(), ctx);
+        }
+
+        template <typename Joins, std::size_t... Is>
+        [[nodiscard]] std::string render_joins_impl(const Joins& j, RenderCtx& ctx,
+                                                    std::index_sequence<Is...>)
+        {
+            std::string out;
+            (append_join_item<Joins, Is>(out, j, ctx), ...);
+            return out;
+        }
+
+        template <typename Joins>
+        [[nodiscard]] std::string render_joins(const Joins& j, RenderCtx& ctx)
+        {
+            if constexpr (Joins::size == 0)
+                return {};
+            else
+                return render_joins_impl(j, ctx, std::make_index_sequence<Joins::size>{});
+        }
+
+        template <typename Groups, std::size_t I>
+        void append_group_by_item(std::string& out, bool& first)
+        {
+            using GB = typename Groups::template orm_type<I>;
+            if (!first) out += ", ";
+            out += std::string(mem_ptr<GB::member>::column_name());
+            first = false;
+        }
+
+        template <typename Groups, std::size_t... Is>
+        [[nodiscard]] std::string render_group_by_impl(std::index_sequence<Is...>)
+        {
+            std::string out = " GROUP BY ";
+            bool first = true;
+            (append_group_by_item<Groups, Is>(out, first), ...);
+            return out;
+        }
+
+        template <typename Groups>
+        [[nodiscard]] std::string render_group_by(const Groups& /*g*/)
+        {
+            if constexpr (Groups::size == 0)
+                return {};
+            else
+                return render_group_by_impl<Groups>(std::make_index_sequence<Groups::size>{});
         }
 
     } // namespace pg_live_detail
@@ -638,21 +704,29 @@ namespace orm {
             if constexpr (Inferred)
             {
                 using Base = orm::detail::base_table_t<Response>;
-                return std::format("SELECT {} FROM {}{}{}{}{}",
+                // The WHERE text is built first: $N numbers follow the order of rendering.
+                const std::string wheres = pg_live_detail::render_wheres(q.where_clauses(), ctx);
+                return std::format("SELECT {} FROM {}{}{}{}{}{}",
                     pg_live_detail::render_qualified_columns<Response>(),
                     std::string(table_name<Base>()),
                     pg_live_detail::render_inferred_joins<Response>(),
-                    pg_live_detail::render_wheres(q.where_clauses(), ctx),
+                    wheres,
+                    pg_live_detail::render_group_by(q.group_clauses()),
                     pg_live_detail::render_order_by(q.order_clauses()),
                     pg_live_detail::render_limits(q.limit_clauses()));
             }
             else
             {
                 using Entity = typename Response::template orm_type<0>::table_type;
-                return std::format("SELECT {} FROM {}{}{}{}",
+                // Joins first, then WHERE: $N numbers follow the order of rendering.
+                const std::string joins = pg_live_detail::render_joins(q.join_clauses(), ctx);
+                const std::string wheres = pg_live_detail::render_wheres(q.where_clauses(), ctx);
+                return std::format("SELECT {} FROM {}{}{}{}{}{}",
                     pg_live_detail::render_columns(q.selected_properties()),
                     std::string(table_name<Entity>()),
-                    pg_live_detail::render_wheres(q.where_clauses(), ctx),
+                    joins,
+                    wheres,
+                    pg_live_detail::render_group_by(q.group_clauses()),
                     pg_live_detail::render_order_by(q.order_clauses()),
                     pg_live_detail::render_limits(q.limit_clauses()));
             }

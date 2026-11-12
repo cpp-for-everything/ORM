@@ -1,6 +1,7 @@
 #pragma once
 #include "ORM/connector/capabilities.hpp"
 #include "ORM/result/result.hpp"
+#include "ORM/details/number_format.hpp"
 #include "ORM/query/select.hpp"
 #include "ORM/query/insert.hpp"
 #include "ORM/query/delete.hpp"
@@ -145,7 +146,7 @@ namespace orm {
         [[nodiscard]] std::string stringify(const T& v)
         {
             using D = std::decay_t<T>;
-            if constexpr (std::is_arithmetic_v<D>)   return std::to_string(v);
+            if constexpr (std::is_arithmetic_v<D>)   return detail::arithmetic_to_string(v);
             else if constexpr (std::is_same_v<D, std::string>) return v;
             else return "?";
         }

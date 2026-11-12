@@ -27,6 +27,11 @@ namespace orm {
         struct supports_bulk_insert {};
         struct supports_async {};
         struct supports_list_placeholder {};
+        struct supports_multi_row_insert {};
+        // One connection object may run queries from several threads at once.
+        // supports_concurrent_execute is different: it means one connection per
+        // thread (a pool). async_db serialises a connection without this tag.
+        struct supports_shared_connection {};
 
     } // namespace cap
 
@@ -67,6 +72,14 @@ namespace orm {
         template <typename DB>
         struct capability_check<DB, cap::supports_list_placeholder>
             : std::bool_constant<requires { typename connector_trait<DB>::supports_list_placeholder; }> {};
+
+        template <typename DB>
+        struct capability_check<DB, cap::supports_multi_row_insert>
+            : std::bool_constant<requires { typename connector_trait<DB>::supports_multi_row_insert; }> {};
+
+        template <typename DB>
+        struct capability_check<DB, cap::supports_shared_connection>
+            : std::bool_constant<requires { typename connector_trait<DB>::supports_shared_connection; }> {};
 
     } // namespace detail
 
